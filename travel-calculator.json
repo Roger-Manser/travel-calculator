@@ -1,0 +1,58 @@
+{
+ "rates": {
+  "stand": "2026-11-21",
+  "verantwortlich": "",
+  "updatedAt": 0,
+  "profiles": [
+   {
+    "id": "ch",
+    "name": "Schweiz",
+    "cur": "CHF",
+    "hotel": 180,
+    "car": 90,
+    "spesen": 60,
+    "nk": 10
+   },
+   {
+    "id": "de",
+    "name": "Deutschland",
+    "cur": "EUR",
+    "hotel": 130,
+    "car": 65,
+    "spesen": 40,
+    "nk": 10
+   },
+   {
+    "id": "us",
+    "name": "USA",
+    "cur": "USD",
+    "hotel": 220,
+    "car": 75,
+    "spesen": 70,
+    "nk": 15
+   }
+  ],
+  "fx": {
+   "CHF": 1,
+   "EUR": 0.93,
+   "USD": 0.82
+  },
+  "classes": [
+   {
+    "name": "Economy",
+    "f": 1
+   },
+   {
+    "name": "Premium Economy",
+    "f": 1.8
+   },
+   {
+    "name": "Business",
+    "f": 3
+   }
+  ]
+ },
+ "einsaetze": [],
+ "deleted": {},
+ "updatedAt": 0
+}
