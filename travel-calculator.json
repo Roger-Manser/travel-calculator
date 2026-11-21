@@ -161,6 +161,13 @@
    "name": "Umbau",
    "art": "Installationstechniker",
    "updatedAt": 0
+  },
+  {
+   "id": "mwqjbu8dl5opd",
+   "name": "Neue Aufgabe",
+   "dauer": "",
+   "art": "",
+   "updatedAt": 1795273230541
   }
  ],
  "techniker": [
@@ -250,5 +257,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795273181643
+ "updatedAt": 1795273230541
 }
