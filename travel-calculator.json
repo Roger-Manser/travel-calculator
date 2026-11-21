@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-21",
   "verantwortlich": "",
-  "updatedAt": 1795261312393,
+  "updatedAt": 1795261318343,
   "profiles": [
    {
     "id": "ch",
@@ -36,7 +36,7 @@
    },
    {
     "id": "mwqc8e4oh4bk8",
-    "name": "Neues Profil",
+    "name": "Schweden",
     "cur": "CHF",
     "hotel": 0,
     "car": 0,
@@ -233,5 +233,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795261312393
+ "updatedAt": 1795261318343
 }
