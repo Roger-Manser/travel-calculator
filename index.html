@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v3.5 – Richtpreis: Reisezeit auf ganze Stunden aufgerundet -->
+<!-- Gallus Travel Calculator v3.6 – Preisbasis Endkunde / Intercompany pro Einsatz; Spesensätze in den Stammdaten -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#0d1c16">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="3.5">
+<meta name="app-version" content="3.6">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
 :root{--bg:#0d1c16;--card:#142a20;--card2:#1a3428;--line:#2a4b3b;--ink:#e6f0ea;--muted:#93ad9f;--brand:#2f8a62;--brand-2:#5fc79c;--red:#e46a6a;--amber:#e2b252;--input:#0f241b}
@@ -127,6 +127,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
         <label>Maschine / Auftrag<input id="f_auftrag"></label>
         <label>Bemerkung<input id="f_bemerkung"></label>
         <label class="chk" style="align-self:end;padding-bottom:8px"><input type="checkbox" id="f_training">Training verkauft</label>
+        <label>Preisbasis<select id="f_preis"><option value="ek">Endkunde</option><option value="ic">Intercompany</option></select></label>
         <label>Status<select id="f_status"><option value="entwurf">Entwurf – rechnet mit aktuellen Sätzen</option><option value="offeriert">Offeriert – Sätze eingefroren</option><option value="abgeschlossen">Abgeschlossen – Sätze eingefroren</option></select></label>
       </div>
       <div class="muted" id="kundeInfo" style="margin-top:8px"></div>
@@ -254,7 +255,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
     <button class="btn sec" id="btnAddAuf" style="margin-top:10px">+ Aufgabe</button>
   </div>
   <div class="card" id="stdCard"><h2>Maschinentypen &amp; Stundensätze</h2>
-    <p class="muted" style="margin-top:0">Ein Stundensatz pro Maschinentyp in CHF – gilt für alle Tätigkeiten (Installation, Umbau, Erweiterung, Troubleshooting, Handover, Training). Die Reisezeit wird in der Kalkulation vollständig gerechnet (Tür bis Kunde, hin und zurück); die max. bezahlten Reisestunden betreffen nur die Auszahlung an den Techniker und dienen als Schätzung, solange die Flugdauer noch nicht ermittelt ist.</p>
+    <p class="muted" style="margin-top:0">Stundensatz pro Maschinentyp in CHF, je für Endkunde und Intercompany (Preisbasis wird im Einsatz gewählt) – gilt für alle Tätigkeiten (Installation, Umbau, Erweiterung, Troubleshooting, Handover, Training). Die Reisezeit wird in der Kalkulation vollständig gerechnet (Tür bis Kunde, hin und zurück); die max. bezahlten Reisestunden betreffen nur die Auszahlung an den Techniker und dienen als Schätzung, solange die Flugdauer noch nicht ermittelt ist.</p>
     <div class="grid">
       <label>Arbeitsstunden pro Tag<input data-g="arbStdTag" inputmode="decimal"></label>
       <label>Max. bezahlte Reisestunden pro Kalendertag<input data-g="reiseStdTag" inputmode="decimal"></label>
@@ -264,6 +265,10 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
     </div>
     <div style="overflow-x:auto;margin-top:12px"><table class="tbl-edit" id="stdTable"></table></div>
     <div class="row" style="margin-top:10px"><input id="maschNew" placeholder="Neuer Maschinentyp" style="max-width:240px"><button class="btn sec" id="btnAddMasch">+ Maschinentyp</button></div>
+  </div>
+  <div class="card" id="spesenCard"><h2>Spesensätze pro Land</h2>
+    <p class="muted" style="margin-top:0">Spesen pro Tag in der Währung des Länderprofils, je für Endkunden- und Intercompany-Preise. Länder und Währungen werden unter Firmensätze → Länderprofile verwaltet.</p>
+    <div style="overflow-x:auto"><table class="tbl-edit" id="spesenTable"><thead><tr><th>Land</th><th>Währung</th><th class="num">Spesen Endkunde/Tag</th><th class="num">Spesen Intercompany/Tag</th></tr></thead><tbody></tbody></table></div>
   </div>
   <div class="card"><h2>Technikerarten</h2>
     <table class="tbl-edit" id="artTable"><tbody></tbody></table>
@@ -300,7 +305,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
   <div class="card"><h2>Länderprofile</h2>
     <p class="muted" style="margin-top:0">Sätze in der Währung des Profils. Der Profilname wird mit dem Land des Kunden abgeglichen.</p>
     <div style="overflow-x:auto">
-    <table class="tbl-edit" id="profTable"><thead><tr><th>Name</th><th>Währung</th><th class="num">Hotel/Nacht</th><th class="num">Mietwagen/Tag</th><th class="num">Taxi/Fahrt</th><th class="num">Spesen/Tag</th><th class="num nkcol">Nebenk./Tag</th><th>Stand</th><th></th></tr></thead><tbody></tbody></table>
+    <table class="tbl-edit" id="profTable"><thead><tr><th>Name</th><th>Währung</th><th class="num">Hotel/Nacht</th><th class="num">Mietwagen/Tag</th><th class="num">Taxi/Fahrt</th><th class="num nkcol">Nebenk./Tag</th><th>Stand</th><th></th></tr></thead><tbody></tbody></table>
     </div>
     <button class="btn sec" id="btnAddProf" style="margin-top:10px">+ Profil</button>
   </div>
@@ -360,8 +365,14 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '3.5';
+const APP_VERSION = '3.6';
 const VERSION_HISTORY = [
+  { v: '3.6', d: '2026-11-21', items: [
+    'Preisbasis pro Einsatz: Endkunde oder Intercompany',
+    'Stundensatz pro Maschinentyp je für Endkunde und Intercompany',
+    'Spesensätze pro Land in den Stammdaten (neue Karte), je für Endkunde und Intercompany; aus den Firmensätzen entfernt',
+    'Preisbasis in Sätzen, Liste, Ausdruck und Richtpreis berücksichtigt'
+  ] },
   { v: '3.5', d: '2026-11-21', items: [
     'Richtpreis: Reisezeit auf ganze Stunden aufgerundet, Betrag = Stunden × Satz'
   ] },
@@ -1026,7 +1037,7 @@ CFG.offer = Object.assign({ lang: 'de', cur: 'CHF' }, cfgStored.offer);
 
 function blankE() {
   const p = DATA.rates.profiles[0], a = DATA.aufgaben[0];
-  return { id: null, name: '', gep: {}, visa: {}, aufgabeId: a ? a.id : '', kundeId: '', techs: [], profileId: p ? p.id : '', auftrag: '', bemerkung: '', maschId: (DATA.rates.maschinen[0] || {}).id || '', ab: '', rueck: '', ueInst: '', ueTrain: '', instTage: '', training: false, handTage: '', trainTage: '', klasse: 'Economy', carMode: 'auto', regel: 'mit', man: { hotel: null, car: null, spesen: null }, ov: { hotel: '', car: '', spesen: '', nk: '', taxi: '' }, nkPausch: '', res: null };
+  return { id: null, name: '', gep: {}, visa: {}, aufgabeId: a ? a.id : '', kundeId: '', techs: [], profileId: p ? p.id : '', auftrag: '', bemerkung: '', maschId: (DATA.rates.maschinen[0] || {}).id || '', preis: 'ek', ab: '', rueck: '', ueInst: '', ueTrain: '', instTage: '', training: false, handTage: '', trainTage: '', klasse: 'Economy', carMode: 'auto', regel: 'mit', man: { hotel: null, car: null, spesen: null }, ov: { hotel: '', car: '', spesen: '', nk: '', taxi: '' }, nkPausch: '', res: null };
 }
 function normE(o) {
   const e = Object.assign(blankE(), o || {});
@@ -1050,7 +1061,7 @@ function saveDraft() { store(LS.draft, E); }
 function changed() { DATA.updatedAt = Date.now(); persist(); scheduleSync(); }
 
 /* ---------- Formular ---------- */
-const FIELDS = ['name', 'aufgabeId', 'kundeId', 'maschId', 'profileId', 'auftrag', 'bemerkung', 'ab', 'instTage', 'handTage', 'trainTage', 'ueInst', 'ueTrain', 'carMode', 'regel', 'nkPausch'];
+const FIELDS = ['name', 'aufgabeId', 'kundeId', 'maschId', 'profileId', 'preis', 'auftrag', 'bemerkung', 'ab', 'instTage', 'handTage', 'trainTage', 'ueInst', 'ueTrain', 'carMode', 'regel', 'nkPausch'];
 const OVS = ['hotel', 'car', 'nk', 'taxi'];
 const isMan = k => E.man[k] !== null && E.man[k] !== undefined;
 function opts(list, val, labelFn, empty) {
@@ -1274,7 +1285,8 @@ function calcCore() {
   const cur = p ? p.cur : 'CHF';
   const fx = num(R.fx[cur]);
   if (p && !(fx > 0)) err(`Kein Wechselkurs für ${cur} hinterlegt (Firmensätze).`);
-  if (p && !(num(p.spesen) > 0)) warn(`Im Länderprofil «${p.name}» sind keine Spesen erfasst (Firmensätze → Länderprofile).`);
+  const IC = E.preis === 'ic', SK = IC ? 'spesenIC' : 'spesen', PB = IC ? 'Intercompany' : 'Endkunde';
+  if (p && !(num(p[SK]) > 0)) warn(`Für ${p.name} sind keine Spesen ${PB} erfasst (Stammdaten → Spesensätze pro Land).`);
   if (p && p.landesWaehrung && p.landesWaehrung !== p.cur) warn(`Länderprofil «${p.name}» wird in ${curLabel(p.cur)} geführt, Landeswährung ist ${curLabel(p.landesWaehrung)}. Umstellen unter Firmensätze → Länderprofile, danach «API».`);
   const valid = E.techs.map(x => ({ sel: x, t: techById(x.id) })).filter(x => x.t);
   if (valid.length < E.techs.length) warn('Mindestens ein ausgewählter Techniker existiert nicht mehr.');
@@ -1299,13 +1311,13 @@ function calcCore() {
   const src = key => E.ov[key] !== '' && E.ov[key] !== undefined ? 'für diesen Einsatz überschrieben' : (p ? `Länderprofil ${p.name}${p.apiStand && p.apiStand.at ? ' · Stand ' + fmtDate(isoOf(p.apiStand.at)) + (p.apiStand.src === 'api' ? ' (API)' : ' (manuell)') : ''}` : 'Länderprofil');
   const busCmp = [];
   const nkOn = !!R.nkAktiv;
-  const h = rate('hotel'), s = p ? num(p.spesen) : NaN, nk = nkOn ? rate('nk') : 0, taxi = car ? 0 : rate('taxi'), carR = car ? rate('car') : 0;
+  const h = rate('hotel'), s = p ? num(p[SK]) : NaN, nk = nkOn ? rate('nk') : 0, taxi = car ? 0 : rate('taxi'), carR = car ? rate('car') : 0;
   const dest = k && k.flughafen ? k.flughafen : '?', destL = k && k.flughafen ? apLabel(k.flughafen, k.flughafenName) : '?';
   const add = (grp, cat, ph, name, qty, unit, satz, c, chf, note) => lines.push({ grp, cat, ph: typeof ph === 'string' ? { [ph]: 1 } : ph, name, qty, unit, satz, cur: c, chf, note });
   const plan = [], missingStd = new Set(), arbH = num(R.arbStdTag) || 0;
   const masch = (R.maschinen || []).find(m => m.id === E.maschId), maschName = masch ? masch.name : '';
   if (!masch) warn('Maschinentyp wählen (Stammdaten → Maschinentypen & Stundensätze).');
-  const stdSatz = () => { const n = masch ? masch.satz : undefined; return n === '' || n === undefined || n === null ? NaN : num(n); };
+  const stdSatz = () => { const n = masch ? masch[IC ? 'satzIC' : 'satz'] : undefined; return n === '' || n === undefined || n === null ? NaN : num(n); };
   S.per.forEach(x => {
     const { sel, t } = x, home = x.home, fr = x.frac;
     const g = `${t.name}${E.training ? (x.role === 'app' ? ' – Training / Handover' : ' – Installation / Handover') : ''}`;
@@ -1386,8 +1398,8 @@ function calcCore() {
     add('Gemeinsam', 'Transport vor Ort', cf, 'Mietwagen Kilometer', km, 'km', ks, 'CHF', km * ks, `${isFinite(dist) ? `2 × ${fmt0(dist)} km + ` : ''}${fmt0(carD)} Tage × ${fmt0(lk)} km`);
   }
   const stdUsed = [[E.aufgabeId, S.P1]].concat(E.training ? [['a-hand', 'Handover'], ['a-train', 'Training']] : []);
-  const stdTxt = masch ? (isFinite(stdSatz()) ? `CHF ${fmt(stdSatz())}/h <span class="muted">(${esc(maschName)})</span>` : `<span class="warnTxt">fehlt für ${esc(maschName)}</span>`) : '<span class="warnTxt">Maschinentyp wählen</span>';
-  if (missingStd.size && masch) warn(`Stundensatz für «${maschName}» fehlt (Stammdaten → Maschinentypen & Stundensätze).`);
+  const stdTxt = masch ? (isFinite(stdSatz()) ? `CHF ${fmt(stdSatz())}/h <span class="muted">(${esc(maschName)}, ${PB})</span>` : `<span class="warnTxt">${PB} fehlt für ${esc(maschName)}</span>`) : '<span class="warnTxt">Maschinentyp wählen</span>';
+  if (missingStd.size && masch) warn(`Stundensatz ${PB} für «${maschName}» fehlt (Stammdaten → Maschinentypen & Stundensätze).`);
   { const uz = (num(R.ueZuschlag) || 0) / 100, st = stdSatz();
     [[E.ueInst, S.P1, 'Installation'], [E.training ? E.ueTrain : '', 'Training', 'Schulung']].forEach(([v, ph, lbl]) => {
       const hh = v === '' || v === undefined ? 0 : num(v);
@@ -1402,7 +1414,7 @@ function calcCore() {
   plan.forEach(x => { if (x.visRes && /^(ja|visum|e)/i.test(String(x.visRes.benoetigt || '')) && !(num(x.visRes.kosten_chf) >= 0)) warn(`${x.t.name}: Visum nötig, Kosten unbekannt.`); });
   const cats = {}, phs = {}; S.phases.forEach(ph => phs[ph] = 0);
   lines.forEach(l => { cats[l.cat] = (cats[l.cat] || 0) + l.chf; Object.entries(l.ph).forEach(([ph, q]) => phs[ph] = (phs[ph] || 0) + l.chf * q); });
-  return { busCmp, stdTxt, spesen: s, nkOn, srcOf: src, lines, total, msgs, cur, fx, p, S, sched: S.ok && S.per.length > 0, car, carWhy, km, valid, a, k, plan, cats, phs };
+  return { pb: PB, busCmp, stdTxt, spesen: s, nkOn, srcOf: src, lines, total, msgs, cur, fx, p, S, sched: S.ok && S.per.length > 0, car, carWhy, km, valid, a, k, plan, cats, phs };
 }
 function hhmmMinus(hhmm, h) {
   const m = /^(\d{1,2}):(\d{2})/.exec(String(hhmm || '')); if (!m || !isFinite(h)) return '';
@@ -1465,9 +1477,9 @@ function offerData(r, lang, cur) {
   const aName = r.a ? r.a.name : 'Einsatz';
   const P1n = lang === 'en' ? ({ 'Installation Neumaschine': 'Installation New Machine', 'Erweiterung Neumaschine': 'Extension New Machine', 'Umbau': 'Conversion', 'Troubleshooting': 'Troubleshooting', 'Handover': 'Handover', 'Training': 'Training' }[aName] || aName) : aName;
   const tables = E.training ? [{ title: `${P1n} ${T.inst}`, phases: [r.S.P1, 'Handover'] }, { title: T.train, phases: ['Training'] }] : [{ title: P1n, phases: r.S.phases }];
-  const st = (() => { const m = (R.maschinen || []).find(x => x.id === E.maschId); return m ? num(m.satz) : NaN; })(), uz = (num(R.ueZuschlag) || 0) / 100;
+  const st = (() => { const m = (R.maschinen || []).find(x => x.id === E.maschId); return m ? num(m[E.preis === 'ic' ? 'satzIC' : 'satz']) : NaN; })(), uz = (num(R.ueZuschlag) || 0) / 100;
   const pfx = r.fx > 0 ? r.fx : 1, p = r.p || {};
-  const defPrice = { travel: st * (num(R.reiseProz) || 0) / 100, work: st, ot: st * (1 + uz), allow: num(p.spesen) * pfx, acc: num(isFinite(num(E.ov.hotel)) && E.ov.hotel !== '' ? E.ov.hotel : p.hotel) * pfx, carkm: num(R.kmSatz), rental: num(isFinite(num(E.ov.car)) && E.ov.car !== '' ? E.ov.car : p.car) * pfx, flight: 0, other: 0 };
+  const defPrice = { travel: st * (num(R.reiseProz) || 0) / 100, work: st, ot: st * (1 + uz), allow: num(p[E.preis === 'ic' ? 'spesenIC' : 'spesen']) * pfx, acc: num(isFinite(num(E.ov.hotel)) && E.ov.hotel !== '' ? E.ov.hotel : p.hotel) * pfx, carkm: num(R.kmSatz), rental: num(isFinite(num(E.ov.car)) && E.ov.car !== '' ? E.ov.car : p.car) * pfx, flight: 0, other: 0 };
   tables.forEach(tb => {
     const agg = {};
     r.lines.forEach(l => {
@@ -1566,7 +1578,7 @@ function render() {
   $('busTable').tBodies[0].innerHTML = r.busCmp.length ? r.busCmp.map(b => `<tr><td>${esc(b.t.name)}</td><td>${KL[b.cls]}</td><td class="num">${fmt(b.cur)}</td><td class="num">${isFinite(b.bus) ? fmt(b.bus) + (b.bgUnknown ? ' <span class="warnTxt">(Gepäck ?)</span>' : '') : '<span class="muted">nach Online-Ermittlung</span>'}</td><td class="num ${b.bus - b.cur > 0 ? 'pos' : 'neg'}">${isFinite(b.bus) ? (b.bus - b.cur > 0 ? '+' : '') + fmt(b.bus - b.cur) : ''}</td></tr>`).join('')
     + (r.busCmp.every(b => isFinite(b.bus)) && r.busCmp.length > 1 ? `<tr class="total"><td colspan="4">Mehrkosten Business total</td><td class="num">${fmt(r.busCmp.reduce((a, b) => a + b.bus - b.cur, 0))}</td></tr>` : '') : '<tr><td colspan="5" class="muted">Techniker wählen.</td></tr>';
   $('stdInfo').innerHTML = r.stdTxt;
-  $('spesenInfo').innerHTML = r.p ? `${esc(r.cur)} ${fmt(r.spesen)} <span class="muted">(${esc(r.p.name)})</span>` : '–';
+  $('spesenInfo').innerHTML = r.p ? `${esc(r.cur)} ${fmt(r.spesen)} <span class="muted">(${esc(r.p.name)}, ${r.pb})</span>` : '–';
   document.querySelectorAll('#calcForm .nkf').forEach(el => el.hidden = !r.nkOn);
   $('plan').innerHTML = planHtml(r);
   const CORDER = CATS;
@@ -1653,7 +1665,7 @@ function renderList() {
   $('listCount').textContent = `${rows.length} von ${DATA.einsaetze.length}`;
   $('listTable').tBodies[0].innerHTML = rows.length ? rows.map(({ e, i }) => `<tr>
     <td><b>${esc(e.name)}</b>${e.auftrag ? `<div class="muted">${esc(e.auftrag)}</div>` : ''}</td>
-    <td>${statusBadge(e)}</td>
+    <td>${statusBadge(e)}${e.preis === 'ic' ? '<div class="muted">Intercompany</div>' : ''}</td>
     <td>${esc(i.aufgabe)}</td><td>${esc(i.kunde)}${i.ort ? `<div class="muted">${esc(i.ort)}</div>` : ''}</td><td>${esc(i.techs)}</td>
     <td>${fmtDate(e.ab)} – ${fmtDate(e.rueck)}</td><td class="num">${fmt(e.total)}</td>
     <td class="num"><button class="btn sm" data-open="${esc(e.id)}">Öffnen</button> <button class="btn sec sm" data-dup="${esc(e.id)}">Duplizieren</button> <button class="btn red sm" data-del="${esc(e.id)}">Löschen</button></td></tr>`).join('')
@@ -1969,14 +1981,18 @@ Fasse vor dem Ergebnis höchstens in 2–3 Sätzen zusammen. Antworte am Schluss
 }
 
 /* ---------- Firmensätze ---------- */
-const PNUM = ['hotel', 'car', 'taxi', 'spesen', 'nk'], P_API = ['hotel', 'car', 'taxi'];
+const PNUM = ['hotel', 'car', 'taxi', 'spesen', 'spesenIC', 'nk'], P_API = ['hotel', 'car', 'taxi'], PCOLS = ['hotel', 'car', 'taxi', 'nk'];
 const GNUM = ['gepaeck', 'kmSatz', 'carAbKm', 'lokalKm'];
 function ratesChanged() { DATA.rates.updatedAt = Date.now(); changed(); writeForm(); render(); }
 function renderStdTable() {
   const ms = DATA.rates.maschinen || [];
-  $('stdTable').innerHTML = `<thead><tr><th>Maschinentyp</th><th class="num">Stundensatz CHF/h</th><th></th></tr></thead><tbody>`
-    + (ms.length ? ms.map((m, i) => `<tr><td><input data-m="${i}" value="${esc(m.name)}" style="min-width:160px"></td><td class="num"><input data-ms="${i}" inputmode="decimal" placeholder="CHF/h" value="${esc(m.satz ?? '')}"></td><td><button class="btn red sm" data-delm="${i}" title="Maschinentyp löschen">✕</button></td></tr>`).join('')
-      : `<tr><td colspan="3" class="muted">Noch keine Maschinentypen erfasst.</td></tr>`) + '</tbody>';
+  $('stdTable').innerHTML = `<thead><tr><th>Maschinentyp</th><th class="num">Endkunde CHF/h</th><th class="num">Intercompany CHF/h</th><th></th></tr></thead><tbody>`
+    + (ms.length ? ms.map((m, i) => `<tr><td><input data-m="${i}" value="${esc(m.name)}" style="min-width:160px"></td><td class="num"><input data-ms="${i}" inputmode="decimal" placeholder="CHF/h" value="${esc(m.satz ?? '')}"></td><td class="num"><input data-msic="${i}" inputmode="decimal" placeholder="CHF/h" value="${esc(m.satzIC ?? '')}"></td><td><button class="btn red sm" data-delm="${i}" title="Maschinentyp löschen">✕</button></td></tr>`).join('')
+      : `<tr><td colspan="4" class="muted">Noch keine Maschinentypen erfasst.</td></tr>`) + '</tbody>';
+  const R = DATA.rates;
+  $('spesenTable').tBodies[0].innerHTML = R.profiles.map((p, i) => `<tr><td><b>${esc(p.name)}</b></td><td class="muted">${esc(curLabel(p.cur))}</td>
+    <td class="num"><input data-p="${i}" data-k="spesen" inputmode="decimal" value="${esc(isFinite(num(p.spesen)) ? p.spesen : '')}"></td>
+    <td class="num"><input data-p="${i}" data-k="spesenIC" inputmode="decimal" value="${esc(isFinite(num(p.spesenIC)) ? p.spesenIC : '')}"></td></tr>`).join('') || '<tr><td colspan="4" class="muted">Noch keine Länderprofile.</td></tr>';
 }
 function renderRates() {
   const R = DATA.rates;
@@ -1991,7 +2007,7 @@ function renderRates() {
   $('profTable').tBodies[0].innerHTML = R.profiles.map((p, i) => `<tr>
     <td><input data-p="${i}" data-k="name" value="${esc(p.name)}" style="min-width:170px"></td>
     <td><select data-p="${i}" data-k="cur" style="min-width:290px">${curs.concat(curs.includes(p.cur) ? [] : [p.cur]).map(c => `<option value="${esc(c)}" ${c === p.cur ? 'selected' : ''}>${esc(curLabel(c))}</option>`).join('')}</select></td>
-    ${PNUM.map(k => `<td class="num${k === 'nk' ? ' nkcol' : ''}"><input data-p="${i}" data-k="${k}" inputmode="decimal" value="${esc(isFinite(num(p[k])) ? p[k] : '')}"></td>`).join('')}
+    ${PCOLS.map(k => `<td class="num${k === 'nk' ? ' nkcol' : ''}"><input data-p="${i}" data-k="${k}" inputmode="decimal" value="${esc(isFinite(num(p[k])) ? p[k] : '')}"></td>`).join('')}
     <td style="white-space:nowrap;font-size:12px" title="${esc(String(standTxt(p.apiStand)).replace(/<[^>]+>/g, ''))}">${p.apiStand && p.apiStand.at ? `${fmtDate(isoOf(p.apiStand.at))} <span class="muted">${p.apiStand.src === 'api' ? 'API' : 'manuell'}</span>${p.apiStand.stale ? ' <span class="warnTxt">⚠</span>' : ''}` : '<span class="muted">–</span>'}</td>
     <td style="white-space:nowrap"><button class="btn sec sm" data-papi="${i}" title="Hotel, Mietwagen und Taxi per API ermitteln">API</button> <button class="btn red sm" data-delp="${i}" title="Profil löschen">✕</button></td></tr>`).join('');
   $('fxTable').tBodies[0].innerHTML = curs.map(c => `<tr><td><b>${esc(c)}</b> <span class="muted">${esc(curName(c))}</span></td>
@@ -2004,10 +2020,10 @@ function onRatesChange(ev) {
   else if (t.id === 'r_ver') R.verantwortlich = t.value.trim();
   else if (d.g === 'gepaeckArt') R.gepaeckArt = t.value;
   else if (d.gb !== undefined) R[d.gb] = t.checked;
-  else if (d.ms !== undefined) {
-    const m = R.maschinen[+d.ms]; if (!m) return; const v = t.value.trim() === '' ? '' : num(t.value);
-    if (v !== '' && !(v >= 0)) { toast('Bitte einen gültigen Stundensatz eingeben'); t.value = m.satz ?? ''; return; }
-    m.satz = v;
+  else if (d.ms !== undefined || d.msic !== undefined) {
+    const key = d.ms !== undefined ? 'satz' : 'satzIC', m = R.maschinen[+(d.ms !== undefined ? d.ms : d.msic)]; if (!m) return; const v = t.value.trim() === '' ? '' : num(t.value);
+    if (v !== '' && !(v >= 0)) { toast('Bitte einen gültigen Stundensatz eingeben'); t.value = m[key] ?? ''; return; }
+    m[key] = v;
   } else if (d.m !== undefined) {
     const m = R.maschinen[+d.m], nv = t.value.trim();
     if (!m || !nv || R.maschinen.some((x, j) => j !== +d.m && x.name === nv)) { toast('Name fehlt oder ist schon vergeben'); if (m) t.value = m.name; return; }
@@ -2533,7 +2549,7 @@ async function testApi() {
 /* ---------- Drucken ---------- */
 function doPrint() {
   const r = calc(), R = DATA.rates, k = r.k;
- const det = [['Einsatz', E.name], ['Status', (STATUS[E.status] || 'Entwurf') + (E.frozen ? ` – Sätze eingefroren am ${fmtDate(isoOf(E.frozen.at))}` : ' – aktuelle Sätze')], ['Aufgabe', r.a && r.a.name], ['Kunde', k && k.name], ['Adresse', k && k.adresse && k.adresse.replace(/\s*\n\s*/g, ', ')],
+ const det = [['Einsatz', E.name], ['Preisbasis', E.preis === 'ic' ? 'Intercompany' : 'Endkunde'], ['Status', (STATUS[E.status] || 'Entwurf') + (E.frozen ? ` – Sätze eingefroren am ${fmtDate(isoOf(E.frozen.at))}` : ' – aktuelle Sätze')], ['Aufgabe', r.a && r.a.name], ['Kunde', k && k.name], ['Adresse', k && k.adresse && k.adresse.replace(/\s*\n\s*/g, ', ')],
     ['Flughafen', k && k.flughafen ? `${k.flughafen}${k.flughafenName ? ' (' + k.flughafenName + ')' : ''}${isFinite(num(k.distanzKm)) ? ' · ' + fmt0(num(k.distanzKm)) + ' km zum Kunden' : ''}` : ''],
     ['Techniker', r.valid.map(x => `${x.t.name} (ab ${apLabel(x.t.flughafen)})`).join(', ')], ['Maschine / Auftrag', E.auftrag],
     ['Reise', r.sched ? `${dShort(r.S.first)} – ${dShort(r.S.last)}` : ''], ['Ablauf', phaseTxt(r.S)], ['Training verkauft', E.training ? `ja – ${E.trainTage || 0} Tage Training, ${E.handTage || 0} Tage Handover` : ''], ['Transport vor Ort', r.carWhy], ['Bemerkung', E.bemerkung]].filter(x => x[1]);
@@ -2611,6 +2627,7 @@ const ratesTab = document.querySelector('section[data-tab="rates"]');
 ratesTab.addEventListener('change', onRatesChange);
 ratesTab.addEventListener('click', onRatesClick);
 $('stdCard').addEventListener('change', onRatesChange);
+$('spesenCard').addEventListener('change', onRatesChange);
 $('stdCard').addEventListener('click', onRatesClick);
 $('btnExport').addEventListener('click', exportRates);
 $('btnImport').addEventListener('click', () => $('fileImport').click());
