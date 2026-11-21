@@ -173,8 +173,8 @@
    "arten": [
     "Installationstechniker"
    ],
-   "anreiseModus": "auto",
-   "updatedAt": 1795260673279
+   "anreiseModus": "oev",
+   "updatedAt": 1795260677212
   }
  ],
  "kunden": [
@@ -212,5 +212,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795260673279
+ "updatedAt": 1795260677212
 }
