@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-21",
   "verantwortlich": "",
-  "updatedAt": 1795257438732,
+  "updatedAt": 1795258879578,
   "profiles": [
    {
     "id": "ch",
@@ -65,6 +65,14 @@
   "fxStand": {
    "date": "2026-11-20",
    "src": "EZB via Frankfurter"
+  },
+  "gepaeckArt": "Installationstechniker",
+  "gepaeckKg": 30,
+  "vorlaufH": 2,
+  "vorlaufGepaeckH": 3,
+  "kmPrivat": 0,
+  "daily": {
+   "fx": "2026-11-21"
   }
  },
  "einsaetze": [],
@@ -114,7 +122,9 @@
    "arten": [
     "Installationstechniker"
    ],
-   "updatedAt": 1795257708251
+   "updatedAt": 1795257708251,
+   "gepaeckKg": 30,
+   "anreiseModus": "auto"
   }
  ],
  "kunden": [
@@ -148,5 +158,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795257708251
+ "updatedAt": 1795258879578
 }
