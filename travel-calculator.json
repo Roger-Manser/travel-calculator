@@ -73,7 +73,21 @@
   "kmPrivat": 0,
   "daily": {
    "fx": "2026-11-21"
-  }
+  },
+  "maschinen": [
+   {
+    "id": "m-konv",
+    "name": "Konventionell"
+   },
+   {
+    "id": "m-dig",
+    "name": "Digital"
+   }
+  ],
+  "stundensaetze": {},
+  "arbStdTag": 8,
+  "reiseStdTag": 8,
+  "reiseProz": 100
  },
  "einsaetze": [],
  "aufgaben": [
@@ -111,6 +125,12 @@
    "dauer": 4,
    "art": "Installationstechniker",
    "updatedAt": 0
+  },
+  {
+   "id": "a-umb",
+   "name": "Umbau",
+   "art": "Installationstechniker",
+   "updatedAt": 0
   }
  ],
  "techniker": [
@@ -133,7 +153,11 @@
    "oevRetourChf": 29.5,
    "parkenTagChf": 29,
    "anreiseBemerkung": "ÖV-Retourpreis geschätzt (ca. 16 EUR pro Weg, Normalpreis nicht direkt bei ÖBB verifiziert). Parkpreis: offizieller Parkplatz C, 31,50 EUR/Tag laut älterer Quelle, heute evtl. leicht höher. Kurs 1 EUR = 0.9213 CHF. Private Parkplätze ab ca. 6 EUR/Tag, aber nicht offiziell.",
-   "anreiseAusgewertet": 1795258958747
+   "anreiseAusgewertet": 1795258958747,
+   "anreiseStand": {
+    "at": 1795258958747,
+    "src": "api"
+   }
   }
  ],
  "kunden": [
@@ -163,7 +187,11 @@
     }
    ],
    "bemerkung": "Ort Sjöbo (Skåne län) laut Firmenverzeichnissen. CPH wegen der Direktflüge ab der Schweiz empfohlen, Anreise über die Öresundbrücke (Maut). MMX ist näher, hat aber nur ein begrenztes Streckennetz. Distanzen und Fahrzeiten sind Schätzwerte.",
-   "ausgewertet": 1795257590075
+   "ausgewertet": 1795257590075,
+   "calcStand": {
+    "at": 1795257590075,
+    "src": "api"
+   }
   }
  ],
  "deleted": {},
