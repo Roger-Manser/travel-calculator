@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-21",
   "verantwortlich": "",
-  "updatedAt": 1795273022756,
+  "updatedAt": 1795273027644,
   "profiles": [
    {
     "id": "ch",
@@ -106,7 +106,8 @@
    {
     "id": "m-dig",
     "name": "Digital",
-    "satz": 200
+    "satz": 200,
+    "satzIC": 180
    }
   ],
   "stundensaetze": {},
@@ -249,5 +250,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795273022756
+ "updatedAt": 1795273027644
 }
