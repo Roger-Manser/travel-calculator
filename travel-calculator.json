@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-21",
   "verantwortlich": "",
-  "updatedAt": 1795269848773,
+  "updatedAt": 1795269851822,
   "profiles": [
    {
     "id": "ch",
@@ -42,7 +42,7 @@
    {
     "id": "mwqc8e4oh4bk8",
     "name": "Schweden",
-    "cur": "CHF",
+    "cur": "SEK",
     "hotel": 120,
     "car": 45,
     "spesen": 60,
@@ -247,5 +247,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795269848773
+ "updatedAt": 1795269851822
 }
