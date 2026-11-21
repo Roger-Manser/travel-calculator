@@ -168,13 +168,13 @@
    "nationalitaet": "Schweiz",
    "wohnort": "9000 St. Gallen",
    "flughafen": "ZRH",
-   "gepaeck": true,
+   "gepaeck": false,
    "gepaeckKg": 30,
    "arten": [
     "Installationstechniker"
    ],
    "anreiseModus": "auto",
-   "updatedAt": 1795260671186
+   "updatedAt": 1795260673279
   }
  ],
  "kunden": [
@@ -212,5 +212,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795260671186
+ "updatedAt": 1795260673279
 }
