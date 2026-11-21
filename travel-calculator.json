@@ -100,7 +100,8 @@
   "arbStdTag": 10,
   "reiseStdTag": 13,
   "reiseProz": 100,
-  "nkAktiv": false
+  "nkAktiv": false,
+  "ecoPlusAbH": 10
  },
  "einsaetze": [],
  "aufgaben": [
@@ -181,10 +182,10 @@
    "gepaeck": false,
    "gepaeckKg": 30,
    "arten": [
-    "Installationstechniker"
+    "Applikationstechniker"
    ],
    "anreiseModus": "oev",
-   "updatedAt": 1795260703385,
+   "updatedAt": 1795262116879,
    "anreiseKm": 80,
    "autoH": 1,
    "oevH": 1.5,
@@ -233,5 +234,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795261318343
+ "updatedAt": 1795262116879
 }
