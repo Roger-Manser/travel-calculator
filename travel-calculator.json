@@ -77,17 +77,20 @@
   "maschinen": [
    {
     "id": "m-konv",
-    "name": "Konventionell"
+    "name": "Konventionell",
+    "satz": ""
    },
    {
     "id": "m-dig",
-    "name": "Digital"
+    "name": "Digital",
+    "satz": ""
    }
   ],
   "stundensaetze": {},
   "arbStdTag": 10,
   "reiseStdTag": 13,
-  "reiseProz": 100
+  "reiseProz": 100,
+  "nkAktiv": false
  },
  "einsaetze": [],
  "aufgaben": [
@@ -158,6 +161,18 @@
     "at": 1795258958747,
     "src": "api"
    }
+  },
+  {
+   "id": "mwqbu6xr7rrcr",
+   "name": "Neuer Techniker",
+   "nationalitaet": "",
+   "wohnort": "",
+   "flughafen": "ZRH",
+   "gepaeck": false,
+   "gepaeckKg": 30,
+   "arten": [],
+   "anreiseModus": "auto",
+   "updatedAt": 1795260649887
   }
  ],
  "kunden": [
@@ -195,5 +210,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795260118455
+ "updatedAt": 1795260649887
 }
