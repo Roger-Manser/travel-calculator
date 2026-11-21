@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-21",
   "verantwortlich": "",
-  "updatedAt": 1795263879375,
+  "updatedAt": 1795263898505,
   "profiles": [
    {
     "id": "ch",
@@ -43,16 +43,17 @@
     "id": "mwqc8e4oh4bk8",
     "name": "Schweden",
     "cur": "CHF",
-    "hotel": 125,
+    "hotel": 130,
     "car": 50,
     "spesen": 60,
     "nk": 10,
-    "taxi": 60,
+    "taxi": 55,
     "apiStand": {
-     "at": 1795262723454,
+     "at": 1795263898505,
      "src": "api"
     },
-    "apiBemerkung": "Schaetzwerte aus Online-Quellen (Stand Herbst 2026), umgerechnet mit ca. 1 SEK = 0.085 CHF und 1 EUR = 0.93 CHF. Hotel: Mittelklasse in Industrieorten (ca. SEK 1400-1500). Mietwagen: Kompaktklasse ca. 50 EUR/Tag bei 1-3 Wochen. Taxi: Fixpreis ca. SEK 650-750 bei 20-40 km."
+    "apiBemerkung": "Schaetzwerte, umgerechnet mit ca. 1 CHF = 11.5 SEK (Kurs nicht live geprueft). Hotel ca. 1500 SEK, Mietwagen Kompaktklasse ca. 570 SEK/Tag inkl. Basisversicherung, Taxi ca. 630 SEK (Festpreis Flughafen). Taxipreise sind nicht reguliert, daher Preis vorab vereinbaren.",
+    "landesWaehrung": "SEK"
    }
   ],
   "fx": {
@@ -244,5 +245,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795263879375
+ "updatedAt": 1795263898505
 }
