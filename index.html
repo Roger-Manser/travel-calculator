@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v2.7 – Robuste Auswertung der API-Antworten (längere Antworten, Fortsetzung, toleranteres JSON, Rohantwort einsehbar) -->
+<!-- Gallus Travel Calculator v3.1 – Richtpreis (Kundenansicht) Installation inkl. Handover und Schulung, CHF/EUR, DE/EN; Überstunden -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#0d1c16">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="2.7">
+<meta name="app-version" content="3.1">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
 :root{--bg:#0d1c16;--card:#142a20;--card2:#1a3428;--line:#2a4b3b;--ink:#e6f0ea;--muted:#93ad9f;--brand:#2f8a62;--brand-2:#5fc79c;--red:#e46a6a;--amber:#e2b252;--input:#0f241b}
@@ -22,10 +22,10 @@ h1{font-size:17px;margin:0}
 .sync{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);background:none;border:0;cursor:pointer}
 .dot{width:10px;height:10px;border-radius:50%;background:#666;display:inline-block}
 .dot.ok{background:var(--brand-2)}.dot.busy{background:var(--amber)}.dot.err{background:var(--red)}
-nav{display:flex;gap:4px;padding:8px 16px 0;flex-wrap:wrap;max-width:1100px;margin:0 auto}
+nav{display:flex;gap:4px;padding:8px 16px 0;flex-wrap:wrap;max-width:1300px;margin:0 auto}
 nav button{background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:8px 12px;font-size:14px;cursor:pointer}
 nav button.on{color:var(--ink);border-color:var(--brand-2)}
-main{max-width:1100px;margin:0 auto;padding:12px 16px 60px}
+main{max-width:1300px;margin:0 auto;padding:12px 16px 60px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px}
 .card h2{font-size:13px;margin:0 0 10px;color:var(--brand-2);text-transform:uppercase;letter-spacing:.5px}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 14px}
@@ -127,8 +127,10 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
         <label>Maschine / Auftrag<input id="f_auftrag"></label>
         <label>Bemerkung<input id="f_bemerkung"></label>
         <label class="chk" style="align-self:end;padding-bottom:8px"><input type="checkbox" id="f_training">Training verkauft</label>
+        <label>Status<select id="f_status"><option value="entwurf">Entwurf – rechnet mit aktuellen Sätzen</option><option value="offeriert">Offeriert – Sätze eingefroren</option><option value="abgeschlossen">Abgeschlossen – Sätze eingefroren</option></select></label>
       </div>
       <div class="muted" id="kundeInfo" style="margin-top:8px"></div>
+      <div id="frozenInfo" class="ro" style="margin-top:10px" hidden></div>
     </div>
     <div class="card"><h2>Techniker</h2>
       <div id="techPick"></div>
@@ -141,6 +143,8 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
         <label>Mietwagen<select id="f_carMode"><option value="auto">Automatisch (nach Distanz)</option><option value="ja">Ja</option><option value="nein">Nein (Taxi)</option></select></label>
         <label class="trn">Handover (Tage, beide Techniker vor Ort)<input id="f_handTage" inputmode="numeric"></label>
         <label class="trn">Training (Tage)<input id="f_trainTage" inputmode="numeric"></label>
+        <label>Überstunden <span class="lblP1">Installation</span> (h)<input id="f_ueInst" inputmode="decimal" placeholder="0"></label>
+        <label class="trn">Überstunden Schulung (h)<input id="f_ueTrain" inputmode="decimal" placeholder="0"></label>
         <label class="span2">Spesenregel<select id="f_regel">
           <option value="mit">An- und Abreisetag zählen mit</option>
           <option value="ohne">Nur Arbeitstage (ohne An- und Abreisetag)</option>
@@ -186,6 +190,16 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
     <table id="catTable"><tbody></tbody></table>
     <ul class="msgs" id="msgs"></ul>
   </div>
+  <div class="card"><h2>Richtpreis (Kundenansicht)</h2>
+    <p class="muted" style="margin-top:0">Zusammengefasste Ausgabe für den Kunden. Mit Training: Tabelle «Installation inkl. Handover» und Tabelle «Schulung» (inkl. Reisekosten des Applikationstechnikers).</p>
+    <div class="row" style="margin-bottom:10px">
+      <label style="width:auto">Sprache <select id="ofLang" style="width:auto"><option value="de">Deutsch</option><option value="en">English</option></select></label>
+      <label style="width:auto">Währung <select id="ofCur" style="width:auto"><option value="CHF">CHF</option><option value="EUR">EUR</option></select></label>
+      <button class="btn" id="btnOfPrint" type="button" style="align-self:end">Richtpreis drucken / PDF</button>
+      <button class="btn sec" id="btnOfCopy" type="button" style="align-self:end">Für Word kopieren</button>
+    </div>
+    <div id="offerPrev" style="background:#fff;color:#000;border-radius:8px;padding:14px;overflow-x:auto"></div>
+  </div>
   <div class="card"><h2>Online-Recherche</h2>
     <p class="muted" style="margin-top:0">Claude sucht über die Anthropic API im Web nach aktuellen Richtpreisen für die Flüge ab den Heimflughäfen der Techniker, Hotel, Mietwagen, Taxi, Spesen-Referenz und Wechselkurs. Die Werte sind ohne Gewähr und vor der Buchung zu prüfen.</p>
     <div class="row">
@@ -215,7 +229,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
   <div class="card"><h2>Gespeicherte Einsätze</h2>
     <div class="row" style="margin-bottom:10px"><input id="listSearch" placeholder="Suchen (Kunde, Techniker, Aufgabe …)" style="max-width:340px"><span class="muted" id="listCount"></span></div>
     <div style="overflow-x:auto">
-    <table id="listTable"><thead><tr><th>Bezeichnung</th><th>Aufgabe</th><th>Kunde</th><th>Techniker</th><th>Reise</th><th class="num">Total CHF</th><th></th></tr></thead><tbody></tbody></table>
+    <table id="listTable"><thead><tr><th>Bezeichnung</th><th>Status</th><th>Aufgabe</th><th>Kunde</th><th>Techniker</th><th>Reise</th><th class="num">Total CHF</th><th></th></tr></thead><tbody></tbody></table>
     </div>
   </div>
 </section>
@@ -245,6 +259,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
       <label>Arbeitsstunden pro Tag<input data-g="arbStdTag" inputmode="decimal"></label>
       <label>Max. bezahlte Reisestunden pro Kalendertag<input data-g="reiseStdTag" inputmode="decimal"></label>
       <label>Reisezeit verrechnet zu (% des Stundensatzes)<input data-g="reiseProz" inputmode="decimal"></label>
+      <label>Überstundenzuschlag (%)<input data-g="ueZuschlag" inputmode="decimal"></label>
     </div>
     <div style="overflow-x:auto;margin-top:12px"><table class="tbl-edit" id="stdTable"></table></div>
     <div class="row" style="margin-top:10px"><input id="maschNew" placeholder="Neuer Maschinentyp" style="max-width:240px"><button class="btn sec" id="btnAddMasch">+ Maschinentyp</button></div>
@@ -284,7 +299,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
   <div class="card"><h2>Länderprofile</h2>
     <p class="muted" style="margin-top:0">Sätze in der Währung des Profils. Der Profilname wird mit dem Land des Kunden abgeglichen.</p>
     <div style="overflow-x:auto">
-    <table class="tbl-edit" id="profTable"><thead><tr><th>Name</th><th>Währung</th><th class="num">Hotel/Nacht</th><th class="num">Mietwagen/Tag</th><th class="num">Taxi/Fahrt</th><th class="num">Spesen/Tag</th><th class="num">Nebenk./Tag</th><th>Kalkulationsstand</th><th></th></tr></thead><tbody></tbody></table>
+    <table class="tbl-edit" id="profTable"><thead><tr><th>Name</th><th>Währung</th><th class="num">Hotel/Nacht</th><th class="num">Mietwagen/Tag</th><th class="num">Taxi/Fahrt</th><th class="num">Spesen/Tag</th><th class="num nkcol">Nebenk./Tag</th><th>Stand</th><th></th></tr></thead><tbody></tbody></table>
     </div>
     <button class="btn sec" id="btnAddProf" style="margin-top:10px">+ Profil</button>
   </div>
@@ -344,8 +359,31 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '2.7';
+const APP_VERSION = '3.1';
 const VERSION_HISTORY = [
+  { v: '3.1', d: '2026-11-21', items: [
+    'Neue Ausgabe «Richtpreis (Kundenansicht)» im Positionsformat (0010 Reisezeit … 0080 Flugkosten inkl. Transfer) – zusätzlich zur detaillierten Kalkulation',
+    'Tabelle 1: Installation inkl. Handover (Installations- und Applikationstechniker zusammengefasst, Handover-Zeiten, -Spesen und -Hotel des Applikationstechnikers inbegriffen)',
+    'Tabelle 2: Schulung inkl. Reisekosten des Applikationstechnikers',
+    'Ausgabe in CHF oder EUR, Deutsch oder Englisch; Drucken / PDF und Kopieren für Word',
+    'Überstunden pro Einsatz (Installation und Schulung) mit Zuschlag als Firmensatz (Standard 45 %)',
+    'Phasen-Zuordnung von Hotel und Spesen auf ganze Nächte/Tage genau'
+  ] },
+  { v: '3.0', d: '2026-11-21', items: [
+    'Status pro Einsatz: Entwurf, Offeriert, Abgeschlossen',
+    'Beim Wechsel auf Offeriert oder Abgeschlossen werden alle Sätze eingefroren (Stundensatz, Länderprofil inkl. Hotel/Mietwagen/Taxi/Spesen, Wechselkurse, Firmensätze, Anreisedaten der Techniker, Kundendaten)',
+    'Eingefrorene Einsätze rechnen unverändert weiter; Hinweis mit Differenz, falls die aktuellen Sätze inzwischen einen anderen Betrag ergeben',
+    'Button «Auf aktuelle Sätze aktualisieren» übernimmt bewusst die neuen Sätze',
+    'Status in der Einsatzliste und im Ausdruck; Kopie eines Einsatzes startet als Entwurf'
+  ] },
+  { v: '2.9', d: '2026-11-21', items: [
+    'Länderprofil-Tabelle: Währungsspalte breiter, auch lange Währungsnamen vollständig lesbar',
+    'Arbeitsbreite der App auf 1300 px erhöht'
+  ] },
+  { v: '2.8', d: '2026-11-21', items: [
+    'Länderprofil-Tabelle: Name und Währung mit genügend Breite, Kalkulationsstand kompakt (Details beim Darüberfahren)',
+    'Spalte Nebenkosten nur sichtbar, wenn «Nebenkosten rechnen» eingeschaltet ist'
+  ] },
   { v: '2.7', d: '2026-11-21', items: [
     'Fehler «Die Antwort enthielt kein auswertbares Ergebnis» behoben: längere Antworten erlaubt (16’000 statt 4’096 Tokens), abgeschnittene Antworten werden automatisch fortgesetzt',
     'Ergebnis-Auswertung toleranter (letzter JSON-Block, Kommentare und überzählige Kommas werden ignoriert)',
@@ -922,7 +960,7 @@ function defaultRates() {
     gepaeck: 150, kmSatz: 0.25, carAbKm: 30, lokalKm: 30,
     gepaeckArt: 'Installationstechniker', gepaeckKg: 30, vorlaufH: 2, vorlaufGepaeckH: 3, kmPrivat: 0,
     maschinen: [{ id: 'm-konv', name: 'Konventionell' }, { id: 'm-dig', name: 'Digital' }],
-    stundensaetze: {}, arbStdTag: 8, reiseStdTag: 8, reiseProz: 100, nkAktiv: false, ecoPlusAbH: 10
+    stundensaetze: {}, arbStdTag: 8, reiseStdTag: 8, reiseProz: 100, nkAktiv: false, ecoPlusAbH: 10, ueZuschlag: 45
   };
 }
 function defaultAufgaben() {
@@ -937,7 +975,7 @@ function defaultAufgaben() {
 }
 function ensureRates(r) {
   const D = defaultRates(); r = r || D;
-  ['arten', 'gepaeck', 'kmSatz', 'carAbKm', 'lokalKm', 'classes', 'gepaeckArt', 'gepaeckKg', 'vorlaufH', 'vorlaufGepaeckH', 'kmPrivat', 'maschinen', 'stundensaetze', 'arbStdTag', 'reiseStdTag', 'reiseProz', 'nkAktiv', 'ecoPlusAbH'].forEach(k => { if (r[k] === undefined) r[k] = clone(D[k]); });
+  ['arten', 'gepaeck', 'kmSatz', 'carAbKm', 'lokalKm', 'classes', 'gepaeckArt', 'gepaeckKg', 'vorlaufH', 'vorlaufGepaeckH', 'kmPrivat', 'maschinen', 'stundensaetze', 'arbStdTag', 'reiseStdTag', 'reiseProz', 'nkAktiv', 'ecoPlusAbH', 'ueZuschlag'].forEach(k => { if (r[k] === undefined) r[k] = clone(D[k]); });
   r.fx = r.fx || { CHF: 1 }; r.profiles = r.profiles || [];
   const PH = { ch: [180, 90, 80], de: [130, 65, 60], us: [220, 75, 90] }; // Migration v2.4: Platzhalter aus v1.x entfernen
   r.profiles.forEach(p => { const ph = PH[p.id]; if (ph && !p.apiStand && num(p.hotel) === ph[0] && num(p.car) === ph[1] && num(p.taxi) === ph[2]) { p.hotel = ''; p.car = ''; p.taxi = ''; } });
@@ -967,10 +1005,11 @@ const CFG_DEFAULT = { gh: { owner: 'roger-manser', repo: 'travel-calculator-date
 const cfgStored = load(LS.cfg, {});
 let CFG = { gh: Object.assign({}, CFG_DEFAULT.gh, cfgStored.gh), ai: Object.assign({}, CFG_DEFAULT.ai, cfgStored.ai) };
 if (CFG.ai.autoRes === undefined) CFG.ai.autoRes = true;
+CFG.offer = Object.assign({ lang: 'de', cur: 'CHF' }, cfgStored.offer);
 
 function blankE() {
   const p = DATA.rates.profiles[0], a = DATA.aufgaben[0];
-  return { id: null, name: '', gep: {}, visa: {}, aufgabeId: a ? a.id : '', kundeId: '', techs: [], profileId: p ? p.id : '', auftrag: '', bemerkung: '', maschId: (DATA.rates.maschinen[0] || {}).id || '', ab: '', rueck: '', instTage: '', training: false, handTage: '', trainTage: '', klasse: 'Economy', carMode: 'auto', regel: 'mit', man: { hotel: null, car: null, spesen: null }, ov: { hotel: '', car: '', spesen: '', nk: '', taxi: '' }, nkPausch: '', res: null };
+  return { id: null, name: '', gep: {}, visa: {}, aufgabeId: a ? a.id : '', kundeId: '', techs: [], profileId: p ? p.id : '', auftrag: '', bemerkung: '', maschId: (DATA.rates.maschinen[0] || {}).id || '', ab: '', rueck: '', ueInst: '', ueTrain: '', instTage: '', training: false, handTage: '', trainTage: '', klasse: 'Economy', carMode: 'auto', regel: 'mit', man: { hotel: null, car: null, spesen: null }, ov: { hotel: '', car: '', spesen: '', nk: '', taxi: '' }, nkPausch: '', res: null };
 }
 function normE(o) {
   const e = Object.assign(blankE(), o || {});
@@ -994,7 +1033,7 @@ function saveDraft() { store(LS.draft, E); }
 function changed() { DATA.updatedAt = Date.now(); persist(); scheduleSync(); }
 
 /* ---------- Formular ---------- */
-const FIELDS = ['name', 'aufgabeId', 'kundeId', 'maschId', 'profileId', 'auftrag', 'bemerkung', 'ab', 'instTage', 'handTage', 'trainTage', 'carMode', 'regel', 'nkPausch'];
+const FIELDS = ['name', 'aufgabeId', 'kundeId', 'maschId', 'profileId', 'auftrag', 'bemerkung', 'ab', 'instTage', 'handTage', 'trainTage', 'ueInst', 'ueTrain', 'carMode', 'regel', 'nkPausch'];
 const OVS = ['hotel', 'car', 'nk', 'taxi'];
 const isMan = k => E.man[k] !== null && E.man[k] !== undefined;
 function opts(list, val, labelFn, empty) {
@@ -1011,11 +1050,12 @@ function fillSelects() {
   $('f_maschId').innerHTML = opts(R.maschinen || [], E.maschId, m => m.name, (R.maschinen || []).length ? undefined : '– keine Maschinentypen –');
   ['aufgabeId', 'kundeId', 'maschId', 'profileId'].forEach(k => $('f_' + k).value = E[k] || '');
 }
-const profV = k => { const p = DATA.rates.profiles.find(x => x.id === E.profileId); const v = p ? num(p[k]) : NaN; return isFinite(v) ? v : NaN; };
+const profV = k => { const p = (E.frozen ? E.frozen.rates : DATA.rates).profiles.find(x => x.id === E.profileId); const v = p ? num(p[k]) : NaN; return isFinite(v) ? v : NaN; };
 function writeForm() {
   fillSelects();
   FIELDS.forEach(k => { const el = $('f_' + k); if (el) el.value = E[k] ?? ''; });
   $('f_training').checked = !!E.training;
+  $('f_status').value = E.status || 'entwurf';
   OVS.forEach(k => { const el = $('ov_' + k), pv = P_API.includes(k) ? profV(k) : NaN; el.dataset.pv = isFinite(pv) ? String(pv) : ''; el.value = E.ov[k] !== '' && E.ov[k] !== undefined ? E.ov[k] : el.dataset.pv; });
   renderTechPick();
 }
@@ -1090,6 +1130,13 @@ function onForm(ev) {
     const x = E.techs.find(x => x.id === t.dataset.tf); if (x) { x.flug = t.value; x.flugManuell = t.value.trim() !== ''; delete x.flugSrc; }
   } else {
     readForm();
+    if (t.id === 'f_status') {
+      if (ev.type !== 'change') return;
+      const ns = t.value, old = E.status || 'entwurf';
+      if (ns === 'entwurf' && E.frozen) { if (!confirm('Zurück auf Entwurf? Die eingefrorenen Sätze werden verworfen, der Einsatz rechnet wieder mit den aktuellen Sätzen.')) { t.value = old; return; } E.frozen = null; }
+      if (ns !== 'entwurf' && !E.frozen) { E.frozen = makeSnapshot(); toast('Sätze eingefroren – Einsatz speichern nicht vergessen'); }
+      E.status = ns; writeForm(); render(); return;
+    }
     if (t.id && t.id.startsWith('ov_') && E.ovSrc) delete E.ovSrc[t.id.slice(3)];
     if (t.id === 'f_training') { if (E.training) autoRoles(); renderTechPick(); }
     if (t.id === 'f_kundeId' && ev.type === 'change') {
@@ -1137,7 +1184,11 @@ function schedule(valid, msgs) {
     if (role === 'inst') { arr = ab; W = inst + hand; const T = W + 2; frac = E.training ? { [P1]: (inst + 2) / T, Handover: hand / T } : { [P1]: 1 }; }
     else { arr = ab + inst * D; W = hand + train; const T = W + 2; frac = { Handover: hand / T, Training: (train + 2) / T }; }
     const ret = arr + (W + 1) * D;
-    return { sel, t, role, home: role === 'app' ? 'Training' : P1, arr, ret, W, nights: W + 1, spesen: E.regel === 'mit' ? W + 2 : W, days: W + 2, frac };
+    const q = (a, b, n) => n > 0 ? a / n : 0;
+    let fracN, fracS;
+    if (role === 'inst') { fracN = E.training ? { [P1]: q(inst + 1, 0, W + 1), Handover: q(hand, 0, W + 1) } : { [P1]: 1 }; fracS = E.regel === 'mit' ? frac : (E.training ? { [P1]: q(inst, 0, W), Handover: q(hand, 0, W) } : { [P1]: 1 }); }
+    else { fracN = { Handover: q(hand, 0, W + 1), Training: q(train + 1, 0, W + 1) }; fracS = E.regel === 'mit' ? frac : { Handover: q(hand, 0, W), Training: q(train, 0, W) }; }
+    return { sel, t, role, home: role === 'app' ? 'Training' : P1, arr, ret, W, nights: W + 1, spesen: E.regel === 'mit' ? W + 2 : W, days: W + 2, frac, fracN, fracS };
   });
   if (E.training && valid.length) {
     const ta = trainArt(), apps = per.filter(x => x.role === 'app');
@@ -1165,7 +1216,35 @@ function travelTimes(t, sel, k) {
   const hin = isFinite(hinF) ? a + vorl + hinF + z : NaN, rueck = isFinite(rueckF) ? z + vorl + rueckF + a : NaN;
   return { vorl, anr, ziel, hinF, rueckF, hin, rueck, approx: fromDur || rueckFromHin, ok: isFinite(hin) && isFinite(rueck) };
 }
+// ---------- Eingefrorene Sätze ----------
+const STATUS = { entwurf: 'Entwurf', offeriert: 'Offeriert', abgeschlossen: 'Abgeschlossen' };
+function statusBadge(e) {
+  const s = e.status || 'entwurf', c = s === 'entwurf' ? 'var(--muted)' : s === 'offeriert' ? 'var(--amber)' : 'var(--brand-2)';
+  return `<span style="color:${c};font-weight:600">${STATUS[s] || s}</span>${e.frozen ? ' <span title="Sätze eingefroren am ' + fmtDate(isoOf(e.frozen.at)) + '">🔒</span>' : ''}`;
+}
+function makeSnapshot() {
+  const techs = {}; E.techs.forEach(x => { const t = techById(x.id); if (t) techs[t.id] = clone(t); });
+  const k = kunde();
+  return { at: Date.now(), rates: clone(DATA.rates), techs, kunde: k ? clone(k) : null };
+}
+function withData(view, fn) {
+  const saved = { rates: DATA.rates, techniker: DATA.techniker, kunden: DATA.kunden };
+  Object.assign(DATA, view);
+  try { return fn(); } finally { Object.assign(DATA, saved); }
+}
+function frozenView(F) {
+  const tech = DATA.techniker.map(t => F.techs[t.id] || t).concat(Object.values(F.techs).filter(t => !DATA.techniker.some(x => x.id === t.id)));
+  const kd = F.kunde ? DATA.kunden.filter(k => k.id !== F.kunde.id).concat([F.kunde]) : DATA.kunden;
+  return { rates: ensureRates(F.rates), techniker: tech, kunden: kd };
+}
 function calc() {
+  if (!E.frozen) return calcCore();
+  const r = withData(frozenView(E.frozen), calcCore);
+  const now = calcCore();
+  r.frozen = true; r.nowTotal = now.total;
+  return r;
+}
+function calcCore() {
   readForm();
   const R = DATA.rates, msgs = [], lines = [];
   const err = m => msgs.push(['err', m]), warn = m => msgs.push(['warn', m]);
@@ -1263,8 +1342,8 @@ function calc() {
     const vis = t.nationalitaet ? E.visa[natKey(t.nationalitaet)] : null;
     if (!t.nationalitaet) warn(`${t.name}: Nationalität fehlt – Visum kann nicht geprüft werden.`);
     if (vis && num(vis.kosten_chf) > 0) add(g, 'Visum', home, `Visum / Einreise${vis.art ? ' (' + vis.art + ')' : ''}`, 1, 'Stk.', num(vis.kosten_chf), 'CHF', num(vis.kosten_chf), 'online ermittelt');
-    add(g, 'Hotel', fr, 'Hotel', nights, 'Nächte', h, cur, nights * h * fx, src('hotel'));
-    add(g, 'Spesen', fr, 'Spesen', spD, 'Tage', s, cur, spD * s * fx, E.regel === 'mit' ? 'inkl. An- und Abreisetag' : 'ohne An- und Abreisetag');
+    add(g, 'Hotel', x.fracN, 'Hotel', nights, 'Nächte', h, cur, nights * h * fx, src('hotel'));
+    add(g, 'Spesen', x.fracS, 'Spesen', spD, 'Tage', s, cur, spD * s * fx, E.regel === 'mit' ? 'inkl. An- und Abreisetag' : 'ohne An- und Abreisetag');
     if (nkOn) add(g, 'Nebenkosten', fr, 'Nebenkosten', days, 'Reisetage', nk, cur, days * nk * fx, '');
     if (!car) add(g, 'Transport vor Ort', home, 'Taxi Flughafen ↔ Kunde', 2, 'Fahrten', taxi, cur, 2 * taxi * fx, src('taxi'));
     if (sel.flugInfo && S.ok) {
@@ -1292,6 +1371,13 @@ function calc() {
   const stdUsed = [[E.aufgabeId, S.P1]].concat(E.training ? [['a-hand', 'Handover'], ['a-train', 'Training']] : []);
   const stdTxt = masch ? (isFinite(stdSatz()) ? `CHF ${fmt(stdSatz())}/h <span class="muted">(${esc(maschName)})</span>` : `<span class="warnTxt">fehlt für ${esc(maschName)}</span>`) : '<span class="warnTxt">Maschinentyp wählen</span>';
   if (missingStd.size && masch) warn(`Stundensatz für «${maschName}» fehlt (Stammdaten → Maschinentypen & Stundensätze).`);
+  { const uz = (num(R.ueZuschlag) || 0) / 100, st = stdSatz();
+    [[E.ueInst, S.P1, 'Installation'], [E.training ? E.ueTrain : '', 'Training', 'Schulung']].forEach(([v, ph, lbl]) => {
+      const hh = v === '' || v === undefined ? 0 : num(v);
+      if (!(hh >= 0)) { err(`Ungültige Überstunden (${lbl}).`); return; }
+      if (hh > 0) { if (!isFinite(st)) missingStd.add('x'); add('Gemeinsam', 'Überstunden', ph, `Überstunden ${ph === 'Training' ? 'Schulung' : S.P1} (+${fmt0(uz * 100)} %)`, hh, 'h', st * (1 + uz), 'CHF', isFinite(st) ? hh * st * (1 + uz) : 0, maschName); }
+    });
+  }
   const np = !nkOn || E.nkPausch === '' ? 0 : num(E.nkPausch);
   if (!(np >= 0)) err('Ungültiger Betrag bei Nebenkosten pauschal.');
   if (np) add('Gemeinsam', 'Nebenkosten', S.P1, 'Nebenkosten pauschal', 1, 'pauschal', np, 'CHF', np, '');
@@ -1328,7 +1414,111 @@ function planHtml(r) {
     return `<div class="trow" style="display:block"><b>${esc(t.name)}</b>${l0 ? `<div class="muted">${l0}</div>` : ''}<div class="muted">${l1}</div>${lf}<div class="muted">${l2}</div><div class="muted">${l3}</div></div>`;
   }).join('');
 }
-const CATS = ['Arbeitszeit', 'Reisezeit', 'Flug', 'Zusatzgepäck', 'Anreise Flughafen', 'Visum', 'Hotel', 'Transport vor Ort', 'Spesen', 'Nebenkosten'];
+const CATS = ['Arbeitszeit', 'Überstunden', 'Reisezeit', 'Flug', 'Zusatzgepäck', 'Anreise Flughafen', 'Visum', 'Hotel', 'Transport vor Ort', 'Spesen', 'Nebenkosten'];
+/* ---------- Richtpreis (Kundenansicht) ---------- */
+const OF_POS = [
+  ['travel', '0010', 'GL.D005000/00', { de: 'Reisezeit', en: 'Travel Time' }, 'h'],
+  ['work', '0020', 'GL.D005005/00', { de: 'Arbeitszeit', en: 'Working Time' }, 'h'],
+  ['ot', '0030', 'GL.D005010/00', { de: 'Überstunden', en: 'Overtime' }, 'h'],
+  ['allow', '0040', 'GL.D005230/00', { de: 'Tagespauschale', en: 'Daily Allowance' }, 'X'],
+  ['acc', '0050', 'GL.D005250/00', { de: 'Unterkunft', en: 'Accommodation Expenses' }, 'X'],
+  ['carkm', '0060', 'GL.D005220/00', { de: 'Fahrzeugkosten', en: 'Car Expenses' }, 'km'],
+  ['rental', '0070', 'GL.D005200/00', { de: 'Mietwagen', en: 'Rental Car' }, 'X'],
+  ['flight', '0080', 'GL.D005200/00', { de: 'Flugkosten inkl. Transfer', en: 'Flight Costs incl. Transfer' }, 'X'],
+  ['other', '0090', '', { de: 'Nebenkosten', en: 'Other Expenses' }, 'X']
+];
+const OF_TXT = {
+  de: { title: 'Richtpreis', pos: 'Pos.', desc: 'Beschreibung', qty: 'Menge', unit: 'Einheit', ppu: 'Preis pro Einheit', amt: 'Betrag', fin: 'Endpreis', tot: 'Total', inst: 'inkl. Handover', train: 'Schulung', cust: 'Kunde', mach: 'Maschine / Auftrag', date: 'Datum', note: 'Richtpreis auf Basis der aktuellen Annahmen; Reisekosten nach effektivem Aufwand.' },
+  en: { title: 'Budgetary Price', pos: 'Pos.', desc: 'Description', qty: 'Quantity', unit: 'Unit', ppu: 'Price per Unit', amt: 'Amount', fin: 'Final Price', tot: 'Total', inst: 'incl. Handover', train: 'Training', cust: 'Customer', mach: 'Machine / Order', date: 'Date', note: 'Budgetary price based on current assumptions; travel expenses charged as incurred.' }
+};
+function posOf(l) {
+  if (l.cat === 'Reisezeit') return 'travel';
+  if (l.cat === 'Arbeitszeit') return 'work';
+  if (l.cat === 'Überstunden') return 'ot';
+  if (l.cat === 'Spesen') return 'allow';
+  if (l.cat === 'Hotel') return 'acc';
+  if (/^Mietwagen Kilometer|^Privatauto/.test(l.name)) return 'carkm';
+  if (l.name === 'Mietwagen') return 'rental';
+  if (l.cat === 'Nebenkosten') return 'other';
+  return 'flight';
+}
+function offerData(r, lang, cur) {
+  const T = OF_TXT[lang] || OF_TXT.de, R = E.frozen ? E.frozen.rates : DATA.rates;
+  const eur = num(R.fx.EUR), conv = chf => cur === 'EUR' ? (eur > 0 ? chf / eur : NaN) : chf;
+  const aName = r.a ? r.a.name : 'Einsatz';
+  const P1n = lang === 'en' ? ({ 'Installation Neumaschine': 'Installation New Machine', 'Erweiterung Neumaschine': 'Extension New Machine', 'Umbau': 'Conversion', 'Troubleshooting': 'Troubleshooting', 'Handover': 'Handover', 'Training': 'Training' }[aName] || aName) : aName;
+  const tables = E.training ? [{ title: `${P1n} ${T.inst}`, phases: [r.S.P1, 'Handover'] }, { title: T.train, phases: ['Training'] }] : [{ title: P1n, phases: r.S.phases }];
+  const st = (() => { const m = (R.maschinen || []).find(x => x.id === E.maschId); return m ? num(m.satz) : NaN; })(), uz = (num(R.ueZuschlag) || 0) / 100;
+  const pfx = r.fx > 0 ? r.fx : 1, p = r.p || {};
+  const defPrice = { travel: st * (num(R.reiseProz) || 0) / 100, work: st, ot: st * (1 + uz), allow: num(p.spesen) * pfx, acc: num(isFinite(num(E.ov.hotel)) && E.ov.hotel !== '' ? E.ov.hotel : p.hotel) * pfx, carkm: num(R.kmSatz), rental: num(isFinite(num(E.ov.car)) && E.ov.car !== '' ? E.ov.car : p.car) * pfx, flight: 0, other: 0 };
+  tables.forEach(tb => {
+    const agg = {};
+    r.lines.forEach(l => {
+      const f = Object.entries(l.ph || {}).filter(([ph]) => tb.phases.includes(ph)).reduce((a, [, v]) => a + v, 0);
+      if (!f) return;
+      const k = posOf(l); agg[k] = agg[k] || { qty: 0, amt: 0 };
+      agg[k].amt += (l.chf || 0) * f;
+      if (k !== 'flight' && k !== 'other') agg[k].qty += (num(l.qty) || 0) * f;
+    });
+    tb.rows = OF_POS.filter(([k]) => k !== 'other' || agg.other).map(([k, pos, art, lbl, unit]) => {
+      const a = agg[k] || { qty: 0, amt: 0 };
+      let qty = k === 'flight' || k === 'other' ? (a.amt > 0 ? 1 : 0) : Math.round(a.qty * 100) / 100;
+      const amt = conv(a.amt);
+      const ppu = qty > 0 ? amt / qty : conv(defPrice[k] || 0);
+      const label = k === 'ot' ? `${lbl[lang] || lbl.de} (+${fmt0(uz * 100)}%)` : (lbl[lang] || lbl.de);
+      return { pos, art, label, qty, unit, ppu, amt };
+    });
+    tb.total = tb.rows.reduce((s, x) => s + (isFinite(x.amt) ? x.amt : 0), 0);
+  });
+  return { T, cur, tables, total: tables.reduce((s, t) => s + t.total, 0), eurMissing: cur === 'EUR' && !(eur > 0) };
+}
+function offerHtml(r, lang, cur) {
+  const D = offerData(r, lang, cur), T = D.T, k = r.k;
+  const n2 = v => isFinite(v) ? v.toLocaleString('de-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '–';
+  const B = 'border:1px solid #000;', HB = 'background:#365f91;color:#fff;';
+  const th = (t, al) => `<th style="${HB}${B}padding:8px 10px;font-weight:normal;text-align:${al || 'center'};text-transform:none;letter-spacing:0;font-size:11pt">${t}</th>`;
+  const head = [[T.cust, k ? k.name : ''], [T.mach, E.auftrag], [T.date, fmtDate(todayISO())]].filter(x => x[1]).map(([a, b]) => `${esc(a)}: <b>${esc(b)}</b>`).join(' &nbsp;·&nbsp; ');
+  let html = `<div style="font-family:Arial,Helvetica,sans-serif;color:#000;font-size:11pt">
+    <div style="font-size:15pt;font-weight:bold;margin-bottom:4px">${esc(T.title)}</div>${head ? `<div style="margin-bottom:10px">${head}</div>` : ''}`;
+  if (D.eurMissing) html += `<p style="color:#b00">${lang === 'en' ? 'EUR exchange rate missing.' : 'Wechselkurs EUR fehlt (Firmensätze).'}</p>`;
+  D.tables.forEach(tb => {
+    html += `<div style="font-size:12.5pt;font-weight:bold;margin:14px 0 6px">${esc(tb.title)}</div>
+    <table style="border-collapse:collapse;width:100%;${B}"><thead><tr>${th(T.pos)}${th(T.desc)}${th(T.qty)}${th(T.unit)}${th(T.ppu)}${th(T.amt + ' ' + cur)}</tr></thead><tbody>`
+      + tb.rows.map(x => `<tr>
+        <td style="${B}padding:7px 10px">${x.pos}</td>
+        <td style="${B}padding:7px 10px">${x.art ? esc(x.art) + '<br>' : ''}${esc(x.label)}</td>
+        <td style="${B}padding:7px 10px;text-align:center">${n2(x.qty)}</td>
+        <td style="${B}padding:7px 10px;text-align:center">${esc(x.unit)}</td>
+        <td style="${B}padding:7px 10px;text-align:right;white-space:nowrap">${n2(x.ppu)} ${cur}</td>
+        <td style="${B}padding:7px 10px;text-align:right;white-space:nowrap">${n2(x.amt)} ${cur}</td></tr>`).join('')
+      + `<tr><td colspan="5" style="${HB}${B}padding:8px 10px;font-size:12pt">${esc(T.fin)}</td><td style="${HB}${B}padding:8px 10px;text-align:right;font-size:12pt;white-space:nowrap">${n2(tb.total)} ${cur}</td></tr></tbody></table>`;
+  });
+  if (D.tables.length > 1) html += `<table style="border-collapse:collapse;width:100%;margin-top:12px"><tr><td style="${HB}${B}padding:8px 10px;font-size:12.5pt;font-weight:bold">${esc(T.tot)} (${D.tables.map(t => esc(t.title)).join(' + ')})</td><td style="${HB}${B}padding:8px 10px;text-align:right;font-size:12.5pt;font-weight:bold;white-space:nowrap">${n2(D.total)} ${cur}</td></tr></table>`;
+  html += `<p style="font-size:8.5pt;color:#555;margin-top:10px">${esc(T.note)}</p></div>`;
+  return html;
+}
+function renderOffer(r) {
+  $('ofLang').value = CFG.offer.lang; $('ofCur').value = CFG.offer.cur;
+  $('offerPrev').innerHTML = offerHtml(r, CFG.offer.lang, CFG.offer.cur);
+}
+function printOffer() {
+  const r = calc();
+  $('printArea').innerHTML = offerHtml(r, CFG.offer.lang, CFG.offer.cur);
+  window.print();
+}
+async function copyOffer() {
+  const html = offerHtml(calc(), CFG.offer.lang, CFG.offer.cur);
+  try {
+    if (navigator.clipboard && window.ClipboardItem) {
+      const tmp = document.createElement('div'); tmp.innerHTML = html;
+      await navigator.clipboard.write([new ClipboardItem({ 'text/html': new Blob([html], { type: 'text/html' }), 'text/plain': new Blob([tmp.innerText], { type: 'text/plain' }) })]);
+    } else {
+      const d = document.createElement('div'); d.innerHTML = html; d.contentEditable = 'true'; document.body.appendChild(d);
+      const rg = document.createRange(); rg.selectNodeContents(d); const s = getSelection(); s.removeAllRanges(); s.addRange(rg); document.execCommand('copy'); s.removeAllRanges(); d.remove();
+    }
+    toast('Richtpreis kopiert – in Word einfügen (Ctrl+V)');
+  } catch (e) { toast('Kopieren nicht möglich: ' + e.message); }
+}
 function linesHtml(lines) {
   let g = null, h = '';
   lines.forEach(l => {
@@ -1364,6 +1554,7 @@ function render() {
   const S = r.S;
   document.querySelectorAll('#calcForm .trn').forEach(el => el.hidden = !E.training);
   $('lblInst').textContent = S.P1;
+  document.querySelectorAll('.lblP1').forEach(el => el.textContent = S.P1);
   $('phaseInfo').textContent = phaseTxt(S);
   $('schedTable').tBodies[0].innerHTML = S.per.length ? S.per.map(x => `<tr><td>${esc(x.t.name)}</td><td>${E.training ? (x.role === 'app' ? 'Training' : 'Installation') : esc(S.P1)}</td><td>${dShort(x.arr)}</td><td>${S.ok ? x.W + ' Tage' : '–'}</td><td>${dShort(x.ret)}</td><td class="num">${S.ok ? x.nights : '–'}</td><td class="num">${S.ok ? x.spesen : '–'}</td></tr>`).join('') : '<tr><td colspan="7" class="muted">Techniker wählen.</td></tr>';
   $('daysInfo').textContent = r.sched ? `Gesamter Einsatz: ${dShort(S.first)} – ${dShort(S.last)} (${Math.round((S.last - S.first) / 864e5) + 1} Kalendertage) · Anreise jeweils am Vortag, Rückreise am Tag nach dem letzten Arbeitstag` : '';
@@ -1372,6 +1563,16 @@ function render() {
   const k = r.k;
   $('kundeInfo').innerHTML = k ? `${esc([k.ort, k.land].filter(Boolean).join(', '))}${k.flughafen ? ` · Flughafen <b>${esc(k.flughafen)}</b>${k.flughafenName ? ' (' + esc(k.flughafenName) + ')' : ''}` : ''}${isFinite(num(k.distanzKm)) ? ` · ${fmt0(num(k.distanzKm))} km` : ''}${isFinite(num(k.fahrzeitMin)) ? ` · ${fmt0(num(k.fahrzeitMin))} Min.` : ''}` : '';
   $('msgs').innerHTML = r.msgs.map(([t, m]) => `<li class="${t}">${esc(m)}</li>`).join('');
+  const fz = $('frozenInfo');
+  if (r.frozen) {
+    const d = r.nowTotal - r.total, same = !isFinite(d) || Math.abs(d) < 0.005;
+    fz.hidden = false;
+    fz.innerHTML = `🔒 <b>${STATUS[E.status] || ''}</b> – Sätze eingefroren am ${new Date(E.frozen.at).toLocaleString('de-CH', { dateStyle: 'short', timeStyle: 'short' })}. `
+      + (same ? '<span class="muted">Die aktuellen Sätze ergeben denselben Betrag.</span>'
+        : `<span class="warnTxt">Mit den aktuellen Sätzen wären es CHF ${fmt(r.nowTotal)} (${d > 0 ? '+' : ''}${fmt(d)}).</span>`)
+      + ` <button class="btn sec sm" type="button" id="btnRefreeze">Auf aktuelle Sätze aktualisieren</button>`;
+  } else fz.hidden = true;
+  renderOffer(r);
   saveDraft(); updateEditState(); renderResearch(); renderFlugLog(); maybeAutoResearch(r);
 }
 
@@ -1407,7 +1608,7 @@ function openEinsatz(id) {
 function dupEinsatz(id) {
   const s = DATA.einsaetze.find(x => x.id === id); if (!s) return;
   if (isDirty() && !confirm('Nicht gespeicherte Änderungen verwerfen?')) return;
-  E = normE(clone(s)); E.id = null; delete E.createdAt; delete E.updatedAt; E.name = (E.name || 'Einsatz') + ' (Kopie)'; E.res = null; E.flugLog = []; E.techs.forEach(s => { delete s.flugInfo; delete s.flugSrc; });
+  E = normE(clone(s)); E.id = null; delete E.createdAt; delete E.updatedAt; E.name = (E.name || 'Einsatz') + ' (Kopie)'; E.status = 'entwurf'; E.frozen = null; E.res = null; E.flugLog = []; E.techs.forEach(s => { delete s.flugInfo; delete s.flugSrc; });
   writeForm(); render(); showTab('calc'); toast('Kopie erstellt – noch nicht gespeichert');
 }
 function delEinsatz(id) {
@@ -1430,10 +1631,11 @@ function renderList() {
   $('listCount').textContent = `${rows.length} von ${DATA.einsaetze.length}`;
   $('listTable').tBodies[0].innerHTML = rows.length ? rows.map(({ e, i }) => `<tr>
     <td><b>${esc(e.name)}</b>${e.auftrag ? `<div class="muted">${esc(e.auftrag)}</div>` : ''}</td>
+    <td>${statusBadge(e)}</td>
     <td>${esc(i.aufgabe)}</td><td>${esc(i.kunde)}${i.ort ? `<div class="muted">${esc(i.ort)}</div>` : ''}</td><td>${esc(i.techs)}</td>
     <td>${fmtDate(e.ab)} – ${fmtDate(e.rueck)}</td><td class="num">${fmt(e.total)}</td>
     <td class="num"><button class="btn sm" data-open="${esc(e.id)}">Öffnen</button> <button class="btn sec sm" data-dup="${esc(e.id)}">Duplizieren</button> <button class="btn red sm" data-del="${esc(e.id)}">Löschen</button></td></tr>`).join('')
-    : `<tr><td colspan="7" class="muted">Noch keine Einsätze gespeichert.</td></tr>`;
+    : `<tr><td colspan="8" class="muted">Noch keine Einsätze gespeichert.</td></tr>`;
 }
 
 /* ---------- Stammdaten ---------- */
@@ -1762,12 +1964,13 @@ function renderRates() {
   document.querySelectorAll('[data-g]').forEach(el => el.value = R[el.dataset.g] ?? '');
   document.querySelectorAll('[data-gb]').forEach(el => el.checked = !!R[el.dataset.gb]);
   renderStdTable();
+  setTimeout(() => document.querySelectorAll('#profTable .nkcol').forEach(el => el.hidden = !R.nkAktiv), 0);
   const curs = Object.keys(R.fx);
   $('profTable').tBodies[0].innerHTML = R.profiles.map((p, i) => `<tr>
-    <td><input data-p="${i}" data-k="name" value="${esc(p.name)}"></td>
-    <td><select data-p="${i}" data-k="cur">${curs.concat(curs.includes(p.cur) ? [] : [p.cur]).map(c => `<option value="${esc(c)}" ${c === p.cur ? 'selected' : ''}>${esc(curLabel(c))}</option>`).join('')}</select></td>
-    ${PNUM.map(k => `<td class="num"><input data-p="${i}" data-k="${k}" inputmode="decimal" value="${esc(isFinite(num(p[k])) ? p[k] : '')}"></td>`).join('')}
-    <td style="min-width:190px;font-size:12px">${standTxt(p.apiStand)}</td>
+    <td><input data-p="${i}" data-k="name" value="${esc(p.name)}" style="min-width:170px"></td>
+    <td><select data-p="${i}" data-k="cur" style="min-width:290px">${curs.concat(curs.includes(p.cur) ? [] : [p.cur]).map(c => `<option value="${esc(c)}" ${c === p.cur ? 'selected' : ''}>${esc(curLabel(c))}</option>`).join('')}</select></td>
+    ${PNUM.map(k => `<td class="num${k === 'nk' ? ' nkcol' : ''}"><input data-p="${i}" data-k="${k}" inputmode="decimal" value="${esc(isFinite(num(p[k])) ? p[k] : '')}"></td>`).join('')}
+    <td style="white-space:nowrap;font-size:12px" title="${esc(String(standTxt(p.apiStand)).replace(/<[^>]+>/g, ''))}">${p.apiStand && p.apiStand.at ? `${fmtDate(isoOf(p.apiStand.at))} <span class="muted">${p.apiStand.src === 'api' ? 'API' : 'manuell'}</span>${p.apiStand.stale ? ' <span class="warnTxt">⚠</span>' : ''}` : '<span class="muted">–</span>'}</td>
     <td style="white-space:nowrap"><button class="btn sec sm" data-papi="${i}" title="Hotel, Mietwagen und Taxi per API ermitteln">API</button> <button class="btn red sm" data-delp="${i}" title="Profil löschen">✕</button></td></tr>`).join('');
   $('fxTable').tBodies[0].innerHTML = curs.map(c => `<tr><td><b>${esc(c)}</b> <span class="muted">${esc(curName(c))}</span></td>
     <td class="num">${c === 'CHF' ? '1' : `<input data-fx="${esc(c)}" inputmode="decimal" value="${esc(R.fx[c])}">`}</td>
@@ -2308,7 +2511,7 @@ async function testApi() {
 /* ---------- Drucken ---------- */
 function doPrint() {
   const r = calc(), R = DATA.rates, k = r.k;
-  const det = [['Einsatz', E.name], ['Aufgabe', r.a && r.a.name], ['Kunde', k && k.name], ['Adresse', k && k.adresse && k.adresse.replace(/\s*\n\s*/g, ', ')],
+ const det = [['Einsatz', E.name], ['Status', (STATUS[E.status] || 'Entwurf') + (E.frozen ? ` – Sätze eingefroren am ${fmtDate(isoOf(E.frozen.at))}` : ' – aktuelle Sätze')], ['Aufgabe', r.a && r.a.name], ['Kunde', k && k.name], ['Adresse', k && k.adresse && k.adresse.replace(/\s*\n\s*/g, ', ')],
     ['Flughafen', k && k.flughafen ? `${k.flughafen}${k.flughafenName ? ' (' + k.flughafenName + ')' : ''}${isFinite(num(k.distanzKm)) ? ' · ' + fmt0(num(k.distanzKm)) + ' km zum Kunden' : ''}` : ''],
     ['Techniker', r.valid.map(x => `${x.t.name} (ab ${apLabel(x.t.flughafen)})`).join(', ')], ['Maschine / Auftrag', E.auftrag],
     ['Reise', r.sched ? `${dShort(r.S.first)} – ${dShort(r.S.last)}` : ''], ['Ablauf', phaseTxt(r.S)], ['Training verkauft', E.training ? `ja – ${E.trainTage || 0} Tage Training, ${E.handTage || 0} Tage Handover` : ''], ['Transport vor Ort', r.carWhy], ['Bemerkung', E.bemerkung]].filter(x => x[1]);
@@ -2355,8 +2558,17 @@ function checkVersion() {
 $('calcForm').addEventListener('input', onForm);
 $('calcForm').addEventListener('change', onForm);
 $('techPick').addEventListener('click', ev => { const rm = ev.target.closest('[data-trem]'); if (rm) { E.techs = E.techs.filter(x => x.id !== rm.dataset.trem); renderTechPick(); render(); return; } if (ev.target.closest('[data-tclean]')) { E.techs = E.techs.filter(x => techById(x.id)); renderTechPick(); render(); } });
-$('calcForm').addEventListener('click', ev => { if (ev.target.closest('#btnProfApi') && LAST && LAST.p) evalProfile(LAST.p.id); });
+$('calcForm').addEventListener('click', ev => {
+  if (ev.target.closest('#btnProfApi') && LAST && LAST.p) evalProfile(LAST.p.id);
+  if (ev.target.closest('#btnRefreeze')) {
+    if (!confirm('Eingefrorene Sätze durch die aktuellen Sätze ersetzen? Die Kalkulation ändert sich entsprechend.')) return;
+    E.frozen = makeSnapshot(); writeForm(); render(); toast('Aktuelle Sätze übernommen und eingefroren – Einsatz speichern nicht vergessen');
+  }
+});
 $('btnSave').addEventListener('click', saveEinsatz);
+['ofLang', 'ofCur'].forEach(id => $(id).addEventListener('change', () => { CFG.offer = { lang: $('ofLang').value, cur: $('ofCur').value }; store(LS.cfg, CFG); if (LAST) renderOffer(LAST); }));
+$('btnOfPrint').addEventListener('click', printOffer);
+$('btnOfCopy').addEventListener('click', copyOffer);
 $('btnNew').addEventListener('click', newEinsatz);
 $('btnPrint').addEventListener('click', doPrint);
 $('btnResearch').addEventListener('click', () => runResearch(false));
