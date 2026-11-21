@@ -109,12 +109,12 @@
   {
    "id": "mwqa1sita14sv",
    "name": "Johannes Strauss",
-   "flughafen": "",
+   "flughafen": "VIE",
    "gepaeck": true,
    "arten": [
     "Installationstechniker"
    ],
-   "updatedAt": 1795257682067
+   "updatedAt": 1795257708251
   }
  ],
  "kunden": [
@@ -148,5 +148,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795257682067
+ "updatedAt": 1795257708251
 }
