@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v1.0 – Neustart: Kalkulation, Firmensätze, Einsätze, GitHub-Sync, Online-Recherche per API -->
+<!-- Gallus Travel Calculator v1.2 – Stammdaten: Aufgaben, Techniker, Kunden (API-Auswertung); mehrere Techniker pro Einsatz -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#0d1c16">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="1.0">
+<meta name="app-version" content="1.2">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
 :root{--bg:#0d1c16;--card:#142a20;--card2:#1a3428;--line:#2a4b3b;--ink:#e6f0ea;--muted:#93ad9f;--brand:#2f8a62;--brand-2:#5fc79c;--red:#e46a6a;--amber:#e2b252;--input:#0f241b}
@@ -33,8 +33,9 @@ main{max-width:1100px;margin:0 auto;padding:12px 16px 60px}
 @media(max-width:820px){.grid,.grid.g4{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){.grid,.grid.g4{grid-template-columns:1fr}.span2{grid-column:auto}}
 label{display:block;font-size:12px;color:var(--muted)}
-label>input,label>select{margin-top:4px}
-input,select{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:var(--input);color:var(--ink);font:inherit}
+label>input,label>select,label>textarea{margin-top:4px}
+input,select,textarea{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:var(--input);color:var(--ink);font:inherit}
+textarea{resize:vertical}
 input[type=checkbox]{width:auto;margin:0 6px 0 0;accent-color:var(--brand-2)}
 input[readonly]{opacity:.7}
 .chk{display:flex;align-items:center;font-size:13px;color:var(--ink);margin-top:6px}
@@ -49,14 +50,25 @@ th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertic
 th{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;font-weight:600}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 tr.total td{font-weight:700;font-size:15px;border-top:2px solid var(--brand-2);border-bottom:0}
+tr.grp td{background:var(--card2);font-weight:600;color:var(--brand-2)}
 .msgs{margin:10px 0 0;padding:0;list-style:none}
 .msgs li{padding:6px 10px;border-radius:7px;margin-bottom:6px;font-size:13px}
 .msgs .err{background:rgba(228,106,106,.15);color:#ffb3b3}
 .msgs .warn{background:rgba(226,178,82,.14);color:#f3d48e}
 .muted{color:var(--muted);font-size:12.5px}
+.warnTxt{color:var(--amber)}
 .tbl-edit input,.tbl-edit select{padding:5px 7px}
 .tbl-edit td.num input{text-align:right;min-width:80px}
 .pos{color:#f3a0a0}.neg{color:var(--brand-2)}
+.trow{display:flex;gap:6px 12px;align-items:center;flex-wrap:wrap;padding:7px 0;border-bottom:1px solid var(--line)}
+.trow .chk{margin:0}
+.trow.on b{color:var(--brand-2)}
+.tflug{display:flex;align-items:center;gap:6px;margin-left:auto;white-space:nowrap}
+.tflug input{width:110px;margin:0}
+details.kd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:8px;background:var(--card2)}
+details.kd summary{cursor:pointer;padding:2px 0}
+details.kd[open] summary{margin-bottom:10px}
+.artchk{display:inline-flex;align-items:center;margin-right:10px;font-size:12.5px;color:var(--ink);white-space:nowrap}
 dialog{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:12px;max-width:560px;width:92%}
 dialog::backdrop{background:rgba(0,0,0,.6)}
 .vh h3{margin:12px 0 4px;font-size:14px}.vh ul{margin:0;padding-left:18px}
@@ -72,6 +84,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
   #printArea h1{font-size:15pt;margin:0 0 2px}
   #printArea table{margin:10px 0}
   #printArea th,#printArea td{border-bottom:1px solid #bbb;color:#000;padding:4px 6px}
+  #printArea tr.grp td{background:#eee;color:#000}
   #printArea tr.total td{border-top:2px solid #000}
 }
 </style>
@@ -85,6 +98,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 <nav id="nav">
   <button data-tab="calc" class="on">Kalkulation</button>
   <button data-tab="list">Einsätze</button>
+  <button data-tab="stamm">Stammdaten</button>
   <button data-tab="rates">Firmensätze</button>
   <button data-tab="settings">Einstellungen</button>
 </nav>
@@ -103,29 +117,33 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
   <div id="calcForm">
     <div class="card"><h2>Einsatz</h2>
       <div class="grid">
+        <label>Aufgabe<select id="f_aufgabeId"></select></label>
+        <label>Kunde<select id="f_kundeId"></select></label>
+        <label>Länderprofil<select id="f_profileId"></select></label>
         <label>Bezeichnung<input id="f_name" placeholder="leer = automatisch"></label>
-        <label>Techniker<input id="f_techniker"></label>
-        <label>Kunde<input id="f_kunde"></label>
         <label>Maschine / Auftrag<input id="f_auftrag"></label>
-        <label class="span2">Bemerkung<input id="f_bemerkung"></label>
+        <label>Bemerkung<input id="f_bemerkung"></label>
+      </div>
+      <div class="muted" id="kundeInfo" style="margin-top:8px"></div>
+    </div>
+    <div class="card"><h2>Techniker</h2>
+      <div id="techPick"></div>
+      <div class="grid" style="margin-top:10px">
+        <label>Flugklasse<select id="f_klasse"></select></label>
       </div>
     </div>
     <div class="card"><h2>Reise</h2>
       <div class="grid g4">
-        <label>Länderprofil<select id="f_profileId"></select></label>
-        <label>Einsatzort (Stadt)<input id="f_ort" placeholder="z.B. Chicago"></label>
-        <label>Von (Flughafen)<input id="f_von" maxlength="3" placeholder="ZRH"></label>
-        <label>Nach (Flughafen)<input id="f_nach" maxlength="3" placeholder="ORD"></label>
         <label>Abreise<input type="date" id="f_ab"></label>
         <label>Rückreise<input type="date" id="f_rueck"></label>
-        <label>Flugklasse<select id="f_klasse"></select></label>
-        <label>Flugpreis Economy retour (CHF)<input id="f_flug" inputmode="decimal"></label>
+        <label class="chk" style="align-self:end;padding-bottom:8px"><input type="checkbox" id="f_rueckAuto">Rückreise aus Aufgaben-Dauer</label>
+        <label>Mietwagen<select id="f_carMode"><option value="auto">Automatisch (nach Distanz)</option><option value="ja">Ja</option><option value="nein">Nein (Taxi)</option></select></label>
         <label class="span2">Spesenregel<select id="f_regel">
           <option value="mit">An- und Abreisetag zählen mit</option>
           <option value="ohne">Nur Einsatztage (ohne An- und Abreisetag)</option>
         </select></label>
-        <label class="chk" style="align-self:end;padding-bottom:8px"><input type="checkbox" id="f_car">Mietwagen</label>
       </div>
+      <div class="muted" id="carInfo" style="margin-top:8px"></div>
     </div>
     <div class="card"><h2>Tage</h2>
       <div class="grid">
@@ -142,6 +160,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
         <label>Mietwagen pro Tag<input id="ov_car" inputmode="decimal"></label>
         <label>Spesen pro Tag<input id="ov_spesen" inputmode="decimal"></label>
         <label>Nebenkosten pro Tag<input id="ov_nk" inputmode="decimal"></label>
+        <label>Taxi pro Fahrt<input id="ov_taxi" inputmode="decimal"></label>
         <label>Nebenkosten pauschal (CHF)<input id="f_nkPausch" inputmode="decimal" placeholder="0"></label>
       </div>
     </div>
@@ -154,7 +173,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
     <ul class="msgs" id="msgs"></ul>
   </div>
   <div class="card"><h2>Online-Recherche</h2>
-    <p class="muted" style="margin-top:0">Claude sucht über die Anthropic API im Web nach aktuellen Richtpreisen für Flug, Hotel, Mietwagen, Spesen-Referenz und Wechselkurs. Die Werte sind ohne Gewähr und vor der Buchung zu prüfen.</p>
+    <p class="muted" style="margin-top:0">Claude sucht über die Anthropic API im Web nach aktuellen Richtpreisen für die Flüge ab den Heimflughäfen der Techniker, Hotel, Mietwagen, Taxi, Spesen-Referenz und Wechselkurs. Die Werte sind ohne Gewähr und vor der Buchung zu prüfen.</p>
     <div class="row">
       <button class="btn" id="btnResearch">Richtpreise recherchieren</button>
       <button class="btn sec" id="btnResearchStop" hidden>Abbrechen</button>
@@ -175,10 +194,36 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 <!-- ============ Einsätze ============ -->
 <section class="tab" data-tab="list" hidden>
   <div class="card"><h2>Gespeicherte Einsätze</h2>
-    <div class="row" style="margin-bottom:10px"><input id="listSearch" placeholder="Suchen (Kunde, Techniker, Ort …)" style="max-width:340px"><span class="muted" id="listCount"></span></div>
+    <div class="row" style="margin-bottom:10px"><input id="listSearch" placeholder="Suchen (Kunde, Techniker, Aufgabe …)" style="max-width:340px"><span class="muted" id="listCount"></span></div>
     <div style="overflow-x:auto">
-    <table id="listTable"><thead><tr><th>Bezeichnung</th><th>Kunde</th><th>Ziel</th><th>Reise</th><th class="num">Total CHF</th><th></th></tr></thead><tbody></tbody></table>
+    <table id="listTable"><thead><tr><th>Bezeichnung</th><th>Aufgabe</th><th>Kunde</th><th>Techniker</th><th>Reise</th><th class="num">Total CHF</th><th></th></tr></thead><tbody></tbody></table>
     </div>
+  </div>
+</section>
+
+<!-- ============ Stammdaten ============ -->
+<section class="tab" data-tab="stamm" hidden>
+  <div class="card"><h2>Kunden</h2>
+    <p class="muted" style="margin-top:0">Adresse erfassen und «Adresse auswerten» klicken: Claude ermittelt per API Land, Ort, den nächsten geeigneten Flughafen, die Distanz und die Fahrzeit. Alle Werte bleiben änderbar.</p>
+    <div class="row" style="margin-bottom:10px"><input id="kSearch" placeholder="Kunden suchen …" style="max-width:340px"><button class="btn sec" id="btnAddKunde">+ Kunde</button></div>
+    <div id="kundenList"></div>
+  </div>
+  <div class="card"><h2>Techniker</h2>
+    <div style="overflow-x:auto">
+    <table class="tbl-edit" id="techTable"><thead><tr><th>Name</th><th>Heimflughafen</th><th>Zusatzgepäck</th><th>Art</th><th></th></tr></thead><tbody></tbody></table>
+    </div>
+    <button class="btn sec" id="btnAddTech" style="margin-top:10px">+ Techniker</button>
+  </div>
+  <div class="card"><h2>Aufgaben</h2>
+    <p class="muted" style="margin-top:0">Dauer = Reisetage inkl. An- und Abreise; daraus wird die Rückreise vorgeschlagen. Die benötigte Technikerart wird bei der Auswahl geprüft.</p>
+    <div style="overflow-x:auto">
+    <table class="tbl-edit" id="aufTable"><thead><tr><th>Aufgabe</th><th class="num">Dauer Tage</th><th>Benötigte Technikerart</th><th></th></tr></thead><tbody></tbody></table>
+    </div>
+    <button class="btn sec" id="btnAddAuf" style="margin-top:10px">+ Aufgabe</button>
+  </div>
+  <div class="card"><h2>Technikerarten</h2>
+    <table class="tbl-edit" id="artTable"><tbody></tbody></table>
+    <div class="row" style="margin-top:10px"><input id="artNew" placeholder="Neue Technikerart" style="max-width:260px"><button class="btn sec" id="btnAddArt">+ Art</button></div>
   </div>
 </section>
 
@@ -193,15 +238,25 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
       <button class="btn red" id="btnResetRates">Standardsätze laden</button>
     </div>
   </div>
+  <div class="card"><h2>Allgemein</h2>
+    <div class="grid g4">
+      <label>Zusatzgepäck (CHF pro Retourflug)<input data-g="gepaeck" inputmode="decimal"></label>
+      <label>Mietwagen Kilometerkosten (CHF/km)<input data-g="kmSatz" inputmode="decimal"></label>
+      <label>Mietwagen ab Distanz (km)<input data-g="carAbKm" inputmode="decimal"></label>
+      <label>Tägliche Fahrstrecke vor Ort (km)<input data-g="lokalKm" inputmode="decimal"></label>
+    </div>
+    <p class="muted" style="margin-bottom:0">Ist der Kunde mindestens «Mietwagen ab Distanz» vom Flughafen entfernt, wird automatisch ein Mietwagen gerechnet, sonst Taxi. Kilometer = 2 × Distanz Flughafen–Kunde + Mietwagentage × tägliche Fahrstrecke.</p>
+  </div>
   <div class="card"><h2>Länderprofile</h2>
-    <p class="muted" style="margin-top:0">Sätze in der Währung des Profils.</p>
+    <p class="muted" style="margin-top:0">Sätze in der Währung des Profils. Der Profilname wird mit dem Land des Kunden abgeglichen.</p>
     <div style="overflow-x:auto">
-    <table class="tbl-edit" id="profTable"><thead><tr><th>Name</th><th>Währung</th><th class="num">Hotel/Nacht</th><th class="num">Mietwagen/Tag</th><th class="num">Spesen/Tag</th><th class="num">Nebenk./Tag</th><th></th></tr></thead><tbody></tbody></table>
+    <table class="tbl-edit" id="profTable"><thead><tr><th>Name</th><th>Währung</th><th class="num">Hotel/Nacht</th><th class="num">Mietwagen/Tag</th><th class="num">Spesen/Tag</th><th class="num">Nebenk./Tag</th><th class="num">Taxi/Fahrt</th><th></th></tr></thead><tbody></tbody></table>
     </div>
     <button class="btn sec" id="btnAddProf" style="margin-top:10px">+ Profil</button>
   </div>
   <div class="card"><h2>Wechselkurse</h2>
-    <p class="muted" style="margin-top:0">CHF pro 1 Einheit der Fremdwährung.</p>
+    <p class="muted" style="margin-top:0">CHF pro 1 Einheit der Fremdwährung. Die Kurse werden bei jedem Öffnen der App automatisch aktualisiert; manuelle Änderungen gelten bis zum nächsten Öffnen.</p>
+    <div class="row" style="margin-bottom:8px"><button class="btn sec sm" id="btnFx">Kurse jetzt laden</button><span class="muted" id="fxStatus"></span></div>
     <table class="tbl-edit" id="fxTable"><thead><tr><th>Währung</th><th class="num">CHF</th><th></th></tr></thead><tbody></tbody></table>
     <div class="row" style="margin-top:10px"><input id="fxNewCode" placeholder="Code, z.B. GBP" maxlength="3" style="max-width:150px"><input id="fxNewRate" placeholder="CHF" inputmode="decimal" style="max-width:120px"><button class="btn sec" id="btnAddFx">+ Währung</button></div>
   </div>
@@ -215,7 +270,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 <!-- ============ Einstellungen ============ -->
 <section class="tab" data-tab="settings" hidden>
   <div class="card"><h2>GitHub-Sync</h2>
-    <p class="muted" style="margin-top:0">Firmensätze und Einsätze liegen als JSON in einem <b>privaten</b> Daten-Repo. Der Token bleibt nur in diesem Browser gespeichert.</p>
+    <p class="muted" style="margin-top:0">Stammdaten, Firmensätze und Einsätze liegen als JSON in einem <b>privaten</b> Daten-Repo. Der Token bleibt nur in diesem Browser gespeichert.</p>
     <div class="grid g4">
       <label>Owner<input data-cfg="gh.owner"></label>
       <label>Daten-Repo<input data-cfg="gh.repo"></label>
@@ -226,7 +281,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
     <div class="row" style="margin-top:12px"><button class="btn" id="btnSync">Verbinden / jetzt synchronisieren</button><span class="muted" id="ghStatus"></span></div>
   </div>
   <div class="card"><h2>Anthropic API</h2>
-    <p class="muted" style="margin-top:0">Für die Online-Recherche. Der Key bleibt nur in diesem Browser gespeichert und wird nicht synchronisiert.</p>
+    <p class="muted" style="margin-top:0">Für die Kunden-Auswertung und die Online-Recherche. Der Key bleibt nur in diesem Browser gespeichert und wird nicht synchronisiert.</p>
     <div class="grid">
       <label>API-Key<input type="password" data-cfg="ai.key" autocomplete="off"></label>
       <label>Modell<input data-cfg="ai.model"></label>
@@ -252,8 +307,23 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '1.0';
+const APP_VERSION = '1.2';
 const VERSION_HISTORY = [
+  { v: '1.2', d: '2026-11-21', items: [
+    'Neuer Tab Stammdaten mit Kunden, Technikern, Aufgaben und Technikerarten (erweiterbar, änderbar, löschbar)',
+    'Kunden: Adresse per Anthropic API auswerten – Land, Ort, nächster Flughafen, Distanz und Fahrzeit; Länderprofil wird zugeordnet oder kann angelegt werden',
+    'Techniker mit Heimflughafen, Zusatzgepäck und Technikerarten',
+    'Aufgaben mit Standard-Dauer (Rückreise wird vorgeschlagen) und benötigter Technikerart (Prüfung bei der Auswahl)',
+    'Mehrere Techniker pro Einsatz; Kosten pro Techniker (Flug, Gepäck, Hotel, Spesen, Nebenkosten, Taxi)',
+    'Mietwagen automatisch ab einstellbarer Distanz, sonst Taxi; Kilometerkosten aus Distanz und täglicher Fahrstrecke',
+    'Online-Recherche mit Flugpreisen je Heimflughafen und Taxi-Richtpreis',
+    'Stammdaten werden pro Eintrag mit GitHub abgeglichen'
+  ] },
+  { v: '1.1', d: '2026-11-21', items: [
+    'Wechselkurse werden bei jedem Öffnen automatisch geladen (EZB-Referenzkurse via Frankfurter, Ersatzquelle open.er-api.com)',
+    'Laden erst nach dem GitHub-Sync, damit Firmensätze von anderen Geräten nicht überschrieben werden',
+    'Button «Kurse jetzt laden» und Anzeige von Kursdatum und Quelle in Firmensätzen und Kalkulation'
+  ] },
   { v: '1.0', d: '2026-11-21', items: [
     'Neustart des Gallus Travel Calculator als PWA auf GitHub Pages',
     'Kalkulation: Flug mit Klassen-Faktor, Hotel, Mietwagen, Spesen, Nebenkosten pro Tag und pauschal',
@@ -271,7 +341,7 @@ const VERSION_HISTORY = [
 /* ---------- Hilfsfunktionen ---------- */
 const $ = id => document.getElementById(id);
 const LS = { data: 'tc_data', cfg: 'tc_cfg', draft: 'tc_draft' };
-const LBL = { hotel: 'Hotel', car: 'Mietwagen', spesen: 'Spesen', nk: 'Nebenkosten' };
+const LBL = { hotel: 'Hotel', car: 'Mietwagen', spesen: 'Spesen', nk: 'Nebenkosten', taxi: 'Taxi' };
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 const clone = o => JSON.parse(JSON.stringify(o));
@@ -286,67 +356,153 @@ const fmt0 = n => isFinite(n) ? n.toLocaleString('de-CH', { maximumFractionDigit
 function todayISO() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 const fmtDate = iso => iso ? iso.split('-').reverse().join('.') : '–';
 function isoUTC(s) { if (!/^\d{4}-\d{2}-\d{2}$/.test(s || '')) return NaN; const [y, m, d] = s.split('-').map(Number); return Date.UTC(y, m - 1, d); }
+function addDaysISO(s, n) { const t = isoUTC(s); if (!isFinite(t)) return ''; return new Date(t + n * 864e5).toISOString().slice(0, 10); }
 function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2600); }
 function load(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
 function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { toast('Lokaler Speicher voll oder gesperrt'); } }
+const byName = (a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'de');
 
 /* ---------- Daten ---------- */
 function defaultRates() {
   return {
     stand: todayISO(), verantwortlich: '', updatedAt: 0,
     profiles: [
-      { id: 'ch', name: 'Schweiz', cur: 'CHF', hotel: 180, car: 90, spesen: 60, nk: 10 },
-      { id: 'de', name: 'Deutschland', cur: 'EUR', hotel: 130, car: 65, spesen: 40, nk: 10 },
-      { id: 'us', name: 'USA', cur: 'USD', hotel: 220, car: 75, spesen: 70, nk: 15 }
+      { id: 'ch', name: 'Schweiz', cur: 'CHF', hotel: 180, car: 90, spesen: 60, nk: 10, taxi: 80 },
+      { id: 'de', name: 'Deutschland', cur: 'EUR', hotel: 130, car: 65, spesen: 40, nk: 10, taxi: 60 },
+      { id: 'us', name: 'USA', cur: 'USD', hotel: 220, car: 75, spesen: 70, nk: 15, taxi: 90 }
     ],
     fx: { CHF: 1, EUR: 0.93, USD: 0.82 },
-    classes: [{ name: 'Economy', f: 1 }, { name: 'Premium Economy', f: 1.8 }, { name: 'Business', f: 3 }]
+    classes: [{ name: 'Economy', f: 1 }, { name: 'Premium Economy', f: 1.8 }, { name: 'Business', f: 3 }],
+    arten: ['Installationstechniker', 'Applikationstechniker'],
+    gepaeck: 150, kmSatz: 0.25, carAbKm: 30, lokalKm: 30
   };
 }
-let DATA = load(LS.data, null) || { rates: defaultRates(), einsaetze: [], deleted: {}, updatedAt: 0 };
-DATA.einsaetze = DATA.einsaetze || []; DATA.deleted = DATA.deleted || {}; DATA.rates = DATA.rates || defaultRates();
+function defaultAufgaben() {
+  return [
+    { id: 'a-inst', name: 'Installation Neumaschine', dauer: 12, art: 'Installationstechniker', updatedAt: 0 },
+    { id: 'a-trbl', name: 'Troubleshooting', dauer: 4, art: 'Installationstechniker', updatedAt: 0 },
+    { id: 'a-erw', name: 'Erweiterung Neumaschine', dauer: 7, art: 'Installationstechniker', updatedAt: 0 },
+    { id: 'a-hand', name: 'Handover', dauer: 3, art: '', updatedAt: 0 },
+    { id: 'a-train', name: 'Training', dauer: 5, art: 'Applikationstechniker', updatedAt: 0 }
+  ];
+}
+function ensureRates(r) {
+  const D = defaultRates(); r = r || D;
+  ['arten', 'gepaeck', 'kmSatz', 'carAbKm', 'lokalKm', 'classes'].forEach(k => { if (r[k] === undefined) r[k] = clone(D[k]); });
+  r.fx = r.fx || { CHF: 1 }; r.profiles = r.profiles || [];
+  r.profiles.forEach(p => { if (p.taxi === undefined) { const dp = D.profiles.find(x => x.id === p.id); p.taxi = dp ? dp.taxi : 0; } });
+  return r;
+}
+const LISTS = ['einsaetze', 'aufgaben', 'techniker', 'kunden'];
+function ensureData(d) {
+  d = d || {};
+  d.rates = ensureRates(d.rates); d.deleted = d.deleted || {};
+  d.einsaetze = d.einsaetze || []; d.techniker = d.techniker || []; d.kunden = d.kunden || [];
+  if (!Array.isArray(d.aufgaben)) d.aufgaben = defaultAufgaben();
+  d.updatedAt = d.updatedAt || 0;
+  return d;
+}
+let DATA = ensureData(load(LS.data, null));
 
 const CFG_DEFAULT = { gh: { owner: 'roger-manser', repo: 'travel-calculator-daten', branch: 'main', path: 'travel-calculator.json', token: '' }, ai: { key: '', model: 'claude-sonnet-5-5', maxSearches: 5 } };
 const cfgStored = load(LS.cfg, {});
 let CFG = { gh: Object.assign({}, CFG_DEFAULT.gh, cfgStored.gh), ai: Object.assign({}, CFG_DEFAULT.ai, cfgStored.ai) };
 
 function blankE() {
-  const p = DATA.rates.profiles[0];
-  return { id: null, name: '', techniker: '', kunde: '', auftrag: '', bemerkung: '', profileId: p ? p.id : '', ab: '', rueck: '', von: 'ZRH', nach: '', ort: '', klasse: 'Economy', flug: '', car: true, regel: 'mit', man: { hotel: null, car: null, spesen: null }, ov: { hotel: '', car: '', spesen: '', nk: '' }, nkPausch: '', res: null };
+  const p = DATA.rates.profiles[0], a = DATA.aufgaben[0];
+  return { id: null, name: '', aufgabeId: a ? a.id : '', kundeId: '', techs: [], profileId: p ? p.id : '', auftrag: '', bemerkung: '', ab: '', rueck: '', rueckAuto: true, klasse: 'Economy', carMode: 'auto', regel: 'mit', man: { hotel: null, car: null, spesen: null }, ov: { hotel: '', car: '', spesen: '', nk: '', taxi: '' }, nkPausch: '', res: null };
 }
-function normE(o) { const e = Object.assign(blankE(), o || {}); e.man = Object.assign({ hotel: null, car: null, spesen: null }, e.man); e.ov = Object.assign({ hotel: '', car: '', spesen: '', nk: '' }, e.ov); return e; }
+function normE(o) {
+  const e = Object.assign(blankE(), o || {});
+  e.man = Object.assign({ hotel: null, car: null, spesen: null }, e.man);
+  e.ov = Object.assign({ hotel: '', car: '', spesen: '', nk: '', taxi: '' }, e.ov);
+  if (!Array.isArray(e.techs)) e.techs = [];
+  if (!['auto', 'ja', 'nein'].includes(e.carMode)) e.carMode = 'auto';
+  return e;
+}
 let E = normE(load(LS.draft, null));
 let LAST = null;
+
+const aufgabe = () => DATA.aufgaben.find(a => a.id === E.aufgabeId);
+const kunde = () => DATA.kunden.find(k => k.id === E.kundeId);
+const techById = id => DATA.techniker.find(t => t.id === id);
 
 function persist() { store(LS.data, DATA); }
 function saveDraft() { store(LS.draft, E); }
 function changed() { DATA.updatedAt = Date.now(); persist(); scheduleSync(); }
 
 /* ---------- Formular ---------- */
-const FIELDS = ['name', 'techniker', 'kunde', 'auftrag', 'bemerkung', 'profileId', 'ab', 'rueck', 'von', 'nach', 'ort', 'klasse', 'flug', 'regel', 'nkPausch'];
+const FIELDS = ['name', 'aufgabeId', 'kundeId', 'profileId', 'auftrag', 'bemerkung', 'ab', 'rueck', 'klasse', 'carMode', 'regel', 'nkPausch'];
+const OVS = ['hotel', 'car', 'spesen', 'nk', 'taxi'];
 const isMan = k => E.man[k] !== null && E.man[k] !== undefined;
+function opts(list, val, labelFn, empty) {
+  let h = empty !== undefined ? `<option value="">${esc(empty)}</option>` : '';
+  h += list.map(x => `<option value="${esc(x.id)}" ${x.id === val ? 'selected' : ''}>${esc(labelFn(x))}</option>`).join('');
+  if (val && !list.some(x => x.id === val)) h += `<option value="${esc(val)}" selected>(gelöscht)</option>`;
+  return h;
+}
 function fillSelects() {
   const R = DATA.rates;
-  $('f_profileId').innerHTML = R.profiles.map(p => `<option value="${esc(p.id)}">${esc(p.name)} (${esc(p.cur)})</option>`).join('');
+  $('f_aufgabeId').innerHTML = opts(DATA.aufgaben, E.aufgabeId, a => a.name + (a.dauer ? ` (${a.dauer} Tage)` : ''));
+  $('f_kundeId').innerHTML = opts(DATA.kunden.slice().sort(byName), E.kundeId, k => k.name + (k.ort ? ', ' + k.ort : ''), '– Kunde wählen –');
+  $('f_profileId').innerHTML = opts(R.profiles, E.profileId, p => `${p.name} (${p.cur})`);
   const names = R.classes.map(c => c.name);
-  const extra = E.klasse && !names.includes(E.klasse) ? `<option value="${esc(E.klasse)}">${esc(E.klasse)} (unbekannt)</option>` : '';
-  $('f_klasse').innerHTML = R.classes.map(c => `<option value="${esc(c.name)}">${esc(c.name)} (× ${fmt0(num(c.f))})</option>`).join('') + extra;
-  if (E.profileId && !R.profiles.some(p => p.id === E.profileId)) $('f_profileId').insertAdjacentHTML('beforeend', `<option value="${esc(E.profileId)}">(gelöschtes Profil)</option>`);
-  $('f_profileId').value = E.profileId; $('f_klasse').value = E.klasse;
+  $('f_klasse').innerHTML = R.classes.map(c => `<option value="${esc(c.name)}">${esc(c.name)} (× ${fmt0(num(c.f))})</option>`).join('')
+    + (E.klasse && !names.includes(E.klasse) ? `<option value="${esc(E.klasse)}">${esc(E.klasse)} (unbekannt)</option>` : '');
+  ['aufgabeId', 'kundeId', 'profileId', 'klasse'].forEach(k => $('f_' + k).value = E[k] || '');
 }
 function writeForm() {
   fillSelects();
   FIELDS.forEach(k => { const el = $('f_' + k); if (el) el.value = E[k] ?? ''; });
-  $('f_car').checked = !!E.car;
-  ['hotel', 'car', 'spesen', 'nk'].forEach(k => $('ov_' + k).value = E.ov[k] ?? '');
+  $('f_rueckAuto').checked = !!E.rueckAuto;
+  OVS.forEach(k => $('ov_' + k).value = E.ov[k] ?? '');
   ['hotel', 'car', 'spesen'].forEach(k => { $('man_' + k).checked = isMan(k); if (isMan(k)) $('d_' + k).value = E.man[k]; });
+  renderTechPick();
 }
 function readForm() {
   FIELDS.forEach(k => { const el = $('f_' + k); if (el) E[k] = el.value; });
-  E.von = (E.von || '').toUpperCase().trim(); E.nach = (E.nach || '').toUpperCase().trim();
-  E.car = $('f_car').checked;
-  ['hotel', 'car', 'spesen', 'nk'].forEach(k => E.ov[k] = $('ov_' + k).value);
+  E.rueckAuto = $('f_rueckAuto').checked;
+  OVS.forEach(k => E.ov[k] = $('ov_' + k).value);
   ['hotel', 'car', 'spesen'].forEach(k => { E.man[k] = $('man_' + k).checked ? $('d_' + k).value : null; });
+}
+function applyAutoRueck() {
+  const a = aufgabe();
+  if (E.rueckAuto && E.ab && a && num(a.dauer) > 0) { E.rueck = addDaysISO(E.ab, num(a.dauer) - 1); $('f_rueck').value = E.rueck; }
+}
+function renderTechPick() {
+  const a = aufgabe(), req = a && a.art, k = kunde(), dest = k && k.flughafen;
+  const list = DATA.techniker.slice().sort(byName);
+  const gone = E.techs.filter(x => !techById(x.id));
+  $('techPick').innerHTML = (list.length ? list.map(t => {
+    const sel = E.techs.find(x => x.id === t.id), arten = t.arten || [], fits = !req || arten.includes(req);
+    return `<div class="trow ${sel ? 'on' : ''}">
+      <label class="chk"><input type="checkbox" data-tsel="${esc(t.id)}" ${sel ? 'checked' : ''}><b>${esc(t.name)}</b></label>
+      <span class="muted">${esc(arten.join(', ') || 'keine Art')} · ${esc(t.flughafen || 'kein Heimflughafen')}${t.gepaeck ? ' · Zusatzgepäck' : ''}${req && !fits ? ` · <span class="warnTxt">nicht ${esc(req)}</span>` : ''}</span>
+      ${sel ? `<label class="tflug">Flug ${esc(t.flughafen || '?')}–${esc(dest || '?')} Economy retour CHF<input data-tf="${esc(t.id)}" inputmode="decimal" value="${esc(sel.flug)}"></label>` : ''}
+    </div>`;
+  }).join('') : `<p class="muted">Noch keine Techniker erfasst – unter <b>Stammdaten</b> anlegen.</p>`)
+    + (gone.length ? `<p class="warnTxt">${gone.length} ausgewählte(r) Techniker existiert nicht mehr. <button class="btn sec sm" data-tclean>Entfernen</button></p>` : '');
+}
+function onForm(ev) {
+  const t = ev.target;
+  if (t.dataset.tsel !== undefined) {
+    const id = t.dataset.tsel, has = E.techs.some(x => x.id === id);
+    if (t.checked && !has) E.techs.push({ id, flug: '' });
+    if (!t.checked && has) E.techs = E.techs.filter(x => x.id !== id);
+    renderTechPick();
+  } else if (t.dataset.tf !== undefined) {
+    const x = E.techs.find(x => x.id === t.dataset.tf); if (x) x.flug = t.value;
+  } else {
+    readForm();
+    if (t.id === 'f_rueck') { E.rueckAuto = false; $('f_rueckAuto').checked = false; }
+    if (t.id === 'f_kundeId' && ev.type === 'change') {
+      const k = kunde(); if (k && k.profileId && DATA.rates.profiles.some(p => p.id === k.profileId)) { E.profileId = k.profileId; $('f_profileId').value = E.profileId; }
+      renderTechPick();
+    }
+    if (['f_aufgabeId', 'f_ab', 'f_rueckAuto'].includes(t.id)) applyAutoRueck();
+    if (t.id === 'f_aufgabeId') renderTechPick();
+  }
+  render();
 }
 
 /* ---------- Kalkulation ---------- */
@@ -360,6 +516,10 @@ function calc() {
   readForm();
   const R = DATA.rates, msgs = [], lines = [];
   const err = m => msgs.push(['err', m]), warn = m => msgs.push(['warn', m]);
+  const a = aufgabe(), k = kunde();
+  if (!a) warn('Aufgabe wählen.');
+  if (!k) warn('Kunde wählen.');
+  else if (!k.flughafen) warn(`Beim Kunden «${k.name}» fehlt der Flughafen – unter Stammdaten «Adresse auswerten» oder von Hand erfassen.`);
   const p = R.profiles.find(x => x.id === E.profileId);
   if (!p) err('Kein gültiges Länderprofil gewählt.');
   const cur = p ? p.cur : 'CHF';
@@ -368,47 +528,86 @@ function calc() {
   if (!E.ab || !E.rueck) warn('Abreise- und Rückreisedatum erfassen.');
   else if (isoUTC(E.rueck) < isoUTC(E.ab)) err('Die Rückreise liegt vor der Abreise.');
   const auto = autoDays();
-  const dayVal = k => {
-    if (isMan(k)) { const v = num(E.man[k]); if (!(v >= 0) || !Number.isInteger(v)) { err(`Ungültige Anzahl Tage bei ${LBL[k]}.`); return NaN; } return v; }
-    return auto ? auto[k] : NaN;
+  const dayVal = key => {
+    if (isMan(key)) { const v = num(E.man[key]); if (!(v >= 0) || !Number.isInteger(v)) { err(`Ungültige Anzahl Tage bei ${LBL[key]}.`); return NaN; } return v; }
+    return auto ? auto[key] : NaN;
   };
-  const nights = dayVal('hotel'), carD = E.car ? dayVal('car') : 0, spD = dayVal('spesen');
+  // Mietwagen-Entscheid
+  const dist = k ? num(k.distanzKm) : NaN, abKm = num(R.carAbKm);
+  let car, carWhy;
+  if (E.carMode === 'ja') { car = true; carWhy = 'Mietwagen: manuell ja'; }
+  else if (E.carMode === 'nein') { car = false; carWhy = 'Mietwagen: manuell nein – Taxi'; }
+  else if (isFinite(dist) && isFinite(abKm)) { car = dist >= abKm; carWhy = `Mietwagen automatisch: Distanz ${fmt0(dist)} km ${car ? '≥' : '<'} ${fmt0(abKm)} km → ${car ? 'Mietwagen' : 'Taxi'}`; }
+  else { car = true; carWhy = 'Mietwagen automatisch: Distanz unbekannt → Mietwagen'; }
+  const nights = dayVal('hotel'), carD = car ? dayVal('car') : 0, spD = dayVal('spesen');
   const totalDays = auto ? auto.total : NaN;
-  ['hotel', 'car', 'spesen'].forEach(k => { const el = $('d_' + k); el.readOnly = !isMan(k); if (!isMan(k)) el.value = auto ? auto[k] : ''; });
-  $('d_car').disabled = !E.car; $('man_car').disabled = !E.car;
-  const rate = k => {
-    const raw = E.ov[k];
-    if (raw !== '' && raw !== undefined && raw !== null) { const v = num(raw); if (!(v >= 0)) { err(`Ungültiger Satz bei ${LBL[k]}.`); return NaN; } return v; }
-    return p ? num(p[k]) : NaN;
+  ['hotel', 'car', 'spesen'].forEach(key => { const el = $('d_' + key); el.readOnly = !isMan(key); if (!isMan(key)) el.value = auto ? auto[key] : ''; });
+  $('d_car').disabled = !car; $('man_car').disabled = !car;
+  const rate = key => {
+    const raw = E.ov[key];
+    if (raw !== '' && raw !== undefined && raw !== null) { const v = num(raw); if (!(v >= 0)) { err(`Ungültiger Satz bei ${LBL[key]}.`); return NaN; } return v; }
+    return p ? num(p[key]) : NaN;
   };
   const cls = R.classes.find(c => c.name === E.klasse);
   if (!cls) err(`Unbekannte Flugklasse «${E.klasse}» – bitte in den Firmensätzen erfassen.`);
   const f = cls ? num(cls.f) : NaN;
   if (cls && !(f > 0)) err(`Ungültiger Faktor bei Flugklasse «${cls.name}».`);
-  let flug = num(E.flug);
-  if (E.flug === '') { warn('Flugpreis (Economy retour, CHF) fehlt – der Flug wird mit 0 gerechnet.'); flug = 0; }
-  else if (!(flug >= 0)) err('Ungültiger Flugpreis.');
-  const add = (name, qty, unit, satz, c, chf, note) => lines.push({ name, qty, unit, satz, cur: c, chf, note });
-  add('Flug', 1, 'retour', flug * f, 'CHF', flug * f, cls ? `Economy CHF ${fmt(flug)} × Faktor ${fmt0(f)} (${cls.name})` : '');
-  const h = rate('hotel'); add('Hotel', nights, 'Nächte', h, cur, nights * h * fx, '');
-  if (E.car) { const c = rate('car'); add('Mietwagen', carD, 'Tage', c, cur, carD * c * fx, ''); }
-  const s = rate('spesen'); add('Spesen', spD, 'Tage', s, cur, spD * s * fx, E.regel === 'mit' ? 'inkl. An- und Abreisetag' : 'ohne An- und Abreisetag');
-  const nk = rate('nk'); add('Nebenkosten', totalDays, 'Reisetage', nk, cur, totalDays * nk * fx, '');
+  const h = rate('hotel'), s = rate('spesen'), nk = rate('nk'), taxi = car ? 0 : rate('taxi'), carR = car ? rate('car') : 0;
+  const gp = num(R.gepaeck);
+  // Techniker
+  const valid = E.techs.map(x => ({ sel: x, t: techById(x.id) })).filter(x => x.t);
+  if (valid.length < E.techs.length) warn('Mindestens ein ausgewählter Techniker existiert nicht mehr.');
+  if (!valid.length) warn('Mindestens einen Techniker auswählen.');
+  if (a && a.art && valid.length && !valid.some(x => (x.t.arten || []).includes(a.art))) warn(`«${a.name}» benötigt einen ${a.art} – keiner der gewählten Techniker hat diese Art.`);
+  const dest = k && k.flughafen ? k.flughafen : '?';
+  const add = (grp, name, qty, unit, satz, c, chf, note) => lines.push({ grp, name, qty, unit, satz, cur: c, chf, note });
+  valid.forEach(({ sel, t }) => {
+    let fl = num(sel.flug);
+    if (sel.flug === '' || sel.flug === undefined) { warn(`Flugpreis für ${t.name} fehlt – wird mit 0 gerechnet.`); fl = 0; }
+    else if (!(fl >= 0)) err(`Ungültiger Flugpreis bei ${t.name}.`);
+    if (!t.flughafen) warn(`${t.name}: kein Heimflughafen erfasst.`);
+    const g = t.name;
+    add(g, `Flug ${t.flughafen || '?'}–${dest}`, 1, 'retour', fl * f, 'CHF', fl * f, cls ? `Economy CHF ${fmt(fl)} × Faktor ${fmt0(f)} (${cls.name})` : '');
+    if (t.gepaeck) add(g, 'Zusatzgepäck', 1, 'retour', gp, 'CHF', gp, '');
+    add(g, 'Hotel', nights, 'Nächte', h, cur, nights * h * fx, '');
+    add(g, 'Spesen', spD, 'Tage', s, cur, spD * s * fx, E.regel === 'mit' ? 'inkl. An- und Abreisetag' : 'ohne An- und Abreisetag');
+    add(g, 'Nebenkosten', totalDays, 'Reisetage', nk, cur, totalDays * nk * fx, '');
+    if (!car) add(g, 'Taxi Flughafen ↔ Kunde', 2, 'Fahrten', taxi, cur, 2 * taxi * fx, '');
+  });
+  let km = NaN;
+  if (car) {
+    add('Gemeinsam', 'Mietwagen', carD, 'Tage', carR, cur, carD * carR * fx, valid.length > 1 ? `1 Fahrzeug für ${valid.length} Techniker` : '');
+    const lk = num(R.lokalKm) || 0;
+    if (!isFinite(dist)) warn('Distanz Flughafen–Kunde unbekannt – Kilometer nur aus täglicher Fahrstrecke.');
+    km = (isFinite(dist) ? 2 * dist : 0) + carD * lk;
+    const ks = num(R.kmSatz);
+    add('Gemeinsam', 'Mietwagen Kilometer', km, 'km', ks, 'CHF', km * ks, `${isFinite(dist) ? `2 × ${fmt0(dist)} km + ` : ''}${fmt0(carD)} Tage × ${fmt0(lk)} km`);
+  }
   const np = E.nkPausch === '' ? 0 : num(E.nkPausch);
   if (!(np >= 0)) err('Ungültiger Betrag bei Nebenkosten pauschal.');
-  add('Nebenkosten pauschal', 1, 'pauschal', np, 'CHF', np, '');
-  const total = lines.reduce((a, l) => a + l.chf, 0);
+  if (np) add('Gemeinsam', 'Nebenkosten pauschal', 1, 'pauschal', np, 'CHF', np, '');
+  const total = lines.reduce((x, l) => x + l.chf, 0);
   if (auto && nights === 0) warn('Tagesreise ohne Hotelnacht.');
-  return { lines, total, msgs, cur, fx, p, auto };
+  return { lines, total, msgs, cur, fx, p, auto, car, carWhy, km, valid, a, k };
+}
+function linesHtml(lines) {
+  let g = null, h = '';
+  lines.forEach(l => {
+    if (l.grp !== g) { g = l.grp; h += `<tr class="grp"><td colspan="4">${esc(g)}</td></tr>`; }
+    h += `<tr><td>${esc(l.name)}${l.note ? `<div class="muted">${esc(l.note)}</div>` : ''}</td><td class="num">${fmt0(l.qty)} ${esc(l.unit)}</td><td class="num">${fmt(l.satz)} ${esc(l.cur)}</td><td class="num">${fmt(l.chf)}</td></tr>`;
+  });
+  return h;
 }
 function render() {
   const r = calc(); LAST = r;
   $('curLbl').textContent = r.cur;
-  ['hotel', 'car', 'spesen', 'nk'].forEach(k => $('ov_' + k).placeholder = r.p ? `${fmt0(num(r.p[k]))} ${r.cur} (Profil)` : '');
-  $('costTable').tBodies[0].innerHTML = r.lines.map(l => `<tr><td>${esc(l.name)}${l.note ? `<div class="muted">${esc(l.note)}</div>` : ''}</td><td class="num">${fmt0(l.qty)} ${esc(l.unit)}</td><td class="num">${fmt(l.satz)} ${esc(l.cur)}</td><td class="num">${fmt(l.chf)}</td></tr>`).join('')
-    + `<tr class="total"><td colspan="3">Total</td><td class="num">CHF ${fmt(r.total)}</td></tr>`;
-  $('fxInfo').textContent = r.cur !== 'CHF' && r.fx > 0 ? `Umrechnung: 1 ${r.cur} = ${fmt0(r.fx)} CHF · Firmensätze Stand ${fmtDate(DATA.rates.stand)}` : `Firmensätze Stand ${fmtDate(DATA.rates.stand)}`;
+  OVS.forEach(k => $('ov_' + k).placeholder = r.p ? `${fmt0(num(r.p[k]))} ${r.cur} (Profil)` : '');
+  $('costTable').tBodies[0].innerHTML = linesHtml(r.lines) + `<tr class="total"><td colspan="3">Total${r.valid.length > 1 ? ` (${r.valid.length} Techniker)` : ''}</td><td class="num">CHF ${fmt(r.total)}</td></tr>`;
+  $('fxInfo').textContent = (r.cur !== 'CHF' && r.fx > 0 ? `Umrechnung: 1 ${r.cur} = ${fmt0(r.fx)} CHF${fxStandTxt() ? ' (' + fxStandTxt() + ')' : ''} · ` : '') + `Firmensätze Stand ${fmtDate(DATA.rates.stand)}`;
   $('daysInfo').textContent = r.auto ? `Reisedauer ${r.auto.total} Tage (${fmtDate(E.ab)} – ${fmtDate(E.rueck)})` : '';
+  $('carInfo').textContent = r.carWhy;
+  const k = r.k;
+  $('kundeInfo').innerHTML = k ? `${esc([k.ort, k.land].filter(Boolean).join(', '))}${k.flughafen ? ` · Flughafen <b>${esc(k.flughafen)}</b>${k.flughafenName ? ' (' + esc(k.flughafenName) + ')' : ''}` : ''}${isFinite(num(k.distanzKm)) ? ` · ${fmt0(num(k.distanzKm))} km` : ''}${isFinite(num(k.fahrzeitMin)) ? ` · ${fmt0(num(k.fahrzeitMin))} Min.` : ''}` : '';
   $('msgs').innerHTML = r.msgs.map(([t, m]) => `<li class="${t}">${esc(m)}</li>`).join('');
   saveDraft(); updateEditState(); renderResearch();
 }
@@ -416,7 +615,7 @@ function render() {
 /* ---------- Einsätze ---------- */
 function strip(o) { const c = clone(o); ['updatedAt', 'createdAt', 'total', 'ziel'].forEach(k => delete c[k]); return JSON.stringify(normE(c)); }
 function isDirty() {
-  if (!E.id) return !!(E.name || E.kunde || E.techniker || E.ab || E.flug);
+  if (!E.id) return !!(E.name || E.kundeId || E.techs.length || E.ab);
   const s = DATA.einsaetze.find(x => x.id === E.id);
   return !s || strip(s) !== strip(E);
 }
@@ -425,7 +624,7 @@ function updateEditState() {
 }
 function saveEinsatz() {
   const r = calc();
-  if (!E.name.trim()) { E.name = [E.kunde, E.ort || E.nach, E.ab ? fmtDate(E.ab) : ''].filter(Boolean).join(' – ') || 'Einsatz'; }
+  if (!E.name.trim()) { E.name = [r.a && r.a.name, r.k && r.k.name, E.ab ? fmtDate(E.ab) : ''].filter(Boolean).join(' – ') || 'Einsatz'; }
   const now = Date.now();
   if (!E.id) { E.id = uid(); E.createdAt = now; }
   E.updatedAt = now; E.total = r.total; E.ziel = r.p ? r.p.name : '';
@@ -452,28 +651,238 @@ function delEinsatz(id) {
   const s = DATA.einsaetze.find(x => x.id === id); if (!s) return;
   if (!confirm(`Einsatz «${s.name}» löschen?`)) return;
   DATA.deleted[id] = Date.now(); DATA.einsaetze = DATA.einsaetze.filter(x => x.id !== id);
-  if (E.id === id) { E.id = null; }
+  if (E.id === id) E.id = null;
   changed(); renderList(); render(); toast('Einsatz gelöscht');
+}
+function einsatzInfo(e) {
+  const a = DATA.aufgaben.find(x => x.id === e.aufgabeId), k = DATA.kunden.find(x => x.id === e.kundeId);
+  const techs = (e.techs || []).map(x => techById(x.id)).filter(Boolean).map(t => t.name);
+  return { aufgabe: a ? a.name : '', kunde: k ? k.name : (typeof e.kunde === 'string' ? e.kunde : ''), ort: k ? [k.ort, k.land].filter(Boolean).join(', ') : '', techs: techs.join(', ') || (typeof e.techniker === 'string' ? e.techniker : '') };
 }
 function renderList() {
   const q = $('listSearch').value.trim().toLowerCase();
-  const rows = DATA.einsaetze.filter(e => !q || [e.name, e.kunde, e.techniker, e.ort, e.nach, e.auftrag, e.ziel].join(' ').toLowerCase().includes(q))
-    .sort((a, b) => (b.ab || '').localeCompare(a.ab || '') || (b.updatedAt || 0) - (a.updatedAt || 0));
+  const rows = DATA.einsaetze.map(e => ({ e, i: einsatzInfo(e) }))
+    .filter(({ e, i }) => !q || [e.name, e.auftrag, i.aufgabe, i.kunde, i.ort, i.techs].join(' ').toLowerCase().includes(q))
+    .sort((x, y) => (y.e.ab || '').localeCompare(x.e.ab || '') || (y.e.updatedAt || 0) - (x.e.updatedAt || 0));
   $('listCount').textContent = `${rows.length} von ${DATA.einsaetze.length}`;
-  $('listTable').tBodies[0].innerHTML = rows.length ? rows.map(e => `<tr>
-    <td><b>${esc(e.name)}</b>${e.techniker ? `<div class="muted">${esc(e.techniker)}</div>` : ''}</td>
-    <td>${esc(e.kunde)}</td><td>${esc([e.ort, e.ziel].filter(Boolean).join(', '))}</td>
+  $('listTable').tBodies[0].innerHTML = rows.length ? rows.map(({ e, i }) => `<tr>
+    <td><b>${esc(e.name)}</b>${e.auftrag ? `<div class="muted">${esc(e.auftrag)}</div>` : ''}</td>
+    <td>${esc(i.aufgabe)}</td><td>${esc(i.kunde)}${i.ort ? `<div class="muted">${esc(i.ort)}</div>` : ''}</td><td>${esc(i.techs)}</td>
     <td>${fmtDate(e.ab)} – ${fmtDate(e.rueck)}</td><td class="num">${fmt(e.total)}</td>
     <td class="num"><button class="btn sm" data-open="${esc(e.id)}">Öffnen</button> <button class="btn sec sm" data-dup="${esc(e.id)}">Duplizieren</button> <button class="btn red sm" data-del="${esc(e.id)}">Löschen</button></td></tr>`).join('')
-    : `<tr><td colspan="6" class="muted">Noch keine Einsätze gespeichert.</td></tr>`;
+    : `<tr><td colspan="7" class="muted">Noch keine Einsätze gespeichert.</td></tr>`;
+}
+
+/* ---------- Stammdaten ---------- */
+const OPEN_K = new Set();
+function stammChanged() { fillSelects(); renderTechPick(); render(); }
+function touch(item) { item.updatedAt = Date.now(); changed(); stammChanged(); }
+function profileFor(land) {
+  const l = String(land || '').trim().toLowerCase(); if (!l) return null;
+  return DATA.rates.profiles.find(p => p.name.trim().toLowerCase() === l) || null;
+}
+function kSummary(k) {
+  const prof = DATA.rates.profiles.find(p => p.id === k.profileId);
+  const bits = [[k.ort, k.land].filter(Boolean).join(', '), k.flughafen, isFinite(num(k.distanzKm)) ? fmt0(num(k.distanzKm)) + ' km' : ''].filter(Boolean).join(' · ');
+  return `<b>${esc(k.name || 'Neuer Kunde')}</b> <span class="muted">${esc(bits)}${k.land && !prof ? ' · <span class="warnTxt">kein Länderprofil</span>' : ''}</span>`;
+}
+function kundeHtml(k) {
+  const prof = DATA.rates.profiles.find(p => p.id === k.profileId);
+  const alts = Array.isArray(k.alternativen) && k.alternativen.length ? 'Alternativen: ' + k.alternativen.map(x => `${x.iata || ''} ${x.name || ''}${isFinite(num(x.distanz_km)) ? ' (' + fmt0(num(x.distanz_km)) + ' km)' : ''}`).join(', ') : '';
+  const iv = key => esc(k[key] ?? '');
+  return `<details class="kd" data-kid="${esc(k.id)}" ${OPEN_K.has(k.id) ? 'open' : ''}><summary>${kSummary(k)}</summary>
+    <div class="grid g4">
+      <label class="span2">Name<input data-k="name" value="${iv('name')}"></label>
+      <label>Länderprofil<select data-k="profileId">${opts(DATA.rates.profiles, k.profileId, p => `${p.name} (${p.cur})`, '– keines –')}</select></label>
+      <label>Land<input data-k="land" value="${iv('land')}"></label>
+      <label class="span2">Adresse<textarea data-k="adresse" rows="3">${iv('adresse')}</textarea></label>
+      <label>Ort<input data-k="ort" value="${iv('ort')}"></label>
+      <label>Flughafen (IATA)<input data-k="flughafen" maxlength="3" value="${iv('flughafen')}"></label>
+      <label class="span2">Flughafen-Name<input data-k="flughafenName" value="${iv('flughafenName')}"></label>
+      <label>Distanz Flughafen–Kunde (km)<input data-k="distanzKm" inputmode="decimal" value="${iv('distanzKm')}"></label>
+      <label>Fahrzeit (Min.)<input data-k="fahrzeitMin" inputmode="numeric" value="${iv('fahrzeitMin')}"></label>
+    </div>
+    ${alts || k.bemerkung ? `<p class="muted">${esc([alts, k.bemerkung].filter(Boolean).join(' · '))}</p>` : ''}
+    <div class="row" style="margin-top:10px">
+      <button class="btn sm" data-keval>Adresse auswerten (API)</button>
+      ${k.land && !prof ? `<button class="btn sec sm" data-kprof>Länderprofil «${esc(k.land)}»${k.waehrung ? ' (' + esc(k.waehrung) + ')' : ''} anlegen</button>` : ''}
+      <button class="btn red sm" data-kdel>Löschen</button>
+      <span class="muted" data-kstat></span>
+    </div></details>`;
+}
+function renderKunden() {
+  const q = $('kSearch').value.trim().toLowerCase();
+  const list = DATA.kunden.slice().sort(byName).filter(k => !q || [k.name, k.ort, k.land, k.adresse, k.flughafen].join(' ').toLowerCase().includes(q));
+  $('kundenList').innerHTML = list.length ? list.map(kundeHtml).join('') : `<p class="muted">${DATA.kunden.length ? 'Keine Treffer.' : 'Noch keine Kunden erfasst.'}</p>`;
+}
+function renderStamm() {
+  renderKunden();
+  const arten = DATA.rates.arten || [];
+  $('techTable').tBodies[0].innerHTML = DATA.techniker.slice().sort(byName).map(t => `<tr data-tid="${esc(t.id)}">
+    <td><input data-k="name" value="${esc(t.name)}"></td>
+    <td><input data-k="flughafen" maxlength="3" style="max-width:90px" value="${esc(t.flughafen || '')}"></td>
+    <td><label class="artchk"><input type="checkbox" data-k="gepaeck" ${t.gepaeck ? 'checked' : ''}>ja</label></td>
+    <td>${arten.map(a => `<label class="artchk"><input type="checkbox" data-art="${esc(a)}" ${(t.arten || []).includes(a) ? 'checked' : ''}>${esc(a)}</label>`).join('')}</td>
+    <td><button class="btn red sm" data-tdel title="Techniker löschen">✕</button></td></tr>`).join('') || `<tr><td colspan="5" class="muted">Noch keine Techniker erfasst.</td></tr>`;
+  $('aufTable').tBodies[0].innerHTML = DATA.aufgaben.map(a => `<tr data-aid="${esc(a.id)}">
+    <td><input data-k="name" value="${esc(a.name)}"></td>
+    <td class="num"><input data-k="dauer" inputmode="numeric" value="${esc(a.dauer ?? '')}"></td>
+    <td><select data-k="art"><option value="">– beliebig –</option>${arten.concat(a.art && !arten.includes(a.art) ? [a.art] : []).map(x => `<option ${x === a.art ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></td>
+    <td><button class="btn red sm" data-adel title="Aufgabe löschen">✕</button></td></tr>`).join('');
+  $('artTable').tBodies[0].innerHTML = arten.map((a, i) => `<tr><td><input data-arti="${i}" value="${esc(a)}"></td><td style="width:60px"><button class="btn red sm" data-artdel="${i}" title="Art löschen">✕</button></td></tr>`).join('');
+}
+function onStammChange(ev) {
+  const t = ev.target, now = Date.now();
+  const kd = t.closest('details.kd'), tr = t.closest('tr');
+  if (kd && t.dataset.k) {
+    const k = DATA.kunden.find(x => x.id === kd.dataset.kid); if (!k) return;
+    let v = t.value;
+    if (t.dataset.k === 'flughafen') v = v.trim().toUpperCase();
+    else if (t.dataset.k === 'distanzKm' || t.dataset.k === 'fahrzeitMin') { v = v.trim() === '' ? '' : num(v); if (v !== '' && !(v >= 0)) { toast('Bitte eine gültige Zahl eingeben'); t.value = k[t.dataset.k] ?? ''; return; } }
+    else if (t.dataset.k !== 'adresse') v = v.trim();
+    k[t.dataset.k] = v; t.value = v;
+    if (t.dataset.k === 'land' && !k.profileId) { const p = profileFor(v); if (p) k.profileId = p.id; }
+    kd.querySelector('summary').innerHTML = kSummary(k);
+    touch(k); return;
+  }
+  if (tr && tr.dataset.tid) {
+    const x = techById(tr.dataset.tid); if (!x) return;
+    if (t.dataset.art) { x.arten = x.arten || []; if (t.checked) { if (!x.arten.includes(t.dataset.art)) x.arten.push(t.dataset.art); } else x.arten = x.arten.filter(a => a !== t.dataset.art); }
+    else if (t.dataset.k === 'gepaeck') x.gepaeck = t.checked;
+    else if (t.dataset.k === 'flughafen') { x.flughafen = t.value.trim().toUpperCase(); t.value = x.flughafen; }
+    else if (t.dataset.k === 'name') { if (!t.value.trim()) { toast('Name fehlt'); t.value = x.name; return; } x.name = t.value.trim(); }
+    touch(x); return;
+  }
+  if (tr && tr.dataset.aid) {
+    const x = DATA.aufgaben.find(a => a.id === tr.dataset.aid); if (!x) return;
+    if (t.dataset.k === 'dauer') { const v = t.value.trim() === '' ? '' : num(t.value); if (v !== '' && !(v >= 1 && Number.isInteger(v))) { toast('Dauer: ganze Zahl ab 1'); t.value = x.dauer ?? ''; return; } x.dauer = v; }
+    else if (t.dataset.k === 'name') { if (!t.value.trim()) { toast('Name fehlt'); t.value = x.name; return; } x.name = t.value.trim(); }
+    else if (t.dataset.k === 'art') x.art = t.value;
+    touch(x); return;
+  }
+  if (t.dataset.arti !== undefined) {
+    const R = DATA.rates, i = +t.dataset.arti, old = R.arten[i], nv = t.value.trim();
+    if (!nv || R.arten.some((a, j) => j !== i && a === nv)) { toast('Name fehlt oder ist schon vergeben'); t.value = old; return; }
+    R.arten[i] = nv; R.updatedAt = now;
+    DATA.techniker.forEach(x => { if ((x.arten || []).includes(old)) { x.arten = x.arten.map(a => a === old ? nv : a); x.updatedAt = now; } });
+    DATA.aufgaben.forEach(x => { if (x.art === old) { x.art = nv; x.updatedAt = now; } });
+    changed(); renderStamm(); stammChanged();
+  }
+}
+function onStammClick(ev) {
+  const b = ev.target.closest('button'); if (!b) return;
+  const now = Date.now(), R = DATA.rates;
+  const kd = b.closest('details.kd'), tr = b.closest('tr');
+  if (b.id === 'btnAddKunde') {
+    const k = { id: uid(), name: 'Neuer Kunde', adresse: '', land: '', ort: '', profileId: '', flughafen: '', flughafenName: '', distanzKm: '', fahrzeitMin: '', updatedAt: now };
+    DATA.kunden.push(k); OPEN_K.add(k.id); $('kSearch').value = ''; changed(); renderKunden(); stammChanged();
+    const inp = document.querySelector(`details.kd[data-kid="${k.id}"] input[data-k="name"]`); if (inp) { inp.focus(); inp.select(); }
+    return;
+  }
+  if (kd && b.dataset.keval !== undefined) { ev.preventDefault(); evalKunde(kd.dataset.kid); return; }
+  if (kd && b.dataset.kprof !== undefined) { ev.preventDefault(); createProfileFor(kd.dataset.kid); return; }
+  if (kd && b.dataset.kdel !== undefined) {
+    ev.preventDefault();
+    const k = DATA.kunden.find(x => x.id === kd.dataset.kid); if (!k || !confirm(`Kunde «${k.name}» löschen?`)) return;
+    DATA.deleted[k.id] = now; DATA.kunden = DATA.kunden.filter(x => x.id !== k.id); changed(); renderKunden(); stammChanged(); return;
+  }
+  if (b.id === 'btnAddTech') { DATA.techniker.push({ id: uid(), name: 'Neuer Techniker', flughafen: 'ZRH', gepaeck: false, arten: [], updatedAt: now }); changed(); renderStamm(); stammChanged(); return; }
+  if (tr && tr.dataset.tid && b.dataset.tdel !== undefined) {
+    const x = techById(tr.dataset.tid); if (!x || !confirm(`Techniker «${x.name}» löschen?`)) return;
+    DATA.deleted[x.id] = now; DATA.techniker = DATA.techniker.filter(t => t.id !== x.id); changed(); renderStamm(); stammChanged(); return;
+  }
+  if (b.id === 'btnAddAuf') { DATA.aufgaben.push({ id: uid(), name: 'Neue Aufgabe', dauer: '', art: '', updatedAt: now }); changed(); renderStamm(); stammChanged(); return; }
+  if (tr && tr.dataset.aid && b.dataset.adel !== undefined) {
+    const x = DATA.aufgaben.find(a => a.id === tr.dataset.aid); if (!x || !confirm(`Aufgabe «${x.name}» löschen?`)) return;
+    DATA.deleted[x.id] = now; DATA.aufgaben = DATA.aufgaben.filter(a => a.id !== x.id); changed(); renderStamm(); stammChanged(); return;
+  }
+  if (b.id === 'btnAddArt') {
+    const v = $('artNew').value.trim(); if (!v) return;
+    if (R.arten.includes(v)) { toast('Diese Art gibt es schon'); return; }
+    R.arten.push(v); R.updatedAt = now; $('artNew').value = ''; changed(); renderStamm(); stammChanged(); return;
+  }
+  if (b.dataset.artdel !== undefined) {
+    const a = R.arten[+b.dataset.artdel];
+    const used = DATA.techniker.filter(t => (t.arten || []).includes(a)).length + DATA.aufgaben.filter(x => x.art === a).length;
+    if (!confirm(`Technikerart «${a}» löschen?${used ? ` Sie wird ${used}× verwendet und dort entfernt.` : ''}`)) return;
+    R.arten.splice(+b.dataset.artdel, 1); R.updatedAt = now;
+    DATA.techniker.forEach(t => { if ((t.arten || []).includes(a)) { t.arten = t.arten.filter(x => x !== a); t.updatedAt = now; } });
+    DATA.aufgaben.forEach(x => { if (x.art === a) { x.art = ''; x.updatedAt = now; } });
+    changed(); renderStamm(); stammChanged();
+  }
+}
+function createProfileFor(kid) {
+  const k = DATA.kunden.find(x => x.id === kid); if (!k || !k.land) return;
+  const R = DATA.rates; let p = profileFor(k.land);
+  if (!p) {
+    const cur = /^[A-Z]{3}$/.test(k.waehrung || '') ? k.waehrung : 'CHF';
+    p = { id: uid(), name: k.land, cur, hotel: 0, car: 0, spesen: 0, nk: 0, taxi: 0 };
+    R.profiles.push(p);
+    if (R.fx[cur] === undefined) R.fx[cur] = 0;
+    R.updatedAt = Date.now();
+  }
+  k.profileId = p.id; k.updatedAt = Date.now();
+  changed(); renderKunden(); renderRates(); stammChanged();
+  toast(`Profil «${p.name}» angelegt – Sätze unter Firmensätze erfassen`);
+  if (R.fx[p.cur] === 0) updateFx(false);
+}
+async function evalKunde(kid) {
+  const k = DATA.kunden.find(x => x.id === kid); if (!k) return;
+  const stat = () => document.querySelector(`details.kd[data-kid="${kid}"] [data-kstat]`);
+  if (!CFG.ai.key.trim()) { toast('Bitte zuerst den Anthropic API-Key in den Einstellungen erfassen'); return; }
+  if (!String(k.adresse || '').trim()) { toast('Bitte zuerst die Adresse erfassen'); return; }
+  if (stat()) stat().textContent = 'Ermittle Land, Flughafen und Distanz … (ca. 20–60 Sekunden)';
+  const prompt = `Ein Servicetechniker eines Schweizer Maschinenherstellers reist per Flugzeug zu folgendem Kunden:
+
+Kunde: ${k.name}
+Adresse:
+${k.adresse}
+
+Ermittle:
+- Land (deutscher Name, z.B. «USA», «Deutschland», «Italien»), ISO-Ländercode und Landeswährung (ISO-Code)
+- Ort
+- den nächstgelegenen geeigneten Verkehrsflughafen mit regelmässigen Linienflügen und guten Verbindungen aus Europa (IATA-Code und Name)
+- die Strassendistanz in km und die übliche Fahrzeit in Minuten vom Flughafen zur Adresse
+- bis zu zwei sinnvolle alternative Flughäfen mit Strassendistanz
+
+Antworte am Schluss mit genau einem JSON-Objekt in einem \`\`\`json-Block, ohne Text danach. Unbekannte Werte als null:
+{
+  "land": "", "land_iso": "", "waehrung": "", "ort": "",
+  "flughafen_iata": "", "flughafen_name": "",
+  "distanz_km": Zahl, "fahrzeit_min": Zahl,
+  "alternativen": [ { "iata": "", "name": "", "distanz_km": Zahl } ],
+  "bemerkung": "kurz, Deutsch (Schweiz), ss statt ß"
+}`;
+  try {
+    const r = await callClaude(prompt, 3);
+    const j = extractJSON(r.text);
+    if (!j) throw new Error('Die Antwort enthielt kein auswertbares Ergebnis');
+    const set = (key, v) => { if (v !== null && v !== undefined && v !== '') k[key] = v; };
+    set('land', j.land); set('ort', j.ort); set('flughafenName', j.flughafen_name);
+    if (j.flughafen_iata) k.flughafen = String(j.flughafen_iata).toUpperCase().slice(0, 3);
+    if (isFinite(num(j.distanz_km))) k.distanzKm = Math.round(num(j.distanz_km));
+    if (isFinite(num(j.fahrzeit_min))) k.fahrzeitMin = Math.round(num(j.fahrzeit_min));
+    if (j.waehrung) k.waehrung = String(j.waehrung).toUpperCase();
+    k.alternativen = Array.isArray(j.alternativen) ? j.alternativen.slice(0, 2) : [];
+    k.bemerkung = j.bemerkung || '';
+    const p = profileFor(k.land); if (p) k.profileId = p.id; else if (k.profileId && !DATA.rates.profiles.some(x => x.id === k.profileId)) k.profileId = '';
+    k.ausgewertet = Date.now();
+    OPEN_K.add(k.id); touch(k); renderKunden();
+    if (E.kundeId === k.id && k.profileId) { E.profileId = k.profileId; writeForm(); render(); }
+    const s = stat(); if (s) s.textContent = `Ausgewertet (${r.searches} Websuchen)${p ? '' : ' – kein passendes Länderprofil gefunden'}`;
+  } catch (e) {
+    const s = stat(); if (s) s.textContent = 'Fehler: ' + e.message;
+  }
 }
 
 /* ---------- Firmensätze ---------- */
-const PNUM = ['hotel', 'car', 'spesen', 'nk'];
+const PNUM = ['hotel', 'car', 'spesen', 'nk', 'taxi'];
+const GNUM = ['gepaeck', 'kmSatz', 'carAbKm', 'lokalKm'];
 function ratesChanged() { DATA.rates.updatedAt = Date.now(); changed(); writeForm(); render(); }
 function renderRates() {
   const R = DATA.rates;
   $('r_stand').value = R.stand || ''; $('r_ver').value = R.verantwortlich || '';
+  document.querySelectorAll('[data-g]').forEach(el => el.value = R[el.dataset.g] ?? '');
   const curs = Object.keys(R.fx);
   $('profTable').tBodies[0].innerHTML = R.profiles.map((p, i) => `<tr>
     <td><input data-p="${i}" data-k="name" value="${esc(p.name)}"></td>
@@ -492,6 +901,7 @@ function onRatesChange(ev) {
   const t = ev.target, R = DATA.rates, d = t.dataset;
   if (t.id === 'r_stand') R.stand = t.value;
   else if (t.id === 'r_ver') R.verantwortlich = t.value.trim();
+  else if (d.g !== undefined) { const v = num(t.value); if (!(v >= 0)) { toast('Bitte eine gültige Zahl ≥ 0 eingeben'); t.value = R[d.g] ?? ''; return; } R[d.g] = v; }
   else if (d.p !== undefined) {
     const p = R.profiles[+d.p]; if (!p) return;
     if (PNUM.includes(d.k)) { const v = num(t.value); if (!(v >= 0)) { toast('Bitte eine gültige Zahl ≥ 0 eingeben'); t.value = p[d.k] ?? ''; return; } p[d.k] = v; }
@@ -519,7 +929,7 @@ function onRatesClick(ev) {
     if (R.classes.length <= 1) { toast('Mindestens eine Flugklasse wird benötigt'); return; }
     R.classes.splice(+d.delc, 1);
   } else if (t.id === 'btnAddProf') {
-    R.profiles.push({ id: uid(), name: 'Neues Profil', cur: 'CHF', hotel: 0, car: 0, spesen: 0, nk: 0 });
+    R.profiles.push({ id: uid(), name: 'Neues Profil', cur: 'CHF', hotel: 0, car: 0, spesen: 0, nk: 0, taxi: 0 });
   } else if (t.id === 'btnAddFx') {
     const code = $('fxNewCode').value.trim().toUpperCase(), v = num($('fxNewRate').value);
     if (!/^[A-Z]{3}$/.test(code)) { toast('Bitte einen 3-stelligen Währungscode eingeben'); return; }
@@ -530,7 +940,7 @@ function onRatesClick(ev) {
     let n = 'Neue Klasse', i = 2; while (R.classes.some(c => c.name === n)) n = 'Neue Klasse ' + i++;
     R.classes.push({ name: n, f: 1 });
   } else return;
-  renderRates(); ratesChanged();
+  renderRates(); ratesChanged(); renderKunden();
 }
 function download(name, text, type) {
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name;
@@ -549,15 +959,15 @@ function importRates(file) {
       if (!confirm(`Firmensätze ersetzen? (${r.profiles.length} Profile, ${Object.keys(r.fx).length} Währungen, ${r.classes.length} Flugklassen)`)) return;
       r.profiles.forEach(p => { if (!p.id) p.id = uid(); PNUM.forEach(k => p[k] = num(p[k]) || 0); });
       r.fx.CHF = 1;
-      DATA.rates = { stand: r.stand || todayISO(), verantwortlich: r.verantwortlich || '', profiles: r.profiles, fx: r.fx, classes: r.classes, updatedAt: 0 };
-      renderRates(); ratesChanged(); toast('Firmensätze importiert');
+      DATA.rates = ensureRates(Object.assign({}, r, { stand: r.stand || todayISO(), verantwortlich: r.verantwortlich || '', updatedAt: 0 }));
+      renderRates(); renderStamm(); ratesChanged(); toast('Firmensätze importiert');
     } catch (e) { toast('Import fehlgeschlagen: ' + e.message); }
   };
   rd.readAsText(file);
 }
 
 /* ---------- GitHub-Sync ---------- */
-const SYNC = { sha: null, timer: null, busy: false, again: false };
+const SYNC = { sha: null, timer: null, busy: false, again: false, ok: false };
 function ghReady() { const g = CFG.gh; return !!(g.owner && g.repo && g.path && g.token); }
 function setSync(state, msg) {
   $('syncDot').className = 'dot ' + ({ ok: 'ok', busy: 'busy', pending: 'busy', err: 'err' }[state] || '');
@@ -578,7 +988,7 @@ async function ghGet() {
   if (r.status === 404) {
     const repo = await fetch(`https://api.github.com/repos/${encodeURIComponent(CFG.gh.owner)}/${encodeURIComponent(CFG.gh.repo)}`, { headers: ghHeaders(), cache: 'no-store' });
     if (!repo.ok) throw new Error(ghErr(repo.status));
-    return null; // Repo vorhanden, Datei noch nicht
+    return null;
   }
   if (!r.ok) throw new Error(ghErr(r.status));
   const j = await r.json();
@@ -594,19 +1004,24 @@ async function ghPut(sha) {
 }
 function canon(d) {
   d = d || {};
-  const ein = (d.einsaetze || []).filter(e => e && e.id).slice().sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
-  const del = Object.fromEntries(Object.entries(d.deleted || {}).sort((a, b) => a[0] < b[0] ? -1 : 1));
-  return { rates: d.rates || defaultRates(), einsaetze: ein, deleted: del, updatedAt: d.updatedAt || 0 };
+  const out = { rates: d.rates || defaultRates() };
+  LISTS.forEach(k => out[k] = (Array.isArray(d[k]) ? d[k] : []).filter(e => e && e.id).slice().sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  out.deleted = Object.fromEntries(Object.entries(d.deleted || {}).sort((a, b) => a[0] < b[0] ? -1 : 1));
+  out.updatedAt = d.updatedAt || 0;
+  return out;
 }
 function mergeData(local, remote) {
   const a = canon(local), b = canon(remote);
-  const rates = (num(a.rates.updatedAt) || 0) > (num(b.rates.updatedAt) || 0) ? a.rates : b.rates;
+  const out = { rates: (num(a.rates.updatedAt) || 0) > (num(b.rates.updatedAt) || 0) ? a.rates : b.rates };
   const deleted = Object.assign({}, b.deleted);
   Object.entries(a.deleted).forEach(([k, v]) => deleted[k] = Math.max(deleted[k] || 0, v));
-  const map = new Map(); b.einsaetze.forEach(e => map.set(e.id, e));
-  a.einsaetze.forEach(e => { const o = map.get(e.id); if (!o || (e.updatedAt || 0) > (o.updatedAt || 0)) map.set(e.id, e); });
-  const ein = [...map.values()].filter(e => !(deleted[e.id] >= (e.updatedAt || 0)));
-  return canon({ rates, einsaetze: ein, deleted, updatedAt: Math.max(a.updatedAt, b.updatedAt) });
+  LISTS.forEach(key => {
+    const map = new Map(); b[key].forEach(e => map.set(e.id, e));
+    a[key].forEach(e => { const o = map.get(e.id); if (!o || (e.updatedAt || 0) > (o.updatedAt || 0)) map.set(e.id, e); });
+    out[key] = [...map.values()].filter(e => !(deleted[e.id] >= (e.updatedAt || 0)));
+  });
+  out.deleted = deleted; out.updatedAt = Math.max(a.updatedAt, b.updatedAt);
+  return canon(out);
 }
 async function syncNow(manual) {
   if (!ghReady()) { setSync('off', 'Nur lokal'); if (manual) toast('GitHub-Sync ist noch nicht eingerichtet (Einstellungen)'); return; }
@@ -617,24 +1032,72 @@ async function syncNow(manual) {
     for (let attempt = 0; attempt < 3; attempt++) {
       const remote = await ghGet();
       DATA = remote ? mergeData(DATA, remote.data) : canon(DATA);
+      DATA = canon(ensureData(DATA));
       if (remote && JSON.stringify(canon(remote.data)) === JSON.stringify(DATA)) { SYNC.sha = remote.sha; break; }
       try { await ghPut(remote ? remote.sha : null); break; }
       catch (e) { if (e.conflict && attempt < 2) continue; throw e; }
     }
     persist();
     if (JSON.stringify(DATA) !== before) refreshAll();
+    SYNC.ok = true;
     setSync('ok', 'Synchronisiert ' + new Date().toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' }));
     if (manual) toast('Mit GitHub synchronisiert');
   } catch (e) {
+    SYNC.ok = false;
     setSync('err', e.message || 'Sync-Fehler'); if (manual) toast(e.message || 'Sync-Fehler');
   } finally {
     SYNC.busy = false;
     if (SYNC.again) { SYNC.again = false; scheduleSync(); }
   }
 }
-function refreshAll() { writeForm(); renderRates(); renderList(); render(); }
+function refreshAll() { writeForm(); renderRates(); renderStamm(); renderList(); render(); }
 
-/* ---------- Online-Recherche (Anthropic API) ---------- */
+/* ---------- Wechselkurse aus dem Internet ---------- */
+function fxStandTxt() { const s = DATA.rates.fxStand; return s && s.date ? `Kurse vom ${fmtDate(s.date)}, ${s.src}` : ''; }
+async function fetchJSON(url) {
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 8000);
+  try { const r = await fetch(url, { cache: 'no-store', signal: ctl.signal }); if (!r.ok) throw new Error('HTTP ' + r.status); return await r.json(); }
+  finally { clearTimeout(t); }
+}
+async function updateFx(manual) {
+  const codes = Object.keys(DATA.rates.fx).filter(c => c !== 'CHF');
+  if (!codes.length) { $('fxStatus').textContent = 'Keine Fremdwährungen erfasst.'; return; }
+  $('fxStatus').textContent = 'Lade aktuelle Kurse …';
+  const got = {}, src = []; let date = '';
+  try {
+    const j = await fetchJSON('https://api.frankfurter.dev/v1/latest?base=CHF');
+    codes.forEach(c => { const v = num(j.rates && j.rates[c]); if (v > 0) got[c] = 1 / v; });
+    if (Object.keys(got).length) { src.push('EZB via Frankfurter'); date = j.date || ''; }
+  } catch (e) { }
+  const miss = codes.filter(c => !got[c]);
+  if (miss.length) {
+    try {
+      const j = await fetchJSON('https://open.er-api.com/v6/latest/CHF');
+      let any = false;
+      miss.forEach(c => { const v = num(j.rates && j.rates[c]); if (v > 0) { got[c] = 1 / v; any = true; } });
+      if (any) { src.push('open.er-api.com'); if (!date && j.time_last_update_unix) date = new Date(j.time_last_update_unix * 1000).toISOString().slice(0, 10); }
+    } catch (e) { }
+  }
+  const missing = codes.filter(c => !got[c]);
+  if (!src.length) {
+    $('fxStatus').textContent = 'Kurse konnten nicht geladen werden – gespeicherte Kurse werden verwendet.';
+    if (manual) toast('Kurse konnten nicht geladen werden');
+    return;
+  }
+  const fx = DATA.rates.fx; let diff = false;
+  Object.entries(got).forEach(([c, v]) => { v = Math.round(v * 10000) / 10000; if (fx[c] !== v) { fx[c] = v; diff = true; } });
+  const stand = { date, src: src.join(' / ') };
+  if (JSON.stringify(DATA.rates.fxStand) !== JSON.stringify(stand)) { DATA.rates.fxStand = stand; diff = true; }
+  if (diff) {
+    // Nur nach erfolgreichem Sync (oder ohne Sync) als neuen Stand markieren, damit keine Firmensätze anderer Geräte überschrieben werden
+    if (!ghReady() || SYNC.ok) { DATA.rates.updatedAt = Date.now(); changed(); } else persist();
+    renderRates(); writeForm(); render();
+  }
+  $('fxStatus').textContent = `${fxStandTxt()}${missing.length ? ` · nicht gefunden: ${missing.join(', ')} (gespeicherter Kurs)` : ''}`;
+  if (manual) toast(diff ? 'Wechselkurse aktualisiert' : 'Wechselkurse sind aktuell');
+}
+
+/* ---------- Anthropic API ---------- */
 let RES_ABORT = null;
 const API_URL = 'https://api.anthropic.com/v1/messages';
 function apiHeaders() { return { 'content-type': 'application/json', 'x-api-key': CFG.ai.key.trim(), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }; }
@@ -644,6 +1107,23 @@ function apiErr(s, j) {
   if (s === 429) return 'Rate-Limit erreicht, bitte später nochmals versuchen';
   if (s === 529 || s === 503) return 'API überlastet, bitte später nochmals versuchen';
   return `API-Fehler ${s}${m ? ': ' + m : ''}`;
+}
+async function callClaude(prompt, maxUses, signal) {
+  const model = CFG.ai.model.trim() || 'claude-sonnet-5-5';
+  const messages = [{ role: 'user', content: prompt }];
+  let content = [], searches = 0;
+  for (let i = 0; i < 4; i++) {
+    const body = { model, max_tokens: 4096, messages };
+    if (maxUses > 0) body.tools = [{ type: 'web_search_20250305', name: 'web_search', max_uses: maxUses }];
+    const res = await fetch(API_URL, { method: 'POST', signal, headers: apiHeaders(), body: JSON.stringify(body) });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(apiErr(res.status, j));
+    searches += (j.usage && j.usage.server_tool_use && j.usage.server_tool_use.web_search_requests) || 0;
+    content = content.concat(j.content || []);
+    if (j.stop_reason === 'pause_turn') { messages.push({ role: 'assistant', content: j.content }); continue; }
+    break;
+  }
+  return { content, searches, model, text: content.filter(b => b.type === 'text').map(b => b.text).join('') };
 }
 function extractJSON(t) {
   const c = []; const m = t.match(/```json\s*([\s\S]*?)```/i); if (m) c.push(m[1]);
@@ -657,23 +1137,31 @@ function convCur(v, from, to) {
   const a = num(DATA.rates.fx[from]), b = num(DATA.rates.fx[to]);
   return a > 0 && b > 0 ? v * a / b : NaN;
 }
-function buildPrompt(r) {
-  const a = r.auto, cur = r.cur, land = r.p ? r.p.name : '';
-  return `Recherchiere aktuelle Richtpreise für die Geschäftsreise eines Servicetechnikers (Maschineninstallation).
 
-Flug: ${E.von || '?'} → ${E.nach || '?'} und zurück, Economy
+/* ---------- Online-Recherche ---------- */
+function origins(r) { return [...new Set(r.valid.map(x => x.t.flughafen).filter(Boolean))]; }
+function buildPrompt(r) {
+  const a = r.auto, cur = r.cur, k = r.k, land = r.p ? r.p.name : '';
+  const og = origins(r);
+  return `Recherchiere aktuelle Richtpreise für die Geschäftsreise von Servicetechnikern (Maschineninstallation).
+
+Aufgabe: ${r.a ? r.a.name : '-'}
+Kunde / Einsatzort: ${k ? [k.ort, k.land || land].filter(Boolean).join(', ') : land}${k && k.adresse ? ' (' + k.adresse.replace(/\s*\n\s*/g, ', ') + ')' : ''}
+Zielflughafen: ${k && k.flughafen ? k.flughafen : '?'}
+Abflughäfen der Techniker: ${og.join(', ') || '?'} (je Hin- und Rückflug, Economy)
 Hinflug: ${E.ab}, Rückflug: ${E.rueck}
-Einsatzort: ${[E.ort, land].filter(Boolean).join(', ')}
-Hotel: ${a.hotel} Nächte, Mittelklasse-Businesshotel in der Nähe des Einsatzorts
+Hotel: ${a.hotel} Nächte, Mittelklasse-Businesshotel in der Nähe des Kunden
 Mietwagen: ${a.car} Tage, Kompaktklasse
+Taxi: einfache Fahrt Flughafen – Kunde${k && isFinite(num(k.distanzKm)) ? ' (ca. ' + num(k.distanzKm) + ' km)' : ''}
 Lokale Währung: ${cur}
 
 Suche im Web nach aktuellen Preisen. Spesen: übliche Verpflegungspauschale bzw. Tagegeld für Geschäftsreisen in diesem Land als Referenz.
 Antworte am Schluss mit genau einem JSON-Objekt in einem \`\`\`json-Block, ohne Text danach. Unbekannte Werte als null:
 {
-  "flug": { "economy_chf": Zahl, "bemerkung": "" },
+  "fluege": [ { "von": "IATA", "economy_chf": Zahl, "bemerkung": "" } ],
   "hotel": { "pro_nacht": Zahl, "waehrung": "${cur}", "bemerkung": "" },
   "mietwagen": { "pro_tag": Zahl, "waehrung": "${cur}", "bemerkung": "" },
+  "taxi": { "pro_fahrt": Zahl, "waehrung": "${cur}", "bemerkung": "" },
   "spesen": { "pro_tag": Zahl, "waehrung": "${cur}", "bemerkung": "" },
   "wechselkurs": { "chf_pro_einheit": Zahl, "waehrung": "${cur}" },
   "zusammenfassung": "2–3 Sätze, Deutsch (Schweiz), ss statt ß",
@@ -685,36 +1173,20 @@ async function runResearch() {
   if (!CFG.ai.key.trim()) { toast('Bitte zuerst den Anthropic API-Key in den Einstellungen erfassen'); showTab('settings'); return; }
   const r = calc();
   if (!r.auto) { toast('Bitte gültige Reisedaten erfassen'); return; }
-  if (!E.nach && !E.ort) { toast('Bitte Zielflughafen oder Einsatzort erfassen'); return; }
-  const model = CFG.ai.model.trim() || 'claude-sonnet-5-5';
+  if (!r.k) { toast('Bitte einen Kunden wählen'); return; }
+  if (!r.valid.length) { toast('Bitte mindestens einen Techniker wählen'); return; }
   const maxUses = Math.max(1, Math.min(20, parseInt(CFG.ai.maxSearches, 10) || 5));
-  const messages = [{ role: 'user', content: buildPrompt(r) }];
-  let searches = 0, content = [];
   RES_ABORT = new AbortController(); setResBusy(true);
   $('resStatus').textContent = 'Recherche läuft … (kann 30–90 Sekunden dauern)'; $('resApplied').textContent = '';
   try {
-    for (let i = 0; i < 4; i++) {
-      const res = await fetch(API_URL, { method: 'POST', signal: RES_ABORT.signal, headers: apiHeaders(),
-        body: JSON.stringify({ model, max_tokens: 4096, messages, tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: maxUses }] }) });
-      const j = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(apiErr(res.status, j));
-      searches += (j.usage && j.usage.server_tool_use && j.usage.server_tool_use.web_search_requests) || 0;
-      content = content.concat(j.content || []);
-      if (j.stop_reason === 'pause_turn') { messages.push({ role: 'assistant', content: j.content }); continue; }
-      break;
-    }
-    const text = content.filter(b => b.type === 'text').map(b => b.text).join('');
-    const json = extractJSON(text);
+    const res = await callClaude(buildPrompt(r), maxUses, RES_ABORT.signal);
+    const json = extractJSON(res.text);
     if (!json) throw new Error('Die Antwort enthielt kein auswertbares Ergebnis');
     const src = new Map();
-    content.forEach(b => {
-      if (b.type === 'text' && Array.isArray(b.citations)) b.citations.forEach(c => c.url && !src.has(c.url) && src.set(c.url, c.title || c.url));
-    });
+    res.content.forEach(b => { if (b.type === 'text' && Array.isArray(b.citations)) b.citations.forEach(c => c.url && !src.has(c.url) && src.set(c.url, c.title || c.url)); });
     (Array.isArray(json.quellen) ? json.quellen : []).forEach(q => q && q.url && !src.has(q.url) && src.set(q.url, q.titel || q.url));
-    content.forEach(b => {
-      if (b.type === 'web_search_tool_result' && Array.isArray(b.content)) b.content.forEach(x => x.url && !src.has(x.url) && src.set(x.url, x.title || x.url));
-    });
-    E.res = { at: Date.now(), model, searches, cur: r.cur, trip: `${E.von}–${E.nach} · ${fmtDate(E.ab)}–${fmtDate(E.rueck)}`, data: json, sources: [...src].slice(0, 10).map(([url, title]) => ({ url, title })) };
+    res.content.forEach(b => { if (b.type === 'web_search_tool_result' && Array.isArray(b.content)) b.content.forEach(x => x.url && !src.has(x.url) && src.set(x.url, x.title || x.url)); });
+    E.res = { at: Date.now(), model: res.model, searches: res.searches, cur: r.cur, trip: `${origins(r).join('/')}–${r.k.flughafen || '?'} · ${fmtDate(E.ab)}–${fmtDate(E.rueck)}`, data: json, sources: [...src].slice(0, 10).map(([url, title]) => ({ url, title })) };
     $('resStatus').textContent = '';
     render(); toast('Recherche abgeschlossen');
   } catch (e) {
@@ -729,19 +1201,25 @@ function renderResearch() {
   const d = R.data || {}, cur = LAST.cur, p = LAST.p;
   const eff = k => { const raw = E.ov[k], v = num(raw); return raw !== '' && isFinite(v) ? v : (p ? num(p[k]) : NaN); };
   const g = (o, k) => o && typeof o === 'object' ? o[k] : null;
-  const rows = [
-    { k: 'flug', lbl: 'Flug Economy retour', unit: 'CHF', now: num(E.flug), res: num(g(d.flug, 'economy_chf')), note: g(d.flug, 'bemerkung'), def: true },
-    { k: 'hotel', lbl: 'Hotel pro Nacht', unit: cur, now: eff('hotel'), res: convCur(g(d.hotel, 'pro_nacht'), g(d.hotel, 'waehrung'), cur), note: g(d.hotel, 'bemerkung'), def: true },
-    { k: 'car', lbl: 'Mietwagen pro Tag', unit: cur, now: eff('car'), res: convCur(g(d.mietwagen, 'pro_tag'), g(d.mietwagen, 'waehrung'), cur), note: g(d.mietwagen, 'bemerkung'), def: !!E.car },
-    { k: 'spesen', lbl: 'Spesen pro Tag (Referenz)', unit: cur, now: eff('spesen'), res: convCur(g(d.spesen, 'pro_tag'), g(d.spesen, 'waehrung'), cur), note: g(d.spesen, 'bemerkung'), def: false }
-  ];
-  if (cur !== 'CHF') rows.push({ k: 'fx', lbl: `Wechselkurs 1 ${cur} in CHF`, unit: 'CHF', now: num(DATA.rates.fx[cur]), res: num(g(d.wechselkurs, 'chf_pro_einheit')), note: 'Übernahme ändert den Firmensatz für alle Einsätze', def: false, dec: 4 });
+  const rows = [];
+  const fl = Array.isArray(d.fluege) ? d.fluege : (d.flug ? [{ von: '', economy_chf: g(d.flug, 'economy_chf'), bemerkung: g(d.flug, 'bemerkung') }] : []);
+  fl.forEach(x => {
+    const von = String(x.von || '').toUpperCase();
+    const ts = LAST.valid.filter(v => !von || v.t.flughafen === von);
+    const nowV = ts.map(v => num(v.sel.flug)).find(v => isFinite(v));
+    rows.push({ k: 'flug:' + von, lbl: `Flug ${von || 'alle'}–${LAST.k && LAST.k.flughafen || '?'} Economy retour`, unit: 'CHF', now: nowV, res: num(x.economy_chf), note: [ts.map(v => v.t.name).join(', '), x.bemerkung].filter(Boolean).join(' · '), def: true });
+  });
+  rows.push({ k: 'hotel', lbl: 'Hotel pro Nacht', unit: cur, now: eff('hotel'), res: convCur(g(d.hotel, 'pro_nacht'), g(d.hotel, 'waehrung'), cur), note: g(d.hotel, 'bemerkung'), def: true });
+  rows.push({ k: 'car', lbl: 'Mietwagen pro Tag', unit: cur, now: eff('car'), res: convCur(g(d.mietwagen, 'pro_tag'), g(d.mietwagen, 'waehrung'), cur), note: g(d.mietwagen, 'bemerkung'), def: !!LAST.car });
+  rows.push({ k: 'taxi', lbl: 'Taxi pro Fahrt', unit: cur, now: eff('taxi'), res: convCur(g(d.taxi, 'pro_fahrt'), g(d.taxi, 'waehrung'), cur), note: g(d.taxi, 'bemerkung'), def: !LAST.car });
+  rows.push({ k: 'spesen', lbl: 'Spesen pro Tag (Referenz)', unit: cur, now: eff('spesen'), res: convCur(g(d.spesen, 'pro_tag'), g(d.spesen, 'waehrung'), cur), note: g(d.spesen, 'bemerkung'), def: false });
+  if (cur !== 'CHF') rows.push({ k: 'fx', lbl: `Wechselkurs 1 ${cur} in CHF`, unit: 'CHF', now: num(DATA.rates.fx[cur]), res: num(g(d.wechselkurs, 'chf_pro_einheit')), note: 'Übernahme ändert den Firmensatz bis zum nächsten automatischen Kurs-Update', def: false, dec: 4 });
   $('resTable').tBodies[0].innerHTML = rows.map(x => {
     const ok = isFinite(x.res);
     const chk = ok && (prev[x.k] !== undefined ? prev[x.k] : x.def);
     const diff = ok && x.now > 0 ? (x.res - x.now) / x.now * 100 : NaN;
     const f = v => x.dec ? (isFinite(v) ? v.toLocaleString('de-CH', { maximumFractionDigits: x.dec }) : '–') : fmt(v);
-    return `<tr><td><input type="checkbox" data-k="${x.k}" data-v="${ok ? x.res : ''}" ${chk ? 'checked' : ''} ${ok ? '' : 'disabled'}></td>
+    return `<tr><td><input type="checkbox" data-k="${esc(x.k)}" data-v="${ok ? x.res : ''}" ${chk ? 'checked' : ''} ${ok ? '' : 'disabled'}></td>
       <td>${esc(x.lbl)}${x.note ? `<div class="muted">${esc(x.note)}</div>` : ''}</td>
       <td class="num">${f(x.now)} ${esc(x.unit)}</td><td class="num">${ok ? f(x.res) + ' ' + esc(x.unit) : '–'}</td>
       <td class="num ${diff > 0 ? 'pos' : diff < 0 ? 'neg' : ''}">${isFinite(diff) ? (diff > 0 ? '+' : '') + fmt0(Math.round(diff)) + ' %' : ''}</td></tr>`;
@@ -755,8 +1233,11 @@ function applyResearch() {
   const done = []; const cur = LAST.cur;
   document.querySelectorAll('#resTable input[data-k]:checked').forEach(cb => {
     const k = cb.dataset.k, v = num(cb.dataset.v); if (!isFinite(v)) return;
-    if (k === 'flug') { E.flug = String(Math.round(v)); done.push('Flug'); }
-    else if (k === 'fx') { DATA.rates.fx[cur] = Math.round(v * 10000) / 10000; DATA.rates.updatedAt = Date.now(); changed(); renderRates(); done.push('Wechselkurs'); }
+    if (k.startsWith('flug:')) {
+      const von = k.slice(5);
+      E.techs.forEach(x => { const t = techById(x.id); if (t && (!von || t.flughafen === von)) x.flug = String(Math.round(v)); });
+      done.push('Flug ' + (von || ''));
+    } else if (k === 'fx') { DATA.rates.fx[cur] = Math.round(v * 10000) / 10000; DATA.rates.updatedAt = Date.now(); changed(); renderRates(); done.push('Wechselkurs'); }
     else { E.ov[k] = String(Math.round(v * 100) / 100); done.push(LBL[k]); }
   });
   writeForm(); render();
@@ -775,17 +1256,18 @@ async function testApi() {
 
 /* ---------- Drucken ---------- */
 function doPrint() {
-  const r = calc(), R = DATA.rates;
-  const det = [['Einsatz', E.name], ['Techniker', E.techniker], ['Kunde', E.kunde], ['Maschine / Auftrag', E.auftrag],
-    ['Einsatzort', [E.ort, r.p && r.p.name].filter(Boolean).join(', ')], ['Strecke', [E.von, E.nach].filter(Boolean).join(' – ') + (E.klasse ? ` (${E.klasse})` : '')],
-    ['Reise', `${fmtDate(E.ab)} – ${fmtDate(E.rueck)}`], ['Bemerkung', E.bemerkung]].filter(x => x[1]);
+  const r = calc(), R = DATA.rates, k = r.k;
+  const det = [['Einsatz', E.name], ['Aufgabe', r.a && r.a.name], ['Kunde', k && k.name], ['Adresse', k && k.adresse && k.adresse.replace(/\s*\n\s*/g, ', ')],
+    ['Flughafen', k && k.flughafen ? `${k.flughafen}${k.flughafenName ? ' (' + k.flughafenName + ')' : ''}${isFinite(num(k.distanzKm)) ? ' · ' + fmt0(num(k.distanzKm)) + ' km zum Kunden' : ''}` : ''],
+    ['Techniker', r.valid.map(x => `${x.t.name} (${x.t.flughafen || '?'})`).join(', ')], ['Maschine / Auftrag', E.auftrag],
+    ['Reise', `${fmtDate(E.ab)} – ${fmtDate(E.rueck)}${r.auto ? ` (${r.auto.total} Tage)` : ''}`], ['Flugklasse', E.klasse], ['Transport vor Ort', r.carWhy], ['Bemerkung', E.bemerkung]].filter(x => x[1]);
   $('printArea').innerHTML = `<h1>Gallus Travel Calculator – Kostenübersicht</h1>
-    <table>${det.map(([k, v]) => `<tr><td style="width:170px"><b>${esc(k)}</b></td><td>${esc(v)}</td></tr>`).join('')}</table>
+    <table>${det.map(([a, v]) => `<tr><td style="width:170px"><b>${esc(a)}</b></td><td>${esc(v)}</td></tr>`).join('')}</table>
     <table><thead><tr><th>Posten</th><th class="num">Menge</th><th class="num">Satz</th><th class="num">Betrag CHF</th></tr></thead><tbody>
-    ${r.lines.map(l => `<tr><td>${esc(l.name)}${l.note ? ` <small>(${esc(l.note)})</small>` : ''}</td><td class="num">${fmt0(l.qty)} ${esc(l.unit)}</td><td class="num">${fmt(l.satz)} ${esc(l.cur)}</td><td class="num">${fmt(l.chf)}</td></tr>`).join('')}
+    ${linesHtml(r.lines)}
     <tr class="total"><td colspan="3"><b>Total</b></td><td class="num"><b>CHF ${fmt(r.total)}</b></td></tr></tbody></table>
     ${r.msgs.length ? `<p><b>Hinweise:</b><br>${r.msgs.map(m => esc(m[1])).join('<br>')}</p>` : ''}
-    <p style="font-size:9pt;color:#555">${r.cur !== 'CHF' && r.fx > 0 ? `Umrechnung 1 ${esc(r.cur)} = ${fmt0(r.fx)} CHF · ` : ''}Firmensätze Stand ${fmtDate(R.stand)}${R.verantwortlich ? ' · ' + esc(R.verantwortlich) : ''} · erstellt ${new Date().toLocaleString('de-CH')} · v${APP_VERSION}</p>`;
+    <p style="font-size:9pt;color:#555">${r.cur !== 'CHF' && r.fx > 0 ? `Umrechnung 1 ${esc(r.cur)} = ${fmt0(r.fx)} CHF${fxStandTxt() ? ' (' + esc(fxStandTxt()) + ')' : ''} · ` : ''}Firmensätze Stand ${fmtDate(R.stand)}${R.verantwortlich ? ' · ' + esc(R.verantwortlich) : ''} · erstellt ${new Date().toLocaleString('de-CH')} · v${APP_VERSION}</p>`;
   window.print();
 }
 
@@ -814,8 +1296,9 @@ function checkVersion() {
 }
 
 /* ---------- Events ---------- */
-$('calcForm').addEventListener('input', render);
-$('calcForm').addEventListener('change', render);
+$('calcForm').addEventListener('input', onForm);
+$('calcForm').addEventListener('change', onForm);
+$('techPick').addEventListener('click', ev => { if (ev.target.closest('[data-tclean]')) { E.techs = E.techs.filter(x => techById(x.id)); renderTechPick(); render(); } });
 $('btnSave').addEventListener('click', saveEinsatz);
 $('btnNew').addEventListener('click', newEinsatz);
 $('btnPrint').addEventListener('click', doPrint);
@@ -827,17 +1310,23 @@ $('listTable').addEventListener('click', ev => {
   const b = ev.target.closest('button'); if (!b) return;
   if (b.dataset.open) openEinsatz(b.dataset.open); else if (b.dataset.dup) dupEinsatz(b.dataset.dup); else if (b.dataset.del) delEinsatz(b.dataset.del);
 });
+const stammTab = document.querySelector('section[data-tab="stamm"]');
+stammTab.addEventListener('change', onStammChange);
+stammTab.addEventListener('click', onStammClick);
+stammTab.addEventListener('toggle', ev => { const d = ev.target; if (d.matches && d.matches('details.kd')) { if (d.open) OPEN_K.add(d.dataset.kid); else OPEN_K.delete(d.dataset.kid); } }, true);
+$('kSearch').addEventListener('input', renderKunden);
 const ratesTab = document.querySelector('section[data-tab="rates"]');
 ratesTab.addEventListener('change', onRatesChange);
 ratesTab.addEventListener('click', onRatesClick);
 $('btnExport').addEventListener('click', exportRates);
 $('btnImport').addEventListener('click', () => $('fileImport').click());
 $('fileImport').addEventListener('change', e => { const f = e.target.files[0]; if (f) importRates(f); e.target.value = ''; });
-$('btnResetRates').addEventListener('click', () => { if (!confirm('Alle Firmensätze durch die Standardsätze ersetzen?')) return; DATA.rates = defaultRates(); renderRates(); ratesChanged(); toast('Standardsätze geladen'); });
+$('btnResetRates').addEventListener('click', () => { if (!confirm('Alle Firmensätze durch die Standardsätze ersetzen?')) return; DATA.rates = defaultRates(); renderRates(); renderStamm(); ratesChanged(); toast('Standardsätze geladen'); });
 document.querySelector('section[data-tab="settings"]').addEventListener('change', onCfgChange);
 $('btnSync').addEventListener('click', () => syncNow(true));
 $('syncBtn').addEventListener('click', () => syncNow(true));
 $('btnTestApi').addEventListener('click', testApi);
+$('btnFx').addEventListener('click', () => updateFx(true));
 $('btnWipe').addEventListener('click', () => { if (!confirm('Alle lokalen Daten, den Entwurf und die Einstellungen (inkl. Token und API-Key) in diesem Browser löschen?')) return; Object.values(LS).forEach(k => localStorage.removeItem(k)); location.reload(); });
 $('nav').addEventListener('click', ev => { const b = ev.target.closest('button'); if (b) showTab(b.dataset.tab); });
 $('ver').addEventListener('click', () => { $('vhList').innerHTML = vhHtml(); $('vhDialog').showModal(); });
@@ -847,8 +1336,11 @@ $('vhClose').addEventListener('click', () => $('vhDialog').close());
 $('ver').textContent = 'v' + APP_VERSION;
 $('vhInfo').innerHTML = vhHtml();
 checkVersion();
-writeForm(); renderRates(); renderList(); renderSettings(); render();
-if (ghReady()) syncNow(false); else setSync('off', 'Nur lokal');
+writeForm(); renderRates(); renderStamm(); renderList(); renderSettings(); render();
+(async () => {
+  if (ghReady()) await syncNow(false); else setSync('off', 'Nur lokal');
+  await updateFx(false);
+})();
 
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
   const hadCtrl = !!navigator.serviceWorker.controller; let reloaded = false;
