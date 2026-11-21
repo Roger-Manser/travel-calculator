@@ -111,8 +111,10 @@
    "name": "Johannes StraussZRH",
    "flughafen": "",
    "gepaeck": true,
-   "arten": [],
-   "updatedAt": 1795257659628
+   "arten": [
+    "Installationstechniker"
+   ],
+   "updatedAt": 1795257669599
   }
  ],
  "kunden": [
@@ -146,5 +148,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795257659628
+ "updatedAt": 1795257669599
 }
