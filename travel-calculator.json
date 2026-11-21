@@ -166,8 +166,15 @@
    "id": "mwqjbu8dl5opd",
    "name": "Wartung",
    "dauer": "",
+   "art": "Installationstechniker",
+   "updatedAt": 1795273258580
+  },
+  {
+   "id": "mwqjcgh9pc2au",
+   "name": "Neue Aufgabe",
+   "dauer": "",
    "art": "",
-   "updatedAt": 1795273254662
+   "updatedAt": 1795273259373
   }
  ],
  "techniker": [
@@ -257,5 +264,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795273254662
+ "updatedAt": 1795273259373
 }
