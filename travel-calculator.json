@@ -119,7 +119,436 @@
   "ueZuschlag": 45,
   "ofRundung": 50
  },
- "einsaetze": [],
+ "einsaetze": [
+  {
+   "id": "mwqjdcdr2qvja",
+   "name": "Installation Neumaschine – Nordvalls Etikett AB – 23.11.2026",
+   "gep": {},
+   "visa": {
+    "österreich": {
+     "nationalitaet": "Österreich",
+     "benoetigt": "nein",
+     "art": "Kein Visum und keine ETIAS-Genehmigung nötig (EU-Bürger). Arbeitgeber meldet die Entsendung bei Arbetsmiljöverket.",
+     "kosten_chf": 0,
+     "vorlauf_tage": 0,
+     "hinweis": "EU/EWR-Bürger brauchen für Schweden keine Arbeitserlaubnis. Der Arbeitgeber muss die Entsendung online bei der Arbeitsumweltbehörde melden, spätestens bei Arbeitsbeginn, und eine Kontaktperson in Schweden benennen (Kunde: Bestätigung verlangen). Beim Steueramt ist ggf. eine Registrierung nötig. Für die Sozialversicherung ist eine A1-Bescheinigung empfehlenswert. Gültigen Pass bzw. Ausweis mitführen."
+    },
+    "schweiz": {
+     "nationalitaet": "Schweiz",
+     "benoetigt": "nein",
+     "art": "Kein Visum nötig (Schengen-Raum). Entsendemeldung bei Arbetsmiljöverket erforderlich.",
+     "kosten_chf": 0,
+     "vorlauf_tage": 0,
+     "hinweis": "Schweizer Staatsangehörige brauchen für Einsätze in Schweden keine Arbeitserlaubnis, eine Aufenthaltskarte ist erst bei einem Aufenthalt über 90 Tage nötig. Der Arbeitgeber muss die Entsendung dennoch vor Arbeitsbeginn melden (Quelle nennt dies für die Schweiz nicht ausdrücklich, daher beim Arbeitsmiljöverket prüfen). Für die Sozialversicherung ist eine A1-Bescheinigung bzw. die Schweizer Entsendebescheinigung zu klären. Gültigen Pass bzw. Ausweis mitführen."
+    }
+   },
+   "aufgabeId": "a-inst",
+   "kundeId": "mwq9xjw2ztyya",
+   "techs": [
+    {
+     "id": "mwqa1sita14sv",
+     "flug": "",
+     "role": "inst",
+     "flugInfo": {
+      "hinflug": {
+       "datum": "2026-11-23",
+       "airline": "Austrian Airlines",
+       "flugnummern": "OS 991",
+       "von": "VIE",
+       "ab": "07:20",
+       "nach": "CPH",
+       "an": "09:05",
+       "umsteigeort": "",
+       "dauer_h": 1.75
+      },
+      "rueckflug": {
+       "datum": "2026-12-04",
+       "airline": "Austrian Airlines",
+       "flugnummern": "OS 996",
+       "von": "CPH",
+       "ab": "17:35",
+       "nach": "VIE",
+       "an": "19:20",
+       "umsteigeort": "",
+       "dauer_h": 1.75
+      },
+      "flugdauer_h": 1.75,
+      "umstiege": 0,
+      "preise": {
+       "eco": 279
+      },
+      "gepaeck": {
+       "eco": 180,
+       "bus": 0
+      },
+      "quelle": "https://www.austrian.com/lhg/at/de/o-d/cy-cy/wien-kopenhagen",
+      "at": 1795263909092
+     },
+     "flugManuell": false,
+     "flugSrc": "online"
+    },
+    {
+     "id": "mwqbu6xr7rrcr",
+     "flug": "",
+     "role": "app",
+     "flugInfo": {
+      "hinflug": {
+       "datum": "2026-12-01",
+       "airline": "SWISS",
+       "flugnummern": "LX 1266",
+       "von": "ZRH",
+       "ab": "07:10",
+       "nach": "CPH",
+       "an": "09:00",
+       "umsteigeort": "",
+       "dauer_h": 1.83
+      },
+      "rueckflug": {
+       "datum": "2026-12-09",
+       "airline": "SWISS",
+       "flugnummern": null,
+       "von": "CPH",
+       "ab": "09:50",
+       "nach": "ZRH",
+       "an": "11:45",
+       "umsteigeort": "",
+       "dauer_h": 1.92
+      },
+      "flugdauer_h": 1.83,
+      "umstiege": 0,
+      "preise": {
+       "eco": 243
+      },
+      "gepaeck": {
+       "eco": 0,
+       "pe": 0,
+       "bus": 0
+      },
+      "quelle": "https://www.swiss.com/lhg/dk/en/o-d/cy-cy/zurich-copenhagen",
+      "at": 1795263909092
+     },
+     "flugManuell": false,
+     "flugSrc": "online"
+    }
+   ],
+   "profileId": "mwqc8e4oh4bk8",
+   "auftrag": "LM440Test",
+   "bemerkung": "",
+   "maschId": "m-konv",
+   "preis": "ek",
+   "ab": "2026-11-23",
+   "rueck": "2026-12-09",
+   "ueInst": "",
+   "ueTrain": "",
+   "instTage": "8",
+   "training": true,
+   "handTage": "2",
+   "trainTage": "5",
+   "klasse": "Economy",
+   "carMode": "ja",
+   "regel": "mit",
+   "man": {
+    "hotel": null,
+    "car": null,
+    "spesen": null
+   },
+   "ov": {
+    "hotel": "",
+    "car": "",
+    "spesen": "",
+    "nk": "",
+    "taxi": ""
+   },
+   "nkPausch": "",
+   "res": {
+    "at": 1795263909089,
+    "key": "{\"k\":\"mwq9xjw2ztyya\",\"ab\":\"2026-11-23\",\"i\":\"8\",\"tr\":true,\"h\":\"2\",\"d\":\"5\",\"t\":[\"mwqa1sita14sv:inst\",\"mwqbu6xr7rrcr:app\"]}",
+    "auto": true,
+    "model": "claude-sonnet-5-5",
+    "searches": 5,
+    "cur": "CHF",
+    "trip": "VIE/ZRH–CPH · 23.11.2026–09.12.2026",
+    "data": {
+     "fluege": [
+      {
+       "techniker": "Johannes Strauss",
+       "von": "VIE",
+       "nach": "CPH",
+       "flugdauer_h": 1.75,
+       "umstiege": 0,
+       "preise_chf": {
+        "economy": 279,
+        "premium_economy": null,
+        "business": null
+       },
+       "zusatzgepaeck_chf": {
+        "economy": 180,
+        "premium_economy": null,
+        "business": 0
+       },
+       "hinflug": {
+        "datum": "2026-11-23",
+        "airline": "Austrian Airlines",
+        "flugnummern": "OS 991",
+        "von": "VIE",
+        "ab": "07:20",
+        "nach": "CPH",
+        "an": "09:05",
+        "umsteigeort": "",
+        "dauer_h": 1.75
+       },
+       "rueckflug": {
+        "datum": "2026-12-04",
+        "airline": "Austrian Airlines",
+        "flugnummern": "OS 996",
+        "von": "CPH",
+        "ab": "17:35",
+        "nach": "VIE",
+        "an": "19:20",
+        "umsteigeort": "",
+        "dauer_h": 1.75
+       },
+       "quelle": "https://www.austrian.com/lhg/at/de/o-d/cy-cy/wien-kopenhagen",
+       "bemerkung": "Economy: Der Preis stammt aus der Lufthansa-Gruppen-Preisübersicht (ab 303 EUR für den 23.11., Aufenthalt 14 Tage, zu 0,9213 umgerechnet). Das ist ein 'ab'-Preis, nicht für exakt den Rückflug am 04.12. Premium Economy gibt es auf dieser Europastrecke bei Austrian nicht. Business-Preis nicht gefunden. Die Flugzeiten stammen aus dem Austrian-Flugplan, der Verkehrstag der Flüge (23.11. bzw. 04.12.) ist nicht bestätigt. Zusatzgepäck 30 kg: Laut Austrian-Tabelle kostet ein zusätzliches Standardstück in Europa 75–90 CHF pro Strecke. Angesetzt sind 2 x 90 CHF als Untergrenze, ein Übergewichtszuschlag (>23 kg) ist nicht sicher eingerechnet. In Business sind laut Drittquellen 2 Gepäckstücke bis 32 kg inklusive. Ab Economy Classic ist 1 Stück à 23 kg inklusive, im Tarif Light keines."
+      },
+      {
+       "techniker": "Andrej Cica",
+       "von": "ZRH",
+       "nach": "CPH",
+       "flugdauer_h": 1.83,
+       "umstiege": 0,
+       "preise_chf": {
+        "economy": 243,
+        "premium_economy": null,
+        "business": null
+       },
+       "zusatzgepaeck_chf": {
+        "economy": 0,
+        "premium_economy": 0,
+        "business": 0
+       },
+       "hinflug": {
+        "datum": "2026-12-01",
+        "airline": "SWISS",
+        "flugnummern": "LX 1266",
+        "von": "ZRH",
+        "ab": "07:10",
+        "nach": "CPH",
+        "an": "09:00",
+        "umsteigeort": "",
+        "dauer_h": 1.83
+       },
+       "rueckflug": {
+        "datum": "2026-12-09",
+        "airline": "SWISS",
+        "flugnummern": null,
+        "von": "CPH",
+        "ab": "09:50",
+        "nach": "ZRH",
+        "an": "11:45",
+        "umsteigeort": "",
+        "dauer_h": 1.92
+       },
+       "quelle": "https://www.swiss.com/lhg/dk/en/o-d/cy-cy/zurich-copenhagen",
+       "bemerkung": "Economy: Der Preis ist der Dezember-Bestpreis ab 243 CHF aus der Swiss/Austrian-Preisübersicht, nicht für exakt diese Daten. Zum Vergleich: KLM nennt ab 239 CHF für 01.12.–15.12. Premium Economy und Business nicht gefunden. Die Flugnummer des Rückflugs ist in der Quelle nicht eindeutig, die Zeiten stammen aus dem SWISS-Flugplan. Die Betreiberairline von LX 1266 ist in der Quelle unklar. Verkehrstage sind nicht bestätigt. Es gibt auch frühere Rückflüge (CPH 06:45), die aber vor 07:00 starten. Kein Zusatzgepäck, daher 0."
+      }
+     ],
+     "wechselkurs": {
+      "chf_pro_einheit": 0.9213,
+      "waehrung": "CHF"
+     },
+     "visa": [
+      {
+       "nationalitaet": "Österreich",
+       "benoetigt": "nein",
+       "art": "Kein Visum und keine ETIAS-Genehmigung nötig (EU-Bürger). Arbeitgeber meldet die Entsendung bei Arbetsmiljöverket.",
+       "kosten_chf": 0,
+       "vorlauf_tage": 0,
+       "hinweis": "EU/EWR-Bürger brauchen für Schweden keine Arbeitserlaubnis. Der Arbeitgeber muss die Entsendung online bei der Arbeitsumweltbehörde melden, spätestens bei Arbeitsbeginn, und eine Kontaktperson in Schweden benennen (Kunde: Bestätigung verlangen). Beim Steueramt ist ggf. eine Registrierung nötig. Für die Sozialversicherung ist eine A1-Bescheinigung empfehlenswert. Gültigen Pass bzw. Ausweis mitführen."
+      },
+      {
+       "nationalitaet": "Schweiz",
+       "benoetigt": "nein",
+       "art": "Kein Visum nötig (Schengen-Raum). Entsendemeldung bei Arbetsmiljöverket erforderlich.",
+       "kosten_chf": 0,
+       "vorlauf_tage": 0,
+       "hinweis": "Schweizer Staatsangehörige brauchen für Einsätze in Schweden keine Arbeitserlaubnis, eine Aufenthaltskarte ist erst bei einem Aufenthalt über 90 Tage nötig. Der Arbeitgeber muss die Entsendung dennoch vor Arbeitsbeginn melden (Quelle nennt dies für die Schweiz nicht ausdrücklich, daher beim Arbeitsmiljöverket prüfen). Für die Sozialversicherung ist eine A1-Bescheinigung bzw. die Schweizer Entsendebescheinigung zu klären. Gültigen Pass bzw. Ausweis mitführen."
+      }
+     ],
+     "zusammenfassung": "Für beide Techniker (Österreich, Schweiz) ist für Schweden kein Visum und keine elektronische Einreisegenehmigung nötig. Vor Arbeitsbeginn muss der Arbeitgeber die Entsendung bei Arbetsmiljöverket melden. Die Economy-Richtpreise betragen rund CHF 279 ab VIE und rund CHF 243 ab ZRH (jeweils 'ab'-Preise, nicht für die exakten Daten). Das Zusatzgepäck von Johannes Strauss ist mit etwa CHF 180 (Economy) geschätzt. Premium Economy und Business konnten nicht belegt werden.",
+     "quellen": [
+      {
+       "titel": "Austrian Airlines – Flug Wien–Kopenhagen (Flugplan)",
+       "url": "https://www.austrian.com/lhg/at/de/o-d/cy-cy/wien-kopenhagen"
+      },
+      {
+       "titel": "Lufthansa – Flug Wien–Kopenhagen (Preise 23.11.)",
+       "url": "https://www.lufthansa.com/lhg/at/en/o-d/cy-cy/vienna-copenhagen"
+      },
+      {
+       "titel": "SWISS – Flug Zürich–Kopenhagen (Flugplan)",
+       "url": "https://www.swiss.com/lhg/dk/en/o-d/cy-cy/zurich-copenhagen"
+      },
+      {
+       "titel": "Austrian Airlines – Austrian-Preisübersicht Zürich–Kopenhagen",
+       "url": "https://www.austrian.com/lhg/ch/de/o-d/cy-cy/zuerich-kopenhagen"
+      },
+      {
+       "titel": "KLM – Zürich–Kopenhagen Tarife",
+       "url": "https://www.klm.ch/de-ch/fluege-von-zuerich-nach-kopenhagen"
+      },
+      {
+       "titel": "Austrian Airlines – Übergepäck",
+       "url": "https://www.austrian.com/at/de/uebergepaeck"
+      },
+      {
+       "titel": "Newland Chase – Sweden Immigration",
+       "url": "https://newlandchase.com/locations/europe/sweden/"
+      },
+      {
+       "titel": "Arbetsmiljöverket – Employer's obligations (Posting)",
+       "url": "https://www.av.se/en/work-environment-work-and-inspections/foreign-labour-in-sweden/Posting-foreign-labour-in-sweden/employers-obligations/"
+      },
+      {
+       "titel": "Workflex – Business trip to Sweden",
+       "url": "https://www.workflex.com/en-uk/country-guides/sweden"
+      },
+      {
+       "titel": "ZKB – EUR/CHF Kurs (20.11.2026)",
+       "url": "https://zkb-finance.mdgms.com/home/currencies/index.html?FI_ID_NOTATION__CHART_TABBEDCHARTS_1=8362186&FI_TIMESPAN__CHART_TABBEDCHARTS_1=1Y"
+      }
+     ]
+    },
+    "sources": [
+     {
+      "url": "https://www.austrian.com/lhg/at/de/o-d/cy-cy/wien-kopenhagen",
+      "title": "Flug Wien - Kopenhagen (VIE"
+     },
+     {
+      "url": "https://www.lufthansa.com/lhg/at/en/o-d/cy-cy/vienna-copenhagen",
+      "title": "Flight from Vienna to Copenhagen (VIE-CPH)"
+     },
+     {
+      "url": "https://www.swiss.com/lhg/dk/en/o-d/cy-cy/zurich-copenhagen",
+      "title": "SWISS – Flug Zürich–Kopenhagen (Flugplan)"
+     },
+     {
+      "url": "https://www.austrian.com/lhg/ch/de/o-d/cy-cy/zuerich-kopenhagen",
+      "title": "Austrian Airlines – Austrian-Preisübersicht Zürich–Kopenhagen"
+     },
+     {
+      "url": "https://www.klm.ch/de-ch/fluege-von-zuerich-nach-kopenhagen",
+      "title": "KLM – Zürich–Kopenhagen Tarife"
+     },
+     {
+      "url": "https://www.austrian.com/at/de/uebergepaeck",
+      "title": "Austrian Airlines – Übergepäck"
+     },
+     {
+      "url": "https://newlandchase.com/locations/europe/sweden/",
+      "title": "Newland Chase – Sweden Immigration"
+     },
+     {
+      "url": "https://www.av.se/en/work-environment-work-and-inspections/foreign-labour-in-sweden/Posting-foreign-labour-in-sweden/employers-obligations/",
+      "title": "Arbetsmiljöverket – Employer's obligations (Posting)"
+     },
+     {
+      "url": "https://www.workflex.com/en-uk/country-guides/sweden",
+      "title": "Workflex – Business trip to Sweden"
+     },
+     {
+      "url": "https://zkb-finance.mdgms.com/home/currencies/index.html?FI_ID_NOTATION__CHART_TABBEDCHARTS_1=8362186&FI_TIMESPAN__CHART_TABBEDCHARTS_1=1Y",
+      "title": "ZKB – EUR/CHF Kurs (20.11.2026)"
+     }
+    ]
+   },
+   "rueckAuto": true,
+   "techniker": "",
+   "kunde": "",
+   "von": "ZRH",
+   "nach": "",
+   "ort": "",
+   "flug": "",
+   "car": true,
+   "flugLog": [
+    {
+     "at": 1795263909092,
+     "techId": "mwqa1sita14sv",
+     "tech": "Johannes Strauss",
+     "klasse": "Economy",
+     "hinflug": {
+      "datum": "2026-11-23",
+      "airline": "Austrian Airlines",
+      "flugnummern": "OS 991",
+      "von": "VIE",
+      "ab": "07:20",
+      "nach": "CPH",
+      "an": "09:05",
+      "umsteigeort": "",
+      "dauer_h": 1.75
+     },
+     "rueckflug": {
+      "datum": "2026-12-04",
+      "airline": "Austrian Airlines",
+      "flugnummern": "OS 996",
+      "von": "CPH",
+      "ab": "17:35",
+      "nach": "VIE",
+      "an": "19:20",
+      "umsteigeort": "",
+      "dauer_h": 1.75
+     },
+     "preis": 279,
+     "gepaeck": 180,
+     "preise": {
+      "eco": 279
+     },
+     "quelle": "https://www.austrian.com/lhg/at/de/o-d/cy-cy/wien-kopenhagen",
+     "auto": true
+    },
+    {
+     "at": 1795263909092,
+     "techId": "mwqbu6xr7rrcr",
+     "tech": "Andrej Cica",
+     "klasse": "Economy",
+     "hinflug": {
+      "datum": "2026-12-01",
+      "airline": "SWISS",
+      "flugnummern": "LX 1266",
+      "von": "ZRH",
+      "ab": "07:10",
+      "nach": "CPH",
+      "an": "09:00",
+      "umsteigeort": "",
+      "dauer_h": 1.83
+     },
+     "rueckflug": {
+      "datum": "2026-12-09",
+      "airline": "SWISS",
+      "flugnummern": null,
+      "von": "CPH",
+      "ab": "09:50",
+      "nach": "ZRH",
+      "an": "11:45",
+      "umsteigeort": "",
+      "dauer_h": 1.92
+     },
+     "preis": 243,
+     "gepaeck": null,
+     "preise": {
+      "eco": 243
+     },
+     "quelle": "https://www.swiss.com/lhg/dk/en/o-d/cy-cy/zurich-copenhagen",
+     "auto": true
+    }
+   ],
+   "ovSrc": {},
+   "createdAt": 1795273300719,
+   "updatedAt": 1795273300719,
+   "total": 38081.29,
+   "ziel": "Schweden"
+  }
+ ],
  "aufgaben": [
   {
    "id": "a-erw",
@@ -264,5 +693,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795273267470
+ "updatedAt": 1795273300720
 }
