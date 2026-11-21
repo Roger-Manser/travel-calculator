@@ -105,7 +105,16 @@
    "updatedAt": 0
   }
  ],
- "techniker": [],
+ "techniker": [
+  {
+   "id": "mwqa1sita14sv",
+   "name": "Neuer Techniker",
+   "flughafen": "ZRH",
+   "gepaeck": false,
+   "arten": [],
+   "updatedAt": 1795257645221
+  }
+ ],
  "kunden": [
   {
    "id": "mwq9xjw2ztyya",
@@ -137,5 +146,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795257590075
+ "updatedAt": 1795257645221
 }
