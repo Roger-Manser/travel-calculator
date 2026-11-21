@@ -110,17 +110,17 @@
   {
    "id": "mwq9xjw2ztyya",
    "name": "Nordvalls Etikett AB",
-   "adresse": "\n275 21 Sjöbo\nSweden",
+   "adresse": "Planteringsgatan 46\n\nSweden",
    "land": "",
-   "ort": "",
+   "ort": "275 39 Sjöbo",
    "profileId": "",
    "flughafen": "",
    "flughafenName": "",
    "distanzKm": "",
    "fahrzeitMin": "",
-   "updatedAt": 1795257521052
+   "updatedAt": 1795257554525
   }
  ],
  "deleted": {},
- "updatedAt": 1795257521052
+ "updatedAt": 1795257554525
 }
