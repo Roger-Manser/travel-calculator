@@ -110,7 +110,7 @@
   {
    "id": "mwq9xjw2ztyya",
    "name": "Nordvalls Etikett AB",
-   "adresse": "\nP.O. Box 14\n275 21 Sjöbo\nSweden",
+   "adresse": "\n275 21 Sjöbo\nSweden",
    "land": "",
    "ort": "",
    "profileId": "",
@@ -118,9 +118,9 @@
    "flughafenName": "",
    "distanzKm": "",
    "fahrzeitMin": "",
-   "updatedAt": 1795257509591
+   "updatedAt": 1795257521052
   }
  ],
  "deleted": {},
- "updatedAt": 1795257509591
+ "updatedAt": 1795257521052
 }
