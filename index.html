@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v3.1 – Richtpreis (Kundenansicht) Installation inkl. Handover und Schulung, CHF/EUR, DE/EN; Überstunden -->
+<!-- Gallus Travel Calculator v3.5 – Richtpreis: Reisezeit auf ganze Stunden aufgerundet -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#0d1c16">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="3.1">
+<meta name="app-version" content="3.5">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
 :root{--bg:#0d1c16;--card:#142a20;--card2:#1a3428;--line:#2a4b3b;--ink:#e6f0ea;--muted:#93ad9f;--brand:#2f8a62;--brand-2:#5fc79c;--red:#e46a6a;--amber:#e2b252;--input:#0f241b}
@@ -260,6 +260,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
       <label>Max. bezahlte Reisestunden pro Kalendertag<input data-g="reiseStdTag" inputmode="decimal"></label>
       <label>Reisezeit verrechnet zu (% des Stundensatzes)<input data-g="reiseProz" inputmode="decimal"></label>
       <label>Überstundenzuschlag (%)<input data-g="ueZuschlag" inputmode="decimal"></label>
+      <label>Richtpreis: km und Flugpauschale aufrunden auf (0 = nicht runden)<input data-g="ofRundung" inputmode="decimal"></label>
     </div>
     <div style="overflow-x:auto;margin-top:12px"><table class="tbl-edit" id="stdTable"></table></div>
     <div class="row" style="margin-top:10px"><input id="maschNew" placeholder="Neuer Maschinentyp" style="max-width:240px"><button class="btn sec" id="btnAddMasch">+ Maschinentyp</button></div>
@@ -359,8 +360,24 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '3.1';
+const APP_VERSION = '3.5';
 const VERSION_HISTORY = [
+  { v: '3.5', d: '2026-11-21', items: [
+    'Richtpreis: Reisezeit auf ganze Stunden aufgerundet, Betrag = Stunden × Satz'
+  ] },
+  { v: '3.4', d: '2026-11-21', items: [
+    'Richtpreis: Fahrzeugkosten – Kilometer auf die nächsten 50 km aufgerundet, Betrag = km × Satz',
+    'Richtpreis: Flugkosten inkl. Transfer (Pauschale) auf 50 CHF/EUR aufgerundet',
+    'Alle übrigen Positionen exakt Menge × Preis pro Einheit; Endpreis = Summe'
+  ] },
+  { v: '3.3', d: '2026-11-21', items: [
+    'Richtpreis (Kundenansicht): jede Position wird auf 50 CHF bzw. EUR aufgerundet, der Endpreis ist die Summe der gerundeten Positionen',
+    'Keine Rundungsdifferenz mehr in Position 0080'
+  ] },
+  { v: '3.2', d: '2026-11-21', items: [
+    'Richtpreis (Kundenansicht): Endpreis jeder Tabelle auf die nächsten 50 CHF bzw. EUR aufgerundet',
+    'Rundungsschritt als Firmensatz einstellbar (Standard 50)'
+  ] },
   { v: '3.1', d: '2026-11-21', items: [
     'Neue Ausgabe «Richtpreis (Kundenansicht)» im Positionsformat (0010 Reisezeit … 0080 Flugkosten inkl. Transfer) – zusätzlich zur detaillierten Kalkulation',
     'Tabelle 1: Installation inkl. Handover (Installations- und Applikationstechniker zusammengefasst, Handover-Zeiten, -Spesen und -Hotel des Applikationstechnikers inbegriffen)',
@@ -960,7 +977,7 @@ function defaultRates() {
     gepaeck: 150, kmSatz: 0.25, carAbKm: 30, lokalKm: 30,
     gepaeckArt: 'Installationstechniker', gepaeckKg: 30, vorlaufH: 2, vorlaufGepaeckH: 3, kmPrivat: 0,
     maschinen: [{ id: 'm-konv', name: 'Konventionell' }, { id: 'm-dig', name: 'Digital' }],
-    stundensaetze: {}, arbStdTag: 8, reiseStdTag: 8, reiseProz: 100, nkAktiv: false, ecoPlusAbH: 10, ueZuschlag: 45
+    stundensaetze: {}, arbStdTag: 8, reiseStdTag: 8, reiseProz: 100, nkAktiv: false, ecoPlusAbH: 10, ueZuschlag: 45, ofRundung: 50
   };
 }
 function defaultAufgaben() {
@@ -975,7 +992,7 @@ function defaultAufgaben() {
 }
 function ensureRates(r) {
   const D = defaultRates(); r = r || D;
-  ['arten', 'gepaeck', 'kmSatz', 'carAbKm', 'lokalKm', 'classes', 'gepaeckArt', 'gepaeckKg', 'vorlaufH', 'vorlaufGepaeckH', 'kmPrivat', 'maschinen', 'stundensaetze', 'arbStdTag', 'reiseStdTag', 'reiseProz', 'nkAktiv', 'ecoPlusAbH', 'ueZuschlag'].forEach(k => { if (r[k] === undefined) r[k] = clone(D[k]); });
+  ['arten', 'gepaeck', 'kmSatz', 'carAbKm', 'lokalKm', 'classes', 'gepaeckArt', 'gepaeckKg', 'vorlaufH', 'vorlaufGepaeckH', 'kmPrivat', 'maschinen', 'stundensaetze', 'arbStdTag', 'reiseStdTag', 'reiseProz', 'nkAktiv', 'ecoPlusAbH', 'ueZuschlag', 'ofRundung'].forEach(k => { if (r[k] === undefined) r[k] = clone(D[k]); });
   r.fx = r.fx || { CHF: 1 }; r.profiles = r.profiles || [];
   const PH = { ch: [180, 90, 80], de: [130, 65, 60], us: [220, 75, 90] }; // Migration v2.4: Platzhalter aus v1.x entfernen
   r.profiles.forEach(p => { const ph = PH[p.id]; if (ph && !p.apiStand && num(p.hotel) === ph[0] && num(p.car) === ph[1] && num(p.taxi) === ph[2]) { p.hotel = ''; p.car = ''; p.taxi = ''; } });
@@ -1463,10 +1480,15 @@ function offerData(r, lang, cur) {
     tb.rows = OF_POS.filter(([k]) => k !== 'other' || agg.other).map(([k, pos, art, lbl, unit]) => {
       const a = agg[k] || { qty: 0, amt: 0 };
       let qty = k === 'flight' || k === 'other' ? (a.amt > 0 ? 1 : 0) : Math.round(a.qty * 100) / 100;
-      const amt = conv(a.amt);
-      const ppu = qty > 0 ? amt / qty : conv(defPrice[k] || 0);
+      const exact = conv(a.amt);
+      let ppu = qty > 0 ? exact / qty : conv(defPrice[k] || 0), amt = exact;
+      const step = num(R.ofRundung) > 0 ? num(R.ofRundung) : 0, up = v => Math.ceil(Math.round(v * 100) / 100 / step - 1e-9) * step;
+      if (step && k === 'carkm' && qty > 0) { qty = up(qty); amt = qty * ppu; }            // km auf 50 km aufrunden
+      if (k === 'travel' && qty > 0) { qty = Math.ceil(qty - 1e-9); amt = qty * ppu; }      // Reisezeit auf ganze Stunden
+      if (step && (k === 'flight' || k === 'other') && exact > 0.004) { amt = up(exact); ppu = amt; } // Pauschale auf 50 aufrunden
+      const ppuOut = ppu;
       const label = k === 'ot' ? `${lbl[lang] || lbl.de} (+${fmt0(uz * 100)}%)` : (lbl[lang] || lbl.de);
-      return { pos, art, label, qty, unit, ppu, amt };
+      return { pos, art, label, qty, unit, ppu: ppuOut, amt, exact };
     });
     tb.total = tb.rows.reduce((s, x) => s + (isFinite(x.amt) ? x.amt : 0), 0);
   });
