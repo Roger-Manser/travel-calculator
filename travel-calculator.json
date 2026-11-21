@@ -111,16 +111,31 @@
    "id": "mwq9xjw2ztyya",
    "name": "Nordvalls Etikett AB",
    "adresse": "Planteringsgatan 46\n",
-   "land": "Sweden",
-   "ort": "275 39 Sjöbo",
-   "profileId": "",
-   "flughafen": "",
-   "flughafenName": "",
-   "distanzKm": "",
-   "fahrzeitMin": "",
-   "updatedAt": 1795257576007
+   "land": "Schweden",
+   "ort": "Sjöbo",
+   "profileId": "ch",
+   "flughafen": "CPH",
+   "flughafenName": "Kopenhagen-Kastrup (Copenhagen Airport)",
+   "distanzKm": 95,
+   "fahrzeitMin": 75,
+   "updatedAt": 1795257590075,
+   "waehrung": "SEK",
+   "alternativen": [
+    {
+     "iata": "MMX",
+     "name": "Malmö Sturup Airport",
+     "distanz_km": 45
+    },
+    {
+     "iata": "KID",
+     "name": "Kristianstad Österlen Airport",
+     "distanz_km": 55
+    }
+   ],
+   "bemerkung": "Ort Sjöbo (Skåne län) laut Firmenverzeichnissen. CPH wegen der Direktflüge ab der Schweiz empfohlen, Anreise über die Öresundbrücke (Maut). MMX ist näher, hat aber nur ein begrenztes Streckennetz. Distanzen und Fahrzeiten sind Schätzwerte.",
+   "ausgewertet": 1795257590075
   }
  ],
  "deleted": {},
- "updatedAt": 1795257576007
+ "updatedAt": 1795257590075
 }
