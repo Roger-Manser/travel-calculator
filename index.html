@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v1.7 – Anreise zum Flughafen mit Taxi; Stundensätze nach Maschinentyp und Aufgabe -->
+<!-- Gallus Travel Calculator v2.1 – Konkreter Flug pro Techniker per API (Airline, Flugnummer, Zeiten) mit Flug-Log -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -9,11 +9,12 @@
 <meta name="theme-color" content="#0d1c16">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="1.7">
+<meta name="app-version" content="2.1">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
 :root{--bg:#0d1c16;--card:#142a20;--card2:#1a3428;--line:#2a4b3b;--ink:#e6f0ea;--muted:#93ad9f;--brand:#2f8a62;--brand-2:#5fc79c;--red:#e46a6a;--amber:#e2b252;--input:#0f241b}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{margin:0;font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
 header{position:sticky;top:0;z-index:10;background:#0a1712;border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 h1{font-size:17px;margin:0}
@@ -38,6 +39,7 @@ input,select,textarea{width:100%;padding:7px 9px;border:1px solid var(--line);bo
 textarea{resize:vertical}
 input[type=checkbox]{width:auto;margin:0 6px 0 0;accent-color:var(--brand-2)}
 input[readonly]{opacity:.7}
+.ro{margin-top:4px;padding:7px 9px;border:1px dashed var(--line);border-radius:7px;background:var(--card2);font-size:13px;min-height:35px}
 .chk{display:flex;align-items:center;font-size:13px;color:var(--ink);margin-top:6px}
 .btn{background:var(--brand);color:#fff;border:0;border-radius:8px;padding:8px 14px;font:inherit;cursor:pointer}
 .btn.sec{background:var(--card2);color:var(--ink);border:1px solid var(--line)}
@@ -156,14 +158,16 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
       <div class="muted" id="daysInfo" style="margin-top:8px"></div>
     </div>
     <div class="card"><h2>Sätze für diesen Einsatz</h2>
-      <p class="muted" style="margin-top:0">Leer lassen = Satz aus dem Länderprofil. Beträge in Profilwährung <b id="curLbl"></b>.</p>
-      <div class="grid g4">
-        <label>Hotel pro Nacht<input id="ov_hotel" inputmode="decimal"></label>
-        <label>Mietwagen pro Tag<input id="ov_car" inputmode="decimal"></label>
-        <label>Spesen pro Tag<input id="ov_spesen" inputmode="decimal"></label>
-        <label>Nebenkosten pro Tag<input id="ov_nk" inputmode="decimal"></label>
-        <label>Taxi pro Fahrt<input id="ov_taxi" inputmode="decimal"></label>
-        <label>Nebenkosten pauschal (CHF)<input id="f_nkPausch" inputmode="decimal" placeholder="0"></label>
+      <p class="muted" style="margin-top:0">Stundensatz und Spesen kommen aus den Stammdaten (Firmensätze). Hotel, Mietwagen und Taxi kommen aus der Online-Ermittlung (API) und lassen sich überschreiben; solange nichts ermittelt ist, gilt der Satz aus dem Länderprofil. Beträge in Profilwährung <b id="curLbl"></b>.</p>
+      <div class="grid">
+        <div><label>Stundensatz (Stammdaten)</label><div class="ro" id="stdInfo"></div></div>
+        <div><label>Spesen pro Tag (Länderprofil)</label><div class="ro" id="spesenInfo"></div></div>
+        <div></div>
+        <label>Hotel pro Nacht (API)<input id="ov_hotel" inputmode="decimal"><span class="muted" id="src_hotel"></span></label>
+        <label>Mietwagen pro Tag (API)<input id="ov_car" inputmode="decimal"><span class="muted" id="src_car"></span></label>
+        <label>Taxi pro Fahrt (API)<input id="ov_taxi" inputmode="decimal"><span class="muted" id="src_taxi"></span></label>
+        <label class="nkf">Nebenkosten pro Tag<input id="ov_nk" inputmode="decimal"></label>
+        <label class="nkf">Nebenkosten pauschal (CHF)<input id="f_nkPausch" inputmode="decimal" placeholder="0"></label>
       </div>
     </div>
   </div>
@@ -198,6 +202,10 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
       <div class="src muted" id="resSources"></div>
       <div class="muted" id="resStand" style="margin-top:6px"></div>
     </div>
+    <div id="flugLogBox" hidden style="margin-top:14px">
+      <h2 style="margin-bottom:6px">Flug-Log</h2>
+      <div style="overflow-x:auto"><table id="flugLog"><thead><tr><th>Übernommen</th><th>Techniker</th><th>Hinflug</th><th>Rückflug</th><th class="num">Preis CHF</th><th>Quelle</th></tr></thead><tbody></tbody></table></div>
+    </div>
   </div>
 </section>
 
@@ -230,6 +238,16 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
     </div>
     <button class="btn sec" id="btnAddAuf" style="margin-top:10px">+ Aufgabe</button>
   </div>
+  <div class="card" id="stdCard"><h2>Maschinentypen &amp; Stundensätze</h2>
+    <p class="muted" style="margin-top:0">Ein Stundensatz pro Maschinentyp in CHF – gilt für alle Tätigkeiten (Installation, Umbau, Erweiterung, Troubleshooting, Handover, Training). Die Reisezeit wird in der Kalkulation vollständig gerechnet (Tür bis Kunde, hin und zurück); die max. bezahlten Reisestunden betreffen nur die Auszahlung an den Techniker und dienen als Schätzung, solange die Flugdauer noch nicht ermittelt ist.</p>
+    <div class="grid">
+      <label>Arbeitsstunden pro Tag<input data-g="arbStdTag" inputmode="decimal"></label>
+      <label>Max. bezahlte Reisestunden pro Kalendertag<input data-g="reiseStdTag" inputmode="decimal"></label>
+      <label>Reisezeit verrechnet zu (% des Stundensatzes)<input data-g="reiseProz" inputmode="decimal"></label>
+    </div>
+    <div style="overflow-x:auto;margin-top:12px"><table class="tbl-edit" id="stdTable"></table></div>
+    <div class="row" style="margin-top:10px"><input id="maschNew" placeholder="Neuer Maschinentyp" style="max-width:240px"><button class="btn sec" id="btnAddMasch">+ Maschinentyp</button></div>
+  </div>
   <div class="card"><h2>Technikerarten</h2>
     <table class="tbl-edit" id="artTable"><tbody></tbody></table>
     <div class="row" style="margin-top:10px"><input id="artNew" placeholder="Neue Technikerart" style="max-width:260px"><button class="btn sec" id="btnAddArt">+ Art</button></div>
@@ -255,6 +273,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
       <label>Vorlauf am Flughafen (h)<input data-g="vorlaufH" inputmode="decimal"></label>
       <label>Vorlauf mit Zusatzgepäck (h)<input data-g="vorlaufGepaeckH" inputmode="decimal"></label>
       <label>Privatauto zum Flughafen (CHF/km)<input data-g="kmPrivat" inputmode="decimal"></label>
+      <label class="chk" style="align-self:end;padding-bottom:8px"><input type="checkbox" data-gb="nkAktiv">Nebenkosten rechnen</label>
       <label>Mietwagen Kilometerkosten (CHF/km)<input data-g="kmSatz" inputmode="decimal"></label>
       <label>Mietwagen ab Distanz (km)<input data-g="carAbKm" inputmode="decimal"></label>
       <label>Tägliche Fahrstrecke vor Ort (km)<input data-g="lokalKm" inputmode="decimal"></label>
@@ -273,16 +292,6 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
     <div class="row" style="margin-bottom:8px"><button class="btn sec sm" id="btnFx">Kurse jetzt laden</button><span class="muted" id="fxStatus"></span></div>
     <table class="tbl-edit" id="fxTable"><thead><tr><th>Währung</th><th class="num">CHF</th><th></th></tr></thead><tbody></tbody></table>
     <div class="row" style="margin-top:10px"><input id="fxNewCode" placeholder="Code, z.B. GBP" maxlength="3" style="max-width:150px"><input id="fxNewRate" placeholder="CHF" inputmode="decimal" style="max-width:120px"><button class="btn sec" id="btnAddFx">+ Währung</button></div>
-  </div>
-  <div class="card"><h2>Stundensätze</h2>
-    <p class="muted" style="margin-top:0">CHF pro Stunde je Maschinentyp und Aufgabe. Handover und Training im Einsatz werden mit den Sätzen der Aufgaben «Handover» und «Training» gerechnet.</p>
-    <div class="grid">
-      <label>Arbeitsstunden pro Tag<input data-g="arbStdTag" inputmode="decimal"></label>
-      <label>Reisestunden pro Reisetag<input data-g="reiseStdTag" inputmode="decimal"></label>
-      <label>Reisezeit verrechnet zu (% des Stundensatzes)<input data-g="reiseProz" inputmode="decimal"></label>
-    </div>
-    <div style="overflow-x:auto;margin-top:12px"><table class="tbl-edit" id="stdTable"></table></div>
-    <div class="row" style="margin-top:10px"><input id="maschNew" placeholder="Neuer Maschinentyp" style="max-width:240px"><button class="btn sec" id="btnAddMasch">+ Maschinentyp</button></div>
   </div>
   <div class="card"><h2>Flugklassen</h2>
     <p class="muted" style="margin-top:0">Faktor auf den Economy-Preis.</p>
@@ -331,8 +340,30 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '1.7';
+const APP_VERSION = '2.1';
 const VERSION_HISTORY = [
+  { v: '2.1', d: '2026-11-21', items: [
+    'Online-Ermittlung wählt pro Techniker einen konkreten Hin- und Rückflug (Airline, Flugnummer, Datum, Ab-/Ankunftszeit, Umsteigeort) passend zu seinen Reisedaten',
+    'Gewählter Flug wird beim Techniker im Einsatz gespeichert und im Techniker-Bereich, Reiseplan und Ausdruck angezeigt',
+    'Flug-Log: jede Übernahme wird mit Zeitpunkt, Preis und Quelle protokolliert',
+    'Abfahrt zu Hause wird aus der Abflugzeit des gewählten Flugs berechnet'
+  ] },
+  { v: '2.0', d: '2026-11-21', items: [
+    'Reisezeit in der Kalkulation = ganze Reisezeit Hin- und Rückreise: Anreise zum Flughafen + Vorlauf + Flugdauer + Fahrt Zielflughafen–Kunde',
+    'Feld «Max. bezahlte Reisestunden pro Kalendertag» (Auszahlung an den Techniker) – begrenzt die Kalkulation nicht',
+    'Solange die Flugdauer noch nicht online ermittelt ist, wird die Reisezeit mit diesem Wert geschätzt und markiert'
+  ] },
+  { v: '1.9', d: '2026-11-21', items: [
+    'Stundensatz nur noch pro Maschinentyp – gilt für alle Tätigkeiten (Installation, Umbau, Erweiterung, Troubleshooting, Handover, Training)',
+    'Karte «Maschinentypen & Stundensätze» in die Stammdaten verschoben',
+    'Bisherige Sätze pro Aufgabe werden übernommen (Satz der Installation bzw. erster erfasster Satz)'
+  ] },
+  { v: '1.8', d: '2026-11-21', items: [
+    'Sätze für diesen Einsatz: Stundensatz aus den Stundensätzen (Stammdaten/Firmensätze) und Spesen aus dem Länderprofil – nur Anzeige',
+    'Hotel, Mietwagen und Taxi kommen aus der Online-Ermittlung (API), mit Quelle angezeigt und überschreibbar',
+    'Spesen werden nicht mehr online recherchiert',
+    'Nebenkosten ausgeschaltet (Schalter in Firmensätze → Allgemein, für später)'
+  ] },
   { v: '1.7', d: '2026-11-21', items: [
     'Techniker: Anreise zum Flughafen auch mit Taxi (Preis einfache Fahrt pro Techniker, per API ermittelbar)',
     'Maschinentypen (z.B. Konventionell, Digital) und Stundensätze pro Maschinentyp und Aufgabe in den Firmensätzen',
@@ -437,7 +468,7 @@ function defaultRates() {
     gepaeck: 150, kmSatz: 0.25, carAbKm: 30, lokalKm: 30,
     gepaeckArt: 'Installationstechniker', gepaeckKg: 30, vorlaufH: 2, vorlaufGepaeckH: 3, kmPrivat: 0,
     maschinen: [{ id: 'm-konv', name: 'Konventionell' }, { id: 'm-dig', name: 'Digital' }],
-    stundensaetze: {}, arbStdTag: 8, reiseStdTag: 8, reiseProz: 100
+    stundensaetze: {}, arbStdTag: 8, reiseStdTag: 8, reiseProz: 100, nkAktiv: false
   };
 }
 function defaultAufgaben() {
@@ -452,8 +483,9 @@ function defaultAufgaben() {
 }
 function ensureRates(r) {
   const D = defaultRates(); r = r || D;
-  ['arten', 'gepaeck', 'kmSatz', 'carAbKm', 'lokalKm', 'classes', 'gepaeckArt', 'gepaeckKg', 'vorlaufH', 'vorlaufGepaeckH', 'kmPrivat', 'maschinen', 'stundensaetze', 'arbStdTag', 'reiseStdTag', 'reiseProz'].forEach(k => { if (r[k] === undefined) r[k] = clone(D[k]); });
+  ['arten', 'gepaeck', 'kmSatz', 'carAbKm', 'lokalKm', 'classes', 'gepaeckArt', 'gepaeckKg', 'vorlaufH', 'vorlaufGepaeckH', 'kmPrivat', 'maschinen', 'stundensaetze', 'arbStdTag', 'reiseStdTag', 'reiseProz', 'nkAktiv'].forEach(k => { if (r[k] === undefined) r[k] = clone(D[k]); });
   r.fx = r.fx || { CHF: 1 }; r.profiles = r.profiles || [];
+  (r.maschinen || []).forEach(m => { if (m.satz === undefined) { const o = (r.stundensaetze || {})[m.id] || {}; const v = [o['a-inst']].concat(Object.values(o)).find(x => x !== '' && x !== undefined && x !== null); m.satz = v === undefined ? '' : v; } }); // Migration v1.9
   r.profiles.forEach(p => { if (p.taxi === undefined) { const dp = D.profiles.find(x => x.id === p.id); p.taxi = dp ? dp.taxi : 0; } });
   return r;
 }
@@ -489,7 +521,7 @@ function normE(o) {
   e.man = Object.assign({ hotel: null, car: null, spesen: null }, e.man);
   e.ov = Object.assign({ hotel: '', car: '', spesen: '', nk: '', taxi: '' }, e.ov);
   if (!Array.isArray(e.techs)) e.techs = [];
-  e.gep = e.gep || {}; e.visa = e.visa || {};
+  e.gep = e.gep || {}; e.visa = e.visa || {}; e.flugLog = Array.isArray(e.flugLog) ? e.flugLog : [];
   if (o && o.instTage === undefined && o.ab && o.rueck) { const d = Math.round((isoUTC(o.rueck) - isoUTC(o.ab)) / 864e5); if (d >= 1) e.instTage = String(d - 1); } // Migration ≤ v1.5
   if (!['auto', 'ja', 'nein'].includes(e.carMode)) e.carMode = 'auto';
   return e;
@@ -507,7 +539,7 @@ function changed() { DATA.updatedAt = Date.now(); persist(); scheduleSync(); }
 
 /* ---------- Formular ---------- */
 const FIELDS = ['name', 'aufgabeId', 'kundeId', 'maschId', 'profileId', 'auftrag', 'bemerkung', 'ab', 'instTage', 'handTage', 'trainTage', 'klasse', 'carMode', 'regel', 'nkPausch'];
-const OVS = ['hotel', 'car', 'spesen', 'nk', 'taxi'];
+const OVS = ['hotel', 'car', 'nk', 'taxi'];
 const isMan = k => E.man[k] !== null && E.man[k] !== undefined;
 function opts(list, val, labelFn, empty) {
   let h = empty !== undefined ? `<option value="">${esc(empty)}</option>` : '';
@@ -553,6 +585,7 @@ function renderTechPick() {
       <label class="chk"><input type="checkbox" data-tsel="${esc(t.id)}" ${sel ? 'checked' : ''}><b>${esc(t.name)}</b></label>
       <span class="muted">${esc(arten.join(', ') || 'keine Art')} · ${esc(t.flughafen || 'kein Heimflughafen')}${t.nationalitaet ? ' · ' + esc(t.nationalitaet) : ''}${t.gepaeck ? ` · Zusatzgepäck ${fmt0(num(t.gepaeckKg) || num(DATA.rates.gepaeckKg))} kg` : ''}${req && !fits ? ` · <span class="warnTxt">nicht ${esc(req)}</span>` : ''}</span>
       ${sel && E.training ? `<label class="tflug" style="margin-left:0">Rolle <select data-trole="${esc(t.id)}" style="width:auto"><option value="inst" ${sel.role !== 'app' ? 'selected' : ''}>Installation</option><option value="app" ${sel.role === 'app' ? 'selected' : ''}>Training (Applikation)</option></select></label>` : ''}
+      ${sel && sel.flugInfo ? `<div class="muted" style="flex-basis:100%">✈ ${esc(legTxt(sel.flugInfo.hinflug))} &nbsp;|&nbsp; ${esc(legTxt(sel.flugInfo.rueckflug))}</div>` : ''}
       ${sel ? `<label class="tflug">Flug ${esc(t.flughafen || '?')}–${esc(dest || '?')} Economy retour CHF<input data-tf="${esc(t.id)}" inputmode="decimal" value="${esc(sel.flug)}"></label>` : ''}
     </div>`;
   }).join('') : `<p class="muted">Noch keine Techniker erfasst – unter <b>Stammdaten</b> anlegen.</p>`)
@@ -569,7 +602,7 @@ function onForm(ev) {
     const x = E.techs.find(x => x.id === t.dataset.trole); if (x) x.role = t.value;
     renderTechPick();
   } else if (t.dataset.tf !== undefined) {
-    const x = E.techs.find(x => x.id === t.dataset.tf); if (x) { x.flug = t.value; delete x.flugSrc; }
+    const x = E.techs.find(x => x.id === t.dataset.tf); if (x) { x.flug = t.value; delete x.flugSrc; if (x.flugInfo) x.flugInfo.manuellerPreis = true; }
   } else {
     readForm();
     if (t.id && t.id.startsWith('ov_') && E.ovSrc) delete E.ovSrc[t.id.slice(3)];
@@ -585,7 +618,16 @@ function onForm(ev) {
 
 /* ---------- Kalkulation ---------- */
 function natKey(s) { return String(s || '').trim().toLowerCase(); }
-function resFlight(von) { const d = E.res && E.res.data; const fl = d && Array.isArray(d.fluege) ? d.fluege : []; return fl.find(x => String(x.von || '').toUpperCase() === von) || null; }
+function resFlight(t) {
+  const d = E.res && E.res.data; const fl = d && Array.isArray(d.fluege) ? d.fluege : []; if (!t) return null;
+  const n = String(t.name || '').trim().toLowerCase();
+  return fl.find(x => String(x.techniker || '').trim().toLowerCase() === n) || fl.find(x => String(x.von || '').toUpperCase() === t.flughafen) || null;
+}
+function legTxt(l) {
+  if (!l || typeof l !== 'object') return '';
+  const d = l.datum ? fmtDate(String(l.datum).slice(0, 10)) + ' ' : '';
+  return `${d}${[l.airline, l.flugnummern].filter(Boolean).join(' ')}${l.von || l.ab ? ` · ${l.von || ''} ${l.ab || ''}` : ''} → ${l.nach || ''} ${l.an || ''}${l.umsteigeort ? ` (via ${l.umsteigeort})` : ''}`.replace(/\s+/g, ' ').trim();
+}
 function resVisa(nat) { const d = E.res && E.res.data; const v = d && Array.isArray(d.visa) ? d.visa : []; const n = natKey(nat); return v.find(x => natKey(x.nationalitaet) === n) || v.find(x => n && natKey(x.nationalitaet).includes(n.slice(0, 5))) || null; }
 const isoOf = t => new Date(t).toISOString().slice(0, 10);
 function intOrNaN(v) { if (v === '' || v === undefined || v === null) return NaN; const n = num(v); return Number.isInteger(n) && n >= 0 ? n : NaN; }
@@ -658,13 +700,14 @@ function calc() {
   if (!cls) err(`Unbekannte Flugklasse «${E.klasse}» – bitte in den Firmensätzen erfassen.`);
   const f = cls ? num(cls.f) : NaN;
   if (cls && !(f > 0)) err(`Ungültiger Faktor bei Flugklasse «${cls.name}».`);
-  const h = rate('hotel'), s = rate('spesen'), nk = rate('nk'), taxi = car ? 0 : rate('taxi'), carR = car ? rate('car') : 0;
+  const nkOn = !!R.nkAktiv;
+  const h = rate('hotel'), s = p ? num(p.spesen) : NaN, nk = nkOn ? rate('nk') : 0, taxi = car ? 0 : rate('taxi'), carR = car ? rate('car') : 0;
   const dest = k && k.flughafen ? k.flughafen : '?';
   const add = (grp, cat, ph, name, qty, unit, satz, c, chf, note) => lines.push({ grp, cat, ph: typeof ph === 'string' ? { [ph]: 1 } : ph, name, qty, unit, satz, cur: c, chf, note });
   const plan = [], missingStd = new Set(), arbH = num(R.arbStdTag) || 0;
   const masch = (R.maschinen || []).find(m => m.id === E.maschId), maschName = masch ? masch.name : '';
-  if (!masch) warn('Maschinentyp wählen (Firmensätze → Stundensätze).');
-  const stdSatz = aid => { const v = (R.stundensaetze || {})[E.maschId]; const n = v ? v[aid] : undefined; return n === '' || n === undefined || n === null ? NaN : num(n); };
+  if (!masch) warn('Maschinentyp wählen (Stammdaten → Maschinentypen & Stundensätze).');
+  const stdSatz = () => { const n = masch ? masch.satz : undefined; return n === '' || n === undefined || n === null ? NaN : num(n); };
   S.per.forEach(x => {
     const { sel, t } = x, home = x.home, fr = x.frac;
     const g = `${t.name}${E.training ? (x.role === 'app' ? ' – Training / Handover' : ' – Installation / Handover') : ''}`;
@@ -679,11 +722,17 @@ function calc() {
     parts.forEach(([aid, d, ph]) => {
       if (!(d > 0)) return;
       const st = stdSatz(aid), an = (DATA.aufgaben.find(z => z.id === aid) || {}).name || ph;
-      if (!isFinite(st)) missingStd.add(an);
+      if (!isFinite(st)) missingStd.add('x');
       add(g, 'Arbeitszeit', ph, `Arbeitszeit ${an}`, d * arbH, 'h', st, 'CHF', isFinite(st) ? d * arbH * st : 0, `${d} Tage × ${fmt0(arbH)} h${maschName ? ' · ' + maschName : ''}`);
     });
-    { const aid = x.role === 'app' ? 'a-train' : E.aufgabeId, st = stdSatz(aid), rh = 2 * (num(R.reiseStdTag) || 0), pc = (num(R.reiseProz) || 0) / 100;
-      if (rh > 0 && pc > 0) { if (!isFinite(st)) missingStd.add((DATA.aufgaben.find(z => z.id === aid) || {}).name || '?'); add(g, 'Reisezeit', home, 'Reisezeit An- und Rückreise', rh, 'h', st * pc, 'CHF', isFinite(st) ? rh * st * pc : 0, `2 Reisetage × ${fmt0(num(R.reiseStdTag))} h${pc !== 1 ? ` × ${fmt0(pc * 100)} %` : ''}`); } }
+    { const st = stdSatz(), pc = (num(R.reiseProz) || 0) / 100;
+      const vorl = num(t.gepaeck ? R.vorlaufGepaeckH : R.vorlaufH) || 0;
+      const anrH = num(t.anreiseModus === 'oev' ? t.oevH : t.autoH), rf0 = resFlight(t), fdH = rf0 ? num(rf0.flugdauer_h) : NaN, zielH = k ? num(k.fahrzeitMin) / 60 : NaN;
+      const oneWay = isFinite(fdH) ? (isFinite(anrH) ? anrH : 0) + vorl + fdH + (isFinite(zielH) ? zielH : 0) : NaN;
+      const est = !isFinite(oneWay), rh = est ? 2 * (num(R.reiseStdTag) || 0) : Math.round(2 * oneWay * 100) / 100;
+      if (est) warn(`${t.name}: Reisezeit geschätzt (2 × ${fmt0(num(R.reiseStdTag))} h) – genaue Reisezeit nach der Online-Ermittlung der Flugdauer.`);
+      const note = est ? `geschätzt: 2 × ${fmt0(num(R.reiseStdTag))} h` : `2 × ${fmtH(oneWay)} Tür–Kunde (Anreise ${isFinite(anrH) ? fmtH(anrH) : '–'} + Flughafen ${fmtH(vorl)} + Flug ${fmtH(fdH)} + Fahrt ${isFinite(zielH) ? fmtH(zielH) : '–'})`;
+      if (rh > 0 && pc > 0) { if (!isFinite(st)) missingStd.add('x'); add(g, 'Reisezeit', home, 'Reisezeit An- und Rückreise', rh, 'h', st * pc, 'CHF', isFinite(st) ? rh * st * pc : 0, note + (pc !== 1 ? ` × ${fmt0(pc * 100)} %` : '')); } }
     add(g, 'Flug', home, `Flug ${t.flughafen || '?'}–${dest}`, 1, 'retour', fl * f, 'CHF', fl * f, cls ? `Economy CHF ${fmt(fl)} × Faktor ${fmt0(f)} (${cls.name})${sel.flugSrc === 'online' ? ' · online ermittelt' : ''}` : '');
     if (t.gepaeck) {
       const kg = num(t.gepaeckKg) || num(R.gepaeckKg) || 0;
@@ -710,11 +759,16 @@ function calc() {
     if (vis && num(vis.kosten_chf) > 0) add(g, 'Visum', home, `Visum / Einreise${vis.art ? ' (' + vis.art + ')' : ''}`, 1, 'Stk.', num(vis.kosten_chf), 'CHF', num(vis.kosten_chf), 'online ermittelt');
     add(g, 'Hotel', fr, 'Hotel', nights, 'Nächte', h, cur, nights * h * fx, src('hotel'));
     add(g, 'Spesen', fr, 'Spesen', spD, 'Tage', s, cur, spD * s * fx, E.regel === 'mit' ? 'inkl. An- und Abreisetag' : 'ohne An- und Abreisetag');
-    add(g, 'Nebenkosten', fr, 'Nebenkosten', days, 'Reisetage', nk, cur, days * nk * fx, '');
+    if (nkOn) add(g, 'Nebenkosten', fr, 'Nebenkosten', days, 'Reisetage', nk, cur, days * nk * fx, '');
     if (!car) add(g, 'Transport vor Ort', home, 'Taxi Flughafen ↔ Kunde', 2, 'Fahrten', taxi, cur, 2 * taxi * fx, src('taxi'));
+    if (sel.flugInfo && S.ok) {
+      const hd = sel.flugInfo.hinflug && String(sel.flugInfo.hinflug.datum || '').slice(0, 10), rd = sel.flugInfo.rueckflug && String(sel.flugInfo.rueckflug.datum || '').slice(0, 10);
+      if (hd && hd !== isoOf(x.arr)) warn(`${t.name}: gewählter Hinflug am ${fmtDate(hd)} passt nicht zum Anreisetag ${dShort(x.arr)} – bitte «Neu recherchieren».`);
+      if (rd && rd !== isoOf(x.ret)) warn(`${t.name}: gewählter Rückflug am ${fmtDate(rd)} passt nicht zum Rückreisetag ${dShort(x.ret)} – bitte «Neu recherchieren».`);
+    }
     const vorlauf = num(t.gepaeck ? R.vorlaufGepaeckH : R.vorlaufH);
     const anr = num(t.anreiseModus === 'oev' ? t.oevH : t.autoH);
-    const rf = resFlight(t.flughafen);
+    const rf = resFlight(t);
     plan.push({ t, x, vorlauf, anr, rf, fd: rf ? num(rf.flugdauer_h) : NaN, ziel: k ? num(k.fahrzeitMin) / 60 : NaN, visRes: t.nationalitaet ? resVisa(t.nationalitaet) : null });
   });
   let km = NaN;
@@ -729,15 +783,17 @@ function calc() {
     const ks = num(R.kmSatz);
     add('Gemeinsam', 'Transport vor Ort', cf, 'Mietwagen Kilometer', km, 'km', ks, 'CHF', km * ks, `${isFinite(dist) ? `2 × ${fmt0(dist)} km + ` : ''}${fmt0(carD)} Tage × ${fmt0(lk)} km`);
   }
-  if (missingStd.size && masch) warn(`Stundensatz fehlt für ${maschName}: ${[...missingStd].join(', ')} (Firmensätze → Stundensätze).`);
-  const np = E.nkPausch === '' ? 0 : num(E.nkPausch);
+  const stdUsed = [[E.aufgabeId, S.P1]].concat(E.training ? [['a-hand', 'Handover'], ['a-train', 'Training']] : []);
+  const stdTxt = masch ? (isFinite(stdSatz()) ? `CHF ${fmt(stdSatz())}/h <span class="muted">(${esc(maschName)})</span>` : `<span class="warnTxt">fehlt für ${esc(maschName)}</span>`) : '<span class="warnTxt">Maschinentyp wählen</span>';
+  if (missingStd.size && masch) warn(`Stundensatz für «${maschName}» fehlt (Stammdaten → Maschinentypen & Stundensätze).`);
+  const np = !nkOn || E.nkPausch === '' ? 0 : num(E.nkPausch);
   if (!(np >= 0)) err('Ungültiger Betrag bei Nebenkosten pauschal.');
   if (np) add('Gemeinsam', 'Nebenkosten', S.P1, 'Nebenkosten pauschal', 1, 'pauschal', np, 'CHF', np, '');
   const total = lines.reduce((x, l) => x + l.chf, 0);
   plan.forEach(x => { if (x.visRes && /^(ja|visum|e)/i.test(String(x.visRes.benoetigt || '')) && !(num(x.visRes.kosten_chf) >= 0)) warn(`${x.t.name}: Visum nötig, Kosten unbekannt.`); });
   const cats = {}, phs = {}; S.phases.forEach(ph => phs[ph] = 0);
   lines.forEach(l => { cats[l.cat] = (cats[l.cat] || 0) + l.chf; Object.entries(l.ph).forEach(([ph, q]) => phs[ph] = (phs[ph] || 0) + l.chf * q); });
-  return { lines, total, msgs, cur, fx, p, S, sched: S.ok && S.per.length > 0, car, carWhy, km, valid, a, k, plan, cats, phs };
+  return { stdTxt, spesen: s, nkOn, srcOf: src, lines, total, msgs, cur, fx, p, S, sched: S.ok && S.per.length > 0, car, carWhy, km, valid, a, k, plan, cats, phs };
 }
 function hhmmMinus(hhmm, h) {
   const m = /^(\d{1,2}):(\d{2})/.exec(String(hhmm || '')); if (!m || !isFinite(h)) return '';
@@ -753,16 +809,17 @@ function planHtml(r) {
   return r.plan.map(x => {
     const t = x.t, modus = MODUS[t.anreiseModus] || 'Auto', s = x.x;
     const vor = (isFinite(x.anr) ? x.anr : 0) + x.vorlauf;
-    const abfl = x.rf && x.rf.abflug_beispiel ? String(x.rf.abflug_beispiel) : '';
+    const fi = x.x.sel.flugInfo, abfl = fi && fi.hinflug && fi.hinflug.ab ? String(fi.hinflug.ab) : (x.rf && x.rf.hinflug && x.rf.hinflug.ab ? String(x.rf.hinflug.ab) : (x.rf && x.rf.abflug_beispiel ? String(x.rf.abflug_beispiel) : ''));
     const tuer = [x.anr, x.vorlauf, x.fd, x.ziel].every(v => isFinite(v)) ? x.anr + x.vorlauf + x.fd + x.ziel : NaN;
     const l0 = r.S.ok ? `Anreise ${dShort(s.arr)} · ${s.W} Arbeitstage vor Ort · Rückreise ${dShort(s.ret)}${E.training ? ` · Rolle ${s.role === 'app' ? 'Training' : 'Installation'} (inkl. Handover)` : ''}` : '';
     const l1 = `Anreise ${modus} ${isFinite(x.anr) ? fmtH(x.anr) : '<span class="warnTxt">Zeit fehlt</span>'} + ${fmtH(x.vorlauf)} vor Abflug am Flughafen${t.gepaeck ? ' (Zusatzgepäck)' : ''} → zu Hause <b>${fmtH(vor)}</b> vor Abflug losfahren${abfl ? ` · z.B. Abflug ${esc(abfl)} → Abfahrt ${hhmmMinus(abfl, vor)}` : ''}`;
+    const lf = fi ? `<div class="muted">✈ Hinflug: ${esc(legTxt(fi.hinflug))}<br>✈ Rückflug: ${esc(legTxt(fi.rueckflug))}</div>` : '';
     const l2 = x.rf ? `Flug ${esc(t.flughafen || '?')}–${esc(r.k && r.k.flughafen || '?')}: ca. ${fmtH(num(x.rf.flugdauer_h))}${isFinite(num(x.rf.umstiege)) ? `, ${num(x.rf.umstiege) === 0 ? 'direkt' : num(x.rf.umstiege) + ' Umstieg(e)'}` : ''}${isFinite(tuer) ? ` · Reisezeit Tür–Kunde ca. <b>${fmtH(tuer)}</b>` : ''}` : '<span class="muted">Flugdauer folgt aus der Online-Recherche.</span>';
     const v = x.visRes;
     const l3 = !t.nationalitaet ? '<span class="warnTxt">Nationalität fehlt – Visum nicht geprüft</span>'
       : v ? `Einreise ${esc(land)} mit ${esc(t.nationalitaet)}: <b>${esc(v.benoetigt || '?')}</b>${v.art ? ' – ' + esc(v.art) : ''}${isFinite(num(v.kosten_chf)) ? ` · CHF ${fmt(num(v.kosten_chf))}` : ''}${isFinite(num(v.vorlauf_tage)) ? ` · mind. ${fmt0(num(v.vorlauf_tage))} Tage vorher beantragen` : ''}${v.hinweis ? ` · ${esc(v.hinweis)}` : ''}`
       : `Einreise ${esc(land)} mit ${esc(t.nationalitaet)}: <span class="muted">wird mit der Online-Recherche geprüft</span>`;
-    return `<div class="trow" style="display:block"><b>${esc(t.name)}</b>${l0 ? `<div class="muted">${l0}</div>` : ''}<div class="muted">${l1}</div><div class="muted">${l2}</div><div class="muted">${l3}</div></div>`;
+    return `<div class="trow" style="display:block"><b>${esc(t.name)}</b>${l0 ? `<div class="muted">${l0}</div>` : ''}<div class="muted">${l1}</div>${lf}<div class="muted">${l2}</div><div class="muted">${l3}</div></div>`;
   }).join('');
 }
 const CATS = ['Arbeitszeit', 'Reisezeit', 'Flug', 'Zusatzgepäck', 'Anreise Flughafen', 'Visum', 'Hotel', 'Transport vor Ort', 'Spesen', 'Nebenkosten'];
@@ -777,7 +834,11 @@ function linesHtml(lines) {
 function render() {
   const r = calc(); LAST = r;
   $('curLbl').textContent = r.cur;
-  OVS.forEach(k => $('ov_' + k).placeholder = r.p ? `${fmt0(num(r.p[k]))} ${r.cur} (Profil)` : '');
+  OVS.forEach(k => $('ov_' + k).placeholder = r.p ? `${fmt0(num(r.p[k]))} ${r.cur} (Länderprofil)` : '');
+  ['hotel', 'car', 'taxi'].forEach(k => $('src_' + k).textContent = r.srcOf(k) === 'online ermittelt' ? 'online ermittelt' : r.srcOf(k) === 'Einsatz-Satz' ? 'manuell überschrieben' : (E.res ? 'Länderprofil' : 'Länderprofil, bis API ermittelt'));
+  $('stdInfo').innerHTML = r.stdTxt;
+  $('spesenInfo').innerHTML = r.p ? `${esc(r.cur)} ${fmt(r.spesen)} <span class="muted">(${esc(r.p.name)})</span>` : '–';
+  document.querySelectorAll('#calcForm .nkf').forEach(el => el.hidden = !r.nkOn);
   $('plan').innerHTML = planHtml(r);
   const CORDER = CATS;
   $('catTable').tBodies[0].innerHTML = CORDER.filter(c => r.cats[c] !== undefined).map(c => `<tr><td>${esc(c)}</td><td class="num">${fmt(r.cats[c])}</td></tr>`).join('') + `<tr class="total"><td>Total</td><td class="num">CHF ${fmt(r.total)}</td></tr>`;
@@ -794,7 +855,7 @@ function render() {
   const k = r.k;
   $('kundeInfo').innerHTML = k ? `${esc([k.ort, k.land].filter(Boolean).join(', '))}${k.flughafen ? ` · Flughafen <b>${esc(k.flughafen)}</b>${k.flughafenName ? ' (' + esc(k.flughafenName) + ')' : ''}` : ''}${isFinite(num(k.distanzKm)) ? ` · ${fmt0(num(k.distanzKm))} km` : ''}${isFinite(num(k.fahrzeitMin)) ? ` · ${fmt0(num(k.fahrzeitMin))} Min.` : ''}` : '';
   $('msgs').innerHTML = r.msgs.map(([t, m]) => `<li class="${t}">${esc(m)}</li>`).join('');
-  saveDraft(); updateEditState(); renderResearch(); maybeAutoResearch(r);
+  saveDraft(); updateEditState(); renderResearch(); renderFlugLog(); maybeAutoResearch(r);
 }
 
 /* ---------- Einsätze ---------- */
@@ -829,7 +890,7 @@ function openEinsatz(id) {
 function dupEinsatz(id) {
   const s = DATA.einsaetze.find(x => x.id === id); if (!s) return;
   if (isDirty() && !confirm('Nicht gespeicherte Änderungen verwerfen?')) return;
-  E = normE(clone(s)); E.id = null; delete E.createdAt; delete E.updatedAt; E.name = (E.name || 'Einsatz') + ' (Kopie)'; E.res = null;
+  E = normE(clone(s)); E.id = null; delete E.createdAt; delete E.updatedAt; E.name = (E.name || 'Einsatz') + ' (Kopie)'; E.res = null; E.flugLog = []; E.techs.forEach(s => { delete s.flugInfo; delete s.flugSrc; });
   writeForm(); render(); showTab('calc'); toast('Kopie erstellt – noch nicht gespeichert');
 }
 function delEinsatz(id) {
@@ -1165,10 +1226,10 @@ const PNUM = ['hotel', 'car', 'spesen', 'nk', 'taxi'];
 const GNUM = ['gepaeck', 'kmSatz', 'carAbKm', 'lokalKm'];
 function ratesChanged() { DATA.rates.updatedAt = Date.now(); changed(); writeForm(); render(); }
 function renderStdTable() {
-  const R = DATA.rates, au = DATA.aufgaben, ms = R.maschinen || [], ss = R.stundensaetze || {};
-  $('stdTable').innerHTML = `<thead><tr><th>Maschinentyp</th>${au.map(a => `<th class="num">${esc(a.name)}</th>`).join('')}<th></th></tr></thead><tbody>`
-    + (ms.length ? ms.map((m, i) => `<tr><td><input data-m="${i}" value="${esc(m.name)}" style="min-width:130px"></td>${au.map(a => `<td class="num"><input data-sr="${esc(m.id)}|${esc(a.id)}" inputmode="decimal" placeholder="CHF/h" value="${esc((ss[m.id] || {})[a.id] ?? '')}"></td>`).join('')}<td><button class="btn red sm" data-delm="${i}" title="Maschinentyp löschen">✕</button></td></tr>`).join('')
-      : `<tr><td colspan="${au.length + 2}" class="muted">Noch keine Maschinentypen erfasst.</td></tr>`) + '</tbody>';
+  const ms = DATA.rates.maschinen || [];
+  $('stdTable').innerHTML = `<thead><tr><th>Maschinentyp</th><th class="num">Stundensatz CHF/h</th><th></th></tr></thead><tbody>`
+    + (ms.length ? ms.map((m, i) => `<tr><td><input data-m="${i}" value="${esc(m.name)}" style="min-width:160px"></td><td class="num"><input data-ms="${i}" inputmode="decimal" placeholder="CHF/h" value="${esc(m.satz ?? '')}"></td><td><button class="btn red sm" data-delm="${i}" title="Maschinentyp löschen">✕</button></td></tr>`).join('')
+      : `<tr><td colspan="3" class="muted">Noch keine Maschinentypen erfasst.</td></tr>`) + '</tbody>';
 }
 function renderRates() {
   const R = DATA.rates;
@@ -1176,6 +1237,7 @@ function renderRates() {
   const ga = document.querySelector('[data-g="gepaeckArt"]');
   ga.innerHTML = '<option value="">– keine –</option>' + (R.arten || []).concat(R.gepaeckArt && !(R.arten || []).includes(R.gepaeckArt) ? [R.gepaeckArt] : []).map(a => `<option>${esc(a)}</option>`).join('');
   document.querySelectorAll('[data-g]').forEach(el => el.value = R[el.dataset.g] ?? '');
+  document.querySelectorAll('[data-gb]').forEach(el => el.checked = !!R[el.dataset.gb]);
   renderStdTable();
   const curs = Object.keys(R.fx);
   $('profTable').tBodies[0].innerHTML = R.profiles.map((p, i) => `<tr>
@@ -1196,10 +1258,11 @@ function onRatesChange(ev) {
   if (t.id === 'r_stand') R.stand = t.value;
   else if (t.id === 'r_ver') R.verantwortlich = t.value.trim();
   else if (d.g === 'gepaeckArt') R.gepaeckArt = t.value;
-  else if (d.sr !== undefined) {
-    const [mid, aid] = d.sr.split('|'); const v = t.value.trim() === '' ? '' : num(t.value);
-    if (v !== '' && !(v >= 0)) { toast('Bitte einen gültigen Stundensatz eingeben'); t.value = ((R.stundensaetze || {})[mid] || {})[aid] ?? ''; return; }
-    R.stundensaetze = R.stundensaetze || {}; R.stundensaetze[mid] = Object.assign({}, R.stundensaetze[mid], { [aid]: v });
+  else if (d.gb !== undefined) R[d.gb] = t.checked;
+  else if (d.ms !== undefined) {
+    const m = R.maschinen[+d.ms]; if (!m) return; const v = t.value.trim() === '' ? '' : num(t.value);
+    if (v !== '' && !(v >= 0)) { toast('Bitte einen gültigen Stundensatz eingeben'); t.value = m.satz ?? ''; return; }
+    m.satz = v;
   } else if (d.m !== undefined) {
     const m = R.maschinen[+d.m], nv = t.value.trim();
     if (!m || !nv || R.maschinen.some((x, j) => j !== +d.m && x.name === nv)) { toast('Name fehlt oder ist schon vergeben'); if (m) t.value = m.name; return; }
@@ -1242,11 +1305,11 @@ function onRatesClick(ev) {
     R.fx[code] = v; $('fxNewCode').value = ''; $('fxNewRate').value = '';
   } else if (d.delm !== undefined) {
     const m = R.maschinen[+d.delm]; if (!m || !confirm(`Maschinentyp «${m.name}» mit seinen Stundensätzen löschen?`)) return;
-    R.maschinen.splice(+d.delm, 1); if (R.stundensaetze) delete R.stundensaetze[m.id];
+    R.maschinen.splice(+d.delm, 1);
   } else if (t.id === 'btnAddMasch') {
     const nv = $('maschNew').value.trim(); if (!nv) return;
     if (R.maschinen.some(m => m.name === nv)) { toast('Diesen Maschinentyp gibt es schon'); return; }
-    R.maschinen.push({ id: uid(), name: nv }); $('maschNew').value = '';
+    R.maschinen.push({ id: uid(), name: nv, satz: '' }); $('maschNew').value = '';
   } else if (t.id === 'btnAddCls') {
     let n = 'Neue Klasse', i = 2; while (R.classes.some(c => c.name === n)) n = 'Neue Klasse ' + i++;
     R.classes.push({ name: n, f: 1 });
@@ -1512,15 +1575,17 @@ Mietwagen: ${carD} Tage, Kompaktklasse (${isoOf(S.first)} bis ${isoOf(S.last)})
 Taxi: einfache Fahrt Flughafen – Kunde${k && isFinite(num(k.distanzKm)) ? ' (ca. ' + num(k.distanzKm) + ' km)' : ''}
 Lokale Währung: ${cur}
 
-Suche im Web nach aktuellen Preisen. Flüge: typische Flugdauer (inkl. Umstieg), Anzahl Umstiege und eine typische Abflugzeit am Morgen. Zusatzgepäck: Gebühr der Airline für das angegebene Zusatzgepäck, Hin- und Rückflug zusammen, in CHF. Spesen: übliche Verpflegungspauschale für Geschäftsreisen in diesem Land als Referenz.
+Suche im Web nach aktuellen Preisen. Flüge: Wähle für jeden Techniker einen konkreten, real existierenden Hin- und Rückflug (Economy) an seinen Reisedaten – bevorzugt Direktflug bzw. kurze Gesamtreisezeit, Abflug nicht vor 07:00 – und gib Airline, Flugnummer(n), Datum, Abflug- und Ankunftszeit (Ortszeit), Umsteigeort, Flugdauer und den Retourpreis an. Zusatzgepäck: Gebühr der Airline für das angegebene Zusatzgepäck, Hin- und Rückflug zusammen, in CHF.
 Visum: Prüfe für jede Nationalität, ob für diese Geschäftsreise mit Montagearbeit im Zielland ein Visum oder eine elektronische Einreisegenehmigung nötig ist, mit Kosten in CHF und Vorlaufzeit.
 Antworte am Schluss mit genau einem JSON-Objekt in einem \`\`\`json-Block, ohne Text danach. Unbekannte Werte als null:
 {
-  "fluege": [ { "von": "IATA", "economy_chf": Zahl, "zusatzgepaeck_chf": Zahl, "flugdauer_h": Zahl, "umstiege": Zahl, "abflug_beispiel": "HH:MM", "bemerkung": "" } ],
+  "fluege": [ { "techniker": "Name", "von": "IATA", "nach": "IATA", "economy_chf": Zahl, "zusatzgepaeck_chf": Zahl, "flugdauer_h": Zahl, "umstiege": Zahl,
+      "hinflug": { "datum": "YYYY-MM-DD", "airline": "", "flugnummern": "z.B. LX 8", "von": "IATA", "ab": "HH:MM", "nach": "IATA", "an": "HH:MM", "umsteigeort": "" },
+      "rueckflug": { "datum": "YYYY-MM-DD", "airline": "", "flugnummern": "", "von": "IATA", "ab": "HH:MM", "nach": "IATA", "an": "HH:MM", "umsteigeort": "" },
+      "quelle": "https://…", "bemerkung": "" } ],
   "hotel": { "pro_nacht": Zahl, "waehrung": "${cur}", "bemerkung": "" },
   "mietwagen": { "pro_tag": Zahl, "waehrung": "${cur}", "bemerkung": "" },
   "taxi": { "pro_fahrt": Zahl, "waehrung": "${cur}", "bemerkung": "" },
-  "spesen": { "pro_tag": Zahl, "waehrung": "${cur}", "bemerkung": "" },
   "wechselkurs": { "chf_pro_einheit": Zahl, "waehrung": "${cur}" },
   "visa": [ { "nationalitaet": "", "benoetigt": "ja / nein / elektronische Genehmigung", "art": "", "kosten_chf": Zahl, "vorlauf_tage": Zahl, "hinweis": "" } ],
   "zusammenfassung": "2–3 Sätze, Deutsch (Schweiz), ss statt ß",
@@ -1560,11 +1625,14 @@ function researchRows() {
   const eff = k => { const raw = E.ov[k], v = num(raw); return raw !== '' && isFinite(v) ? v : (p ? num(p[k]) : NaN); };
   const g = (o, k) => o && typeof o === 'object' ? o[k] : null;
   const rows = [];
+  const gepDone = new Set();
+  LAST.valid.forEach(v => {
+    const x = resFlight(v.t); if (!x) return;
+    rows.push({ k: 'flugT:' + v.t.id, lbl: `Flug ${v.t.name} ${v.t.flughafen || '?'}–${LAST.k && LAST.k.flughafen || '?'} Economy retour`, unit: 'CHF', now: num(v.sel.flug), res: num(x.economy_chf), note: [legTxt(x.hinflug), legTxt(x.rueckflug), x.bemerkung].filter(Boolean).join(' · '), def: true, flight: x, tech: v.t });
+  });
   (Array.isArray(d.fluege) ? d.fluege : []).forEach(x => {
-    const von = String(x.von || '').toUpperCase();
+    const von = String(x.von || '').toUpperCase(); if (gepDone.has(von)) return; gepDone.add(von);
     const ts = LAST.valid.filter(v => v.t.flughafen === von);
-    const nowV = ts.map(v => num(v.sel.flug)).find(v => isFinite(v));
-    rows.push({ k: 'flug:' + von, lbl: `Flug ${von}–${LAST.k && LAST.k.flughafen || '?'} Economy retour`, unit: 'CHF', now: nowV, res: num(x.economy_chf), note: [ts.map(v => v.t.name).join(', '), x.bemerkung].filter(Boolean).join(' · '), def: true });
     if (ts.some(v => v.t.gepaeck)) rows.push({ k: 'gep:' + von, lbl: `Zusatzgepäck ab ${von} (retour)`, unit: 'CHF', now: isFinite(num(E.gep[von])) ? num(E.gep[von]) : num(DATA.rates.gepaeck), res: num(x.zusatzgepaeck_chf), note: ts.filter(v => v.t.gepaeck).map(v => `${v.t.name} ${fmt0(num(v.t.gepaeckKg) || num(DATA.rates.gepaeckKg))} kg`).join(', '), def: true });
   });
   rows.push({ k: 'hotel', lbl: 'Hotel pro Nacht', unit: cur, now: eff('hotel'), res: convCur(g(d.hotel, 'pro_nacht'), g(d.hotel, 'waehrung'), cur), note: g(d.hotel, 'bemerkung'), def: true });
@@ -1575,7 +1643,7 @@ function researchRows() {
     const cur0 = E.visa[nk];
     rows.push({ k: 'visa:' + nk, lbl: `Visum / Einreise – ${v.nationalitaet}`, unit: 'CHF', now: cur0 ? num(cur0.kosten_chf) : NaN, res: isFinite(num(v.kosten_chf)) ? num(v.kosten_chf) : 0, note: [v.benoetigt, v.art, v.hinweis].filter(Boolean).join(' · '), def: true, visa: v });
   });
-  rows.push({ k: 'spesen', lbl: 'Spesen pro Tag (Referenz)', unit: cur, now: eff('spesen'), res: convCur(g(d.spesen, 'pro_tag'), g(d.spesen, 'waehrung'), cur), note: [g(d.spesen, 'bemerkung'), 'Firmenregel – wird nicht automatisch übernommen'].filter(Boolean).join(' · '), def: false });
+  if (false) rows.push({ k: 'spesen', lbl: 'Spesen pro Tag (Referenz)', unit: cur, now: eff('spesen'), res: convCur(g(d.spesen, 'pro_tag'), g(d.spesen, 'waehrung'), cur), note: [g(d.spesen, 'bemerkung'), 'Firmenregel – wird nicht automatisch übernommen'].filter(Boolean).join(' · '), def: false });
   if (cur !== 'CHF') rows.push({ k: 'fx', lbl: `Wechselkurs 1 ${cur} in CHF`, unit: 'CHF', now: num(DATA.rates.fx[cur]), res: num(g(d.wechselkurs, 'chf_pro_einheit')), note: 'Kurs wird täglich automatisch geladen – nur zum Vergleich', def: false, dec: 4 });
   return rows;
 }
@@ -1603,13 +1671,26 @@ function renderResearch() {
   const cw = R.cur && R.cur !== LAST.cur ? ` · Achtung: Recherche in ${R.cur}, Profil jetzt ${LAST.cur}` : '';
   $('resStand').textContent = `${stale}Stand: ${new Date(R.at).toLocaleString('de-CH')}${R.auto ? ' (automatisch)' : ''} · ${R.trip} · ${R.searches} Websuchen · ${R.model}${cw}. KI-Richtwerte ohne Gewähr – vor der Buchung prüfen.`;
 }
+function renderFlugLog() {
+  const L = E.flugLog || [];
+  $('flugLogBox').hidden = !L.length;
+  $('flugLog').tBodies[0].innerHTML = L.slice().reverse().map(l => `<tr><td>${new Date(l.at).toLocaleString('de-CH', { dateStyle: 'short', timeStyle: 'short' })}${l.auto ? ' <span class="muted">(auto)</span>' : ''}</td><td>${esc(l.tech)}</td><td>${esc(legTxt(l.hinflug)) || '–'}</td><td>${esc(legTxt(l.rueckflug)) || '–'}</td><td class="num">${fmt(num(l.preis))}</td><td>${l.quelle ? `<a href="${esc(l.quelle)}" target="_blank" rel="noopener noreferrer" style="color:var(--brand-2)">Link</a>` : '–'}</td></tr>`).join('');
+}
 function applyResearch(isAuto) {
   const done = []; const cur = LAST.cur; const rows = researchRows();
   const pick = isAuto ? rows.filter(x => x.def && isFinite(x.res)) : rows.filter(x => { const cb = document.querySelector(`#resTable input[data-k="${CSS.escape(x.k)}"]`); return cb && cb.checked && isFinite(x.res); });
   E.ovSrc = E.ovSrc || {};
   pick.forEach(x => {
     const k = x.k, v = x.res;
-    if (k.startsWith('flug:')) { const von = k.slice(5); E.techs.forEach(s => { const t = techById(s.id); if (t && t.flughafen === von) { s.flug = String(Math.round(v)); s.flugSrc = 'online'; } }); done.push('Flug ' + von); }
+    if (k.startsWith('flugT:')) {
+      const s = E.techs.find(z => z.id === k.slice(6)), fl = x.flight;
+      if (s) {
+        s.flug = String(Math.round(v)); s.flugSrc = 'online';
+        s.flugInfo = { hinflug: fl.hinflug || null, rueckflug: fl.rueckflug || null, preis: Math.round(v), quelle: fl.quelle || '', at: Date.now() };
+        E.flugLog.push({ at: Date.now(), techId: s.id, tech: x.tech.name, hinflug: fl.hinflug || null, rueckflug: fl.rueckflug || null, preis: Math.round(v), quelle: fl.quelle || '', auto: !!isAuto });
+      }
+      done.push('Flug ' + x.tech.name);
+    } else if (k.startsWith('flug:')) { const von = k.slice(5); E.techs.forEach(s => { const t = techById(s.id); if (t && t.flughafen === von) { s.flug = String(Math.round(v)); s.flugSrc = 'online'; } }); done.push('Flug ' + von); }
     else if (k.startsWith('gep:')) { E.gep[k.slice(4)] = Math.round(v); done.push('Gepäck ' + k.slice(4)); }
     else if (k.startsWith('visa:')) { E.visa[k.slice(5)] = Object.assign({}, x.visa, { kosten_chf: v }); done.push('Visum ' + x.visa.nationalitaet); }
     else if (k === 'fx') { DATA.rates.fx[cur] = Math.round(v * 10000) / 10000; DATA.rates.updatedAt = Date.now(); changed(); renderRates(); done.push('Wechselkurs'); }
@@ -1644,6 +1725,7 @@ function doPrint() {
     <table><thead><tr><th>Phase</th><th class="num">CHF</th></tr></thead><tbody>${r.S.phases.map(ph => `<tr><td>${esc(ph)} ${r.S.ranges[ph] ? '(' + rangeTxt(r.S.ranges[ph]) + ')' : ''}</td><td class="num">${fmt(r.phs[ph] || 0)}</td></tr>`).join('')}</tbody></table>
     <table><thead><tr><th>Kategorie</th><th class="num">CHF</th></tr></thead><tbody>${CATS.filter(c => r.cats[c] !== undefined).map(c => `<tr><td>${esc(c)}</td><td class="num">${fmt(r.cats[c])}</td></tr>`).join('')}</tbody></table>
     <div><b>Reiseplan &amp; Einreise</b>${planHtml(r)}</div>
+    ${(E.flugLog || []).length ? `<p><b>Flug-Log</b><br>${E.flugLog.map(l => `${new Date(l.at).toLocaleString('de-CH', { dateStyle: 'short', timeStyle: 'short' })} · ${esc(l.tech)} · ${esc(legTxt(l.hinflug))} / ${esc(legTxt(l.rueckflug))} · CHF ${fmt(num(l.preis))}`).join('<br>')}</p>` : ''}
     ${r.msgs.length ? `<p><b>Hinweise:</b><br>${r.msgs.map(m => esc(m[1])).join('<br>')}</p>` : ''}
     <p style="font-size:9pt;color:#555">${r.cur !== 'CHF' && r.fx > 0 ? `Umrechnung 1 ${esc(r.cur)} = ${fmt0(r.fx)} CHF${fxStandTxt() ? ' (' + esc(fxStandTxt()) + ')' : ''} · ` : ''}Firmensätze Stand ${fmtDate(R.stand)}${R.verantwortlich ? ' · ' + esc(R.verantwortlich) : ''} · erstellt ${new Date().toLocaleString('de-CH')} · v${APP_VERSION}</p>`;
   window.print();
@@ -1697,6 +1779,8 @@ $('kSearch').addEventListener('input', renderKunden);
 const ratesTab = document.querySelector('section[data-tab="rates"]');
 ratesTab.addEventListener('change', onRatesChange);
 ratesTab.addEventListener('click', onRatesClick);
+$('stdCard').addEventListener('change', onRatesChange);
+$('stdCard').addEventListener('click', onRatesClick);
 $('btnExport').addEventListener('click', exportRates);
 $('btnImport').addEventListener('click', () => $('fileImport').click());
 $('fileImport').addEventListener('change', e => { const f = e.target.files[0]; if (f) importRates(f); e.target.value = ''; });
