@@ -174,7 +174,18 @@
     "Installationstechniker"
    ],
    "anreiseModus": "oev",
-   "updatedAt": 1795260677212
+   "updatedAt": 1795260703385,
+   "anreiseKm": 80,
+   "autoH": 1,
+   "oevH": 1.5,
+   "oevRetourChf": 80,
+   "parkenTagChf": 19,
+   "taxiEinfachChf": 300,
+   "anreiseBemerkung": "Distanz und Fahrzeit gerundet (Quellen: 75 bis 81 km, 56 Min. bis 1 h 37 mit Rushhour-Puffer). OeV-Dauer Tuer bis Flughafen ist geschaetzt (Zug rund 55 Min.). OeV-Retourpreis ist eine Schaetzung (ca. 2 x 40 CHF Normalpreis), nicht ueber die SBB verifiziert. Parkieren: Flughafen Zuerich P6, CHF 19 pro Tag ab dem 8. Tag (7 Tage CHF 195, 14 Tage CHF 328). Taxi: Festpreise der Anbieter streuen von 200 bis 370 CHF, Mittelwert ca. 300 CHF.",
+   "anreiseStand": {
+    "at": 1795260703385,
+    "src": "api"
+   }
   }
  ],
  "kunden": [
@@ -212,5 +223,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795260677212
+ "updatedAt": 1795260703385
 }
