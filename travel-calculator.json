@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-21",
   "verantwortlich": "",
-  "updatedAt": 1795258879578,
+  "updatedAt": 1795260114456,
   "profiles": [
    {
     "id": "ch",
@@ -85,7 +85,7 @@
    }
   ],
   "stundensaetze": {},
-  "arbStdTag": 8,
+  "arbStdTag": 10,
   "reiseStdTag": 8,
   "reiseProz": 100
  },
@@ -195,5 +195,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795258958747
+ "updatedAt": 1795260114456
 }
