@@ -165,14 +165,14 @@
   {
    "id": "mwqbu6xr7rrcr",
    "name": "Andrej Cica",
-   "nationalitaet": "",
+   "nationalitaet": "Schweiz",
    "wohnort": "",
    "flughafen": "ZRH",
    "gepaeck": false,
    "gepaeckKg": 30,
    "arten": [],
    "anreiseModus": "auto",
-   "updatedAt": 1795260656935
+   "updatedAt": 1795260660242
   }
  ],
  "kunden": [
@@ -210,5 +210,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795260656935
+ "updatedAt": 1795260660242
 }
