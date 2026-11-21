@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-21",
   "verantwortlich": "",
-  "updatedAt": 1795269764262,
+  "updatedAt": 1795269848773,
   "profiles": [
    {
     "id": "ch",
@@ -59,7 +59,8 @@
   "fx": {
    "CHF": 1,
    "EUR": 0.9223,
-   "USD": 0.8392
+   "USD": 0.8392,
+   "SEK": 0.082
   },
   "classes": [
    {
@@ -246,5 +247,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795269764262
+ "updatedAt": 1795269848773
 }
