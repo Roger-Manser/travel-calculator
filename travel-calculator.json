@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-21",
   "verantwortlich": "",
-  "updatedAt": 1795262723454,
+  "updatedAt": 1795263879375,
   "profiles": [
    {
     "id": "ch",
@@ -45,8 +45,8 @@
     "cur": "CHF",
     "hotel": 125,
     "car": 50,
-    "spesen": 0,
-    "nk": 0,
+    "spesen": 60,
+    "nk": 10,
     "taxi": 60,
     "apiStand": {
      "at": 1795262723454,
@@ -244,5 +244,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795262723454
+ "updatedAt": 1795263879375
 }
