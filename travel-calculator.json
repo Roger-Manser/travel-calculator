@@ -166,13 +166,13 @@
    "id": "mwqbu6xr7rrcr",
    "name": "Andrej Cica",
    "nationalitaet": "Schweiz",
-   "wohnort": "",
+   "wohnort": "9000 St. Gallen",
    "flughafen": "ZRH",
    "gepaeck": false,
    "gepaeckKg": 30,
    "arten": [],
    "anreiseModus": "auto",
-   "updatedAt": 1795260660242
+   "updatedAt": 1795260669092
   }
  ],
  "kunden": [
@@ -210,5 +210,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795260660242
+ "updatedAt": 1795260669092
 }
