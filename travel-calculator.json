@@ -2,37 +2,42 @@
  "rates": {
   "stand": "2026-11-21",
   "verantwortlich": "",
-  "updatedAt": 1795261318343,
+  "updatedAt": 1795262663721,
   "profiles": [
    {
     "id": "ch",
     "name": "Schweiz",
     "cur": "CHF",
-    "hotel": 180,
-    "car": 90,
+    "hotel": 170,
+    "car": 70,
     "spesen": 60,
     "nk": 10,
-    "taxi": 80
+    "taxi": 115,
+    "apiStand": {
+     "at": 1795262663721,
+     "src": "api"
+    },
+    "apiBemerkung": "Richtwerte Nov. 2026: Hotel 3-4 Sterne ausserhalb der Zentren, exkl. Frühstück/Übernachtungstaxe; Mietwagen Kompaktklasse inkl. Basisversicherung bei Wochenmiete (Portal-Durchschnitte tiefer, ca. 45-50); Taxi ca. 30 km nach Tarif ca. 3.80 CHF/km plus Grundtaxe, vorbestellt teils günstiger (ca. 100)."
    },
    {
     "id": "de",
     "name": "Deutschland",
     "cur": "EUR",
-    "hotel": 130,
-    "car": 65,
+    "hotel": "",
+    "car": "",
     "spesen": 40,
     "nk": 10,
-    "taxi": 60
+    "taxi": ""
    },
    {
     "id": "us",
     "name": "USA",
     "cur": "USD",
-    "hotel": 220,
-    "car": 75,
+    "hotel": "",
+    "car": "",
     "spesen": 70,
     "nk": 15,
-    "taxi": 90
+    "taxi": ""
    },
    {
     "id": "mwqc8e4oh4bk8",
@@ -234,5 +239,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795262116879
+ "updatedAt": 1795262663721
 }
