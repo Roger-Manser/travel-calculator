@@ -110,7 +110,7 @@
   {
    "id": "mwq9xjw2ztyya",
    "name": "Neuer Kunde",
-   "adresse": "",
+   "adresse": "\nP.O. Box 14\n275 21 Sjöbo\nSweden",
    "land": "",
    "ort": "",
    "profileId": "",
@@ -118,9 +118,9 @@
    "flughafenName": "",
    "distanzKm": "",
    "fahrzeitMin": "",
-   "updatedAt": 1795257447410
+   "updatedAt": 1795257506908
   }
  ],
  "deleted": {},
- "updatedAt": 1795257447410
+ "updatedAt": 1795257506908
 }
