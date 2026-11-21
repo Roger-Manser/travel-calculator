@@ -171,10 +171,10 @@
   },
   {
    "id": "mwqjcgh9pc2au",
-   "name": "Neue Aufgabe",
+   "name": "FitCheck",
    "dauer": "",
-   "art": "",
-   "updatedAt": 1795273259373
+   "art": "Installationstechniker",
+   "updatedAt": 1795273267470
   }
  ],
  "techniker": [
@@ -264,5 +264,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795273259373
+ "updatedAt": 1795273267470
 }
