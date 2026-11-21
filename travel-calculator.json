@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-21",
   "verantwortlich": "",
-  "updatedAt": 1795269851822,
+  "updatedAt": 1795272985056,
   "profiles": [
    {
     "id": "ch",
@@ -88,7 +88,7 @@
    "date": "2026-11-20",
    "src": "EZB via Frankfurter"
   },
-  "gepaeckArt": "Installationstechniker",
+  "gepaeckArt": "Applikationstechniker",
   "gepaeckKg": 30,
   "vorlaufH": 2,
   "vorlaufGepaeckH": 3,
@@ -114,7 +114,8 @@
   "reiseProz": 100,
   "nkAktiv": false,
   "ecoPlusAbH": 10,
-  "ueZuschlag": 45
+  "ueZuschlag": 45,
+  "ofRundung": 50
  },
  "einsaetze": [],
  "aufgaben": [
@@ -247,5 +248,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795269851822
+ "updatedAt": 1795272985056
 }
