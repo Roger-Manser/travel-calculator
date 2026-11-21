@@ -106,7 +106,21 @@
   }
  ],
  "techniker": [],
- "kunden": [],
+ "kunden": [
+  {
+   "id": "mwq9xjw2ztyya",
+   "name": "Neuer Kunde",
+   "adresse": "",
+   "land": "",
+   "ort": "",
+   "profileId": "",
+   "flughafen": "",
+   "flughafenName": "",
+   "distanzKm": "",
+   "fahrzeitMin": "",
+   "updatedAt": 1795257447410
+  }
+ ],
  "deleted": {},
- "updatedAt": 1795257438732
+ "updatedAt": 1795257447410
 }
