@@ -164,7 +164,7 @@
   },
   {
    "id": "mwqbu6xr7rrcr",
-   "name": "Neuer Techniker",
+   "name": "Andrej Cica",
    "nationalitaet": "",
    "wohnort": "",
    "flughafen": "ZRH",
@@ -172,7 +172,7 @@
    "gepaeckKg": 30,
    "arten": [],
    "anreiseModus": "auto",
-   "updatedAt": 1795260649887
+   "updatedAt": 1795260656935
   }
  ],
  "kunden": [
@@ -210,5 +210,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795260649887
+ "updatedAt": 1795260656935
 }
