@@ -11,7 +11,8 @@
     "hotel": 180,
     "car": 90,
     "spesen": 60,
-    "nk": 10
+    "nk": 10,
+    "taxi": 80
    },
    {
     "id": "de",
@@ -20,7 +21,8 @@
     "hotel": 130,
     "car": 65,
     "spesen": 40,
-    "nk": 10
+    "nk": 10,
+    "taxi": 60
    },
    {
     "id": "us",
@@ -29,7 +31,8 @@
     "hotel": 220,
     "car": 75,
     "spesen": 70,
-    "nk": 15
+    "nk": 15,
+    "taxi": 90
    }
   ],
   "fx": {
@@ -50,9 +53,56 @@
     "name": "Business",
     "f": 3
    }
-  ]
+  ],
+  "arten": [
+   "Installationstechniker",
+   "Applikationstechniker"
+  ],
+  "gepaeck": 150,
+  "kmSatz": 0.25,
+  "carAbKm": 30,
+  "lokalKm": 30
  },
  "einsaetze": [],
+ "aufgaben": [
+  {
+   "id": "a-erw",
+   "name": "Erweiterung Neumaschine",
+   "dauer": 7,
+   "art": "Installationstechniker",
+   "updatedAt": 0
+  },
+  {
+   "id": "a-hand",
+   "name": "Handover",
+   "dauer": 3,
+   "art": "",
+   "updatedAt": 0
+  },
+  {
+   "id": "a-inst",
+   "name": "Installation Neumaschine",
+   "dauer": 12,
+   "art": "Installationstechniker",
+   "updatedAt": 0
+  },
+  {
+   "id": "a-train",
+   "name": "Training",
+   "dauer": 5,
+   "art": "Applikationstechniker",
+   "updatedAt": 0
+  },
+  {
+   "id": "a-trbl",
+   "name": "Troubleshooting",
+   "dauer": 4,
+   "art": "Installationstechniker",
+   "updatedAt": 0
+  }
+ ],
+ "techniker": [],
+ "kunden": [],
  "deleted": {},
  "updatedAt": 0
 }
