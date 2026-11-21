@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-21",
   "verantwortlich": "",
-  "updatedAt": 1795273027644,
+  "updatedAt": 1795273181643,
   "profiles": [
    {
     "id": "ch",
@@ -114,7 +114,7 @@
   "arbStdTag": 10,
   "reiseStdTag": 13,
   "reiseProz": 100,
-  "nkAktiv": false,
+  "nkAktiv": true,
   "ecoPlusAbH": 10,
   "ueZuschlag": 45,
   "ofRundung": 50
@@ -250,5 +250,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795273027644
+ "updatedAt": 1795273181643
 }
