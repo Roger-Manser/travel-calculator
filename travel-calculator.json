@@ -108,13 +108,13 @@
  "techniker": [
   {
    "id": "mwqa1sita14sv",
-   "name": "Johannes StraussZRH",
+   "name": "Johannes Strauss",
    "flughafen": "",
    "gepaeck": true,
    "arten": [
     "Installationstechniker"
    ],
-   "updatedAt": 1795257669599
+   "updatedAt": 1795257682067
   }
  ],
  "kunden": [
@@ -148,5 +148,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795257669599
+ "updatedAt": 1795257682067
 }
