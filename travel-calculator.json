@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-21",
   "verantwortlich": "",
-  "updatedAt": 0,
+  "updatedAt": 1795257438732,
   "profiles": [
    {
     "id": "ch",
@@ -37,8 +37,8 @@
   ],
   "fx": {
    "CHF": 1,
-   "EUR": 0.93,
-   "USD": 0.82
+   "EUR": 0.9223,
+   "USD": 0.8392
   },
   "classes": [
    {
@@ -61,7 +61,11 @@
   "gepaeck": 150,
   "kmSatz": 0.25,
   "carAbKm": 30,
-  "lokalKm": 30
+  "lokalKm": 30,
+  "fxStand": {
+   "date": "2026-11-20",
+   "src": "EZB via Frankfurter"
+  }
  },
  "einsaetze": [],
  "aufgaben": [
@@ -104,5 +108,5 @@
  "techniker": [],
  "kunden": [],
  "deleted": {},
- "updatedAt": 0
+ "updatedAt": 1795257438732
 }
