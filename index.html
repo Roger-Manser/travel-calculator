@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v2.5 – Reisezeit Hin- und Rückreise getrennt aus den gewählten Flügen -->
+<!-- Gallus Travel Calculator v2.7 – Robuste Auswertung der API-Antworten (längere Antworten, Fortsetzung, toleranteres JSON, Rohantwort einsehbar) -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#0d1c16">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="2.5">
+<meta name="app-version" content="2.7">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
 :root{--bg:#0d1c16;--card:#142a20;--card2:#1a3428;--line:#2a4b3b;--ink:#e6f0ea;--muted:#93ad9f;--brand:#2f8a62;--brand-2:#5fc79c;--red:#e46a6a;--amber:#e2b252;--input:#0f241b}
@@ -326,6 +326,12 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 </section>
 </main>
 
+<dialog id="rawDialog" style="max-width:860px">
+  <h2 style="margin-top:0;font-size:16px">Rohantwort der API</h2>
+  <p class="muted">Zur Fehlersuche – bei Bedarf kopieren und mir schicken.</p>
+  <textarea id="rawText" rows="18" readonly style="font:12px/1.4 ui-monospace,Consolas,monospace"></textarea>
+  <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn sec" id="rawCopy">Kopieren</button><button class="btn" id="rawClose">Schliessen</button></div>
+</dialog>
 <dialog id="vhDialog">
   <h2 style="margin-top:0;font-size:16px">Versionshistorie</h2>
   <div class="vh" id="vhList"></div>
@@ -338,8 +344,19 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '2.5';
+const APP_VERSION = '2.7';
 const VERSION_HISTORY = [
+  { v: '2.7', d: '2026-11-21', items: [
+    'Fehler «Die Antwort enthielt kein auswertbares Ergebnis» behoben: längere Antworten erlaubt (16’000 statt 4’096 Tokens), abgeschnittene Antworten werden automatisch fortgesetzt',
+    'Ergebnis-Auswertung toleranter (letzter JSON-Block, Kommentare und überzählige Kommas werden ignoriert)',
+    'Bei einem Fehler kann die Rohantwort der API angezeigt und kopiert werden',
+    'Anweisung an die API: vor dem Ergebnis nur kurz zusammenfassen'
+  ] },
+  { v: '2.6', d: '2026-11-21', items: [
+    'Hotel, Mietwagen und Taxi aus dem Länderprofil stehen als echte Werte im Einsatz (wie von Hand erfasst); Ändern überschreibt nur für diesen Einsatz, Leeren holt wieder den Länderprofil-Wert',
+    'Warnung, wenn im Länderprofil keine Spesen erfasst sind',
+    'API ermittelt auch die Landeswährung; Hinweis, wenn das Länderprofil in einer anderen Währung geführt wird'
+  ] },
   { v: '2.5', d: '2026-11-21', items: [
     'Reisezeit wird für Hin- und Rückreise getrennt berechnet statt verdoppelt',
     'Grundlage: Reisedauer des gewählten Hin- und Rückflugs inkl. Umsteigezeit (per API pro Strecke), Anreise zum Flughafen, Vorlauf am Abflughafen, Fahrt Flughafen–Kunde',
@@ -994,16 +1011,21 @@ function fillSelects() {
   $('f_maschId').innerHTML = opts(R.maschinen || [], E.maschId, m => m.name, (R.maschinen || []).length ? undefined : '– keine Maschinentypen –');
   ['aufgabeId', 'kundeId', 'maschId', 'profileId'].forEach(k => $('f_' + k).value = E[k] || '');
 }
+const profV = k => { const p = DATA.rates.profiles.find(x => x.id === E.profileId); const v = p ? num(p[k]) : NaN; return isFinite(v) ? v : NaN; };
 function writeForm() {
   fillSelects();
   FIELDS.forEach(k => { const el = $('f_' + k); if (el) el.value = E[k] ?? ''; });
   $('f_training').checked = !!E.training;
-  OVS.forEach(k => $('ov_' + k).value = E.ov[k] ?? '');
+  OVS.forEach(k => { const el = $('ov_' + k), pv = P_API.includes(k) ? profV(k) : NaN; el.dataset.pv = isFinite(pv) ? String(pv) : ''; el.value = E.ov[k] !== '' && E.ov[k] !== undefined ? E.ov[k] : el.dataset.pv; });
   renderTechPick();
 }
 function readForm() {
   FIELDS.forEach(k => { const el = $('f_' + k); if (el) E[k] = el.value; });
-  OVS.forEach(k => E.ov[k] = $('ov_' + k).value);
+  OVS.forEach(k => {
+    const v = $('ov_' + k).value.trim();
+    if (!P_API.includes(k)) { E.ov[k] = v; return; }
+    const el = $('ov_' + k), shown = el.dataset.pv || ''; E.ov[k] = v === '' || (shown !== '' && num(v) === num(shown)) ? '' : v; // unveränderter Länderprofil-Wert = kein Überschreiben
+  });
   E.training = $('f_training').checked;
 }
 const KL = { eco: 'Economy', pe: 'Premium Economy', bus: 'Business' };
@@ -1156,6 +1178,8 @@ function calc() {
   const cur = p ? p.cur : 'CHF';
   const fx = num(R.fx[cur]);
   if (p && !(fx > 0)) err(`Kein Wechselkurs für ${cur} hinterlegt (Firmensätze).`);
+  if (p && !(num(p.spesen) > 0)) warn(`Im Länderprofil «${p.name}» sind keine Spesen erfasst (Firmensätze → Länderprofile).`);
+  if (p && p.landesWaehrung && p.landesWaehrung !== p.cur) warn(`Länderprofil «${p.name}» wird in ${curLabel(p.cur)} geführt, Landeswährung ist ${curLabel(p.landesWaehrung)}. Umstellen unter Firmensätze → Länderprofile, danach «API».`);
   const valid = E.techs.map(x => ({ sel: x, t: techById(x.id) })).filter(x => x.t);
   if (valid.length < E.techs.length) warn('Mindestens ein ausgewählter Techniker existiert nicht mehr.');
   if (!valid.length) warn('Mindestens einen Techniker auswählen.');
@@ -1316,7 +1340,13 @@ function linesHtml(lines) {
 function render() {
   const r = calc(); LAST = r;
   $('curLbl').textContent = curLabel(r.cur);
-  ['hotel', 'car', 'taxi'].forEach(k => { const pv = r.p ? num(r.p[k]) : NaN; $('ov_' + k).placeholder = isFinite(pv) ? `${fmt0(pv)} ${r.cur}` : 'fehlt – per API ermitteln'; $('src_' + k).textContent = r.srcOf(k); });
+  ['hotel', 'car', 'taxi'].forEach(k => {
+    const el = $('ov_' + k), pv = r.p ? num(r.p[k]) : NaN;
+    el.placeholder = isFinite(pv) ? '' : 'fehlt – per API ermitteln';
+    if (document.activeElement !== el && (E.ov[k] === '' || E.ov[k] === undefined)) { el.value = isFinite(pv) ? String(pv) : ''; el.dataset.pv = el.value; }
+    else if (E.ov[k] === '' || E.ov[k] === undefined) el.dataset.pv = isFinite(pv) ? String(pv) : '';
+    $('src_' + k).textContent = r.srcOf(k);
+  });
   { const p = r.p, miss = p && P_API.some(k => !isFinite(num(p[k])));
     $('profStand').innerHTML = p ? `${standTxt(p.apiStand)}<div class="row" style="margin-top:6px"><button class="btn ${miss ? '' : 'sec '}sm" id="btnProfApi" type="button">${miss ? 'Sätze für ' + esc(p.name) + ' per API ermitteln' : 'Neu per API ermitteln'}</button><span class="muted" id="profApiStat"></span></div>` : '–'; }
   $('ov_nk').placeholder = r.p ? `${fmt0(num(r.p.nk))} ${r.cur} (Länderprofil)` : '';
@@ -1523,7 +1553,7 @@ Ermittle:
 - Preis fürs Langzeitparkieren am Flughafen pro Tag in CHF (günstigste offizielle Variante, umgerechnet in CHF)
 - Preis einer Taxifahrt Wohnort–Flughafen, einfache Fahrt, in CHF
 
-Antworte am Schluss mit genau einem JSON-Objekt in einem \`\`\`json-Block, ohne Text danach. Unbekannte Werte als null:
+Fasse vor dem Ergebnis höchstens in 2–3 Sätzen zusammen. Antworte am Schluss mit genau einem JSON-Objekt in einem \`\`\`json-Block, ohne Text danach. Unbekannte Werte als null:
 { "distanz_km": Zahl, "fahrzeit_auto_h": Zahl, "oev_dauer_h": Zahl, "oev_retour_chf": Zahl, "parkieren_pro_tag_chf": Zahl, "taxi_einfach_chf": Zahl, "bemerkung": "kurz, Deutsch (Schweiz), ss statt ß" }`;
   try {
     const r = await callClaude(prompt, 3);
@@ -1536,7 +1566,7 @@ Antworte am Schluss mit genau einem JSON-Objekt in einem \`\`\`json-Block, ohne 
     touch(t); renderTechs();
     const s = stat(); if (s) s.textContent = `Ausgewertet (${r.searches} Websuchen)`;
     return true;
-  } catch (e) { const s = stat(); if (s) s.textContent = 'Fehler: ' + e.message; return false; }
+  } catch (e) { const s = stat(); if (s) s.innerHTML = 'Fehler: ' + esc(e.message) + (LAST_RAW ? ' · <a href="#" data-raw style="color:var(--brand-2)">Rohantwort</a>' : ''); return false; }
 }
 function renderStamm() {
   renderKunden();
@@ -1682,7 +1712,7 @@ Ermittle:
 - die Strassendistanz in km und die übliche Fahrzeit in Minuten vom Flughafen zur Adresse
 - bis zu zwei sinnvolle alternative Flughäfen mit Strassendistanz
 
-Antworte am Schluss mit genau einem JSON-Objekt in einem \`\`\`json-Block, ohne Text danach. Unbekannte Werte als null:
+Fasse vor dem Ergebnis höchstens in 2–3 Sätzen zusammen. Antworte am Schluss mit genau einem JSON-Objekt in einem \`\`\`json-Block, ohne Text danach. Unbekannte Werte als null:
 {
   "land": "", "land_iso": "", "waehrung": "", "ort": "",
   "flughafen_iata": "", "flughafen_name": "",
@@ -1710,7 +1740,7 @@ Antworte am Schluss mit genau einem JSON-Objekt in einem \`\`\`json-Block, ohne 
     const s = stat(); if (s) s.textContent = `Ausgewertet (${r.searches} Websuchen)${p ? '' : ' – kein passendes Länderprofil gefunden'}`;
     return true;
   } catch (e) {
-    const s = stat(); if (s) s.textContent = 'Fehler: ' + e.message; return false;
+    const s = stat(); if (s) s.innerHTML = 'Fehler: ' + esc(e.message) + (LAST_RAW ? ' · <a href="#" data-raw style="color:var(--brand-2)">Rohantwort</a>' : ''); return false;
   }
 }
 
@@ -1947,14 +1977,15 @@ Landeswährung im Profil: ${p.cur}
 - Mietwagen: Kompaktklasse, pro Tag, inkl. Basisversicherung, bei Miete über 1–3 Wochen
 - Taxi: einfache Fahrt Flughafen – Hotel/Kunde, typische Strecke 20–40 km
 
-Antworte am Schluss mit genau einem JSON-Objekt in einem \`\`\`json-Block, ohne Text danach. Unbekannte Werte als null:
-{ "waehrung": "${p.cur}", "hotel_pro_nacht": Zahl, "mietwagen_pro_tag": Zahl, "taxi_pro_fahrt": Zahl, "bemerkung": "kurz, Deutsch (Schweiz), ss statt ß" }`;
+Fasse vor dem Ergebnis höchstens in 2–3 Sätzen zusammen. Antworte am Schluss mit genau einem JSON-Objekt in einem \`\`\`json-Block, ohne Text danach. Unbekannte Werte als null:
+{ "waehrung": "${p.cur}", "landeswaehrung": "ISO-Code der Landeswährung", "hotel_pro_nacht": Zahl, "mietwagen_pro_tag": Zahl, "taxi_pro_fahrt": Zahl, "bemerkung": "kurz, Deutsch (Schweiz), ss statt ß" }`;
   try {
     const r = await callClaude(prompt, 3);
     const j = extractJSON(r.text); if (!j) throw new Error('Die Antwort enthielt kein auswertbares Ergebnis');
     const set = (k, v) => { v = convCur(v, j.waehrung || p.cur, p.cur); if (isFinite(v)) p[k] = Math.round(v * 100) / 100; };
     set('hotel', j.hotel_pro_nacht); set('car', j.mietwagen_pro_tag); set('taxi', j.taxi_pro_fahrt);
     p.apiStand = { at: Date.now(), src: 'api' }; p.apiBemerkung = j.bemerkung || '';
+    if (/^[A-Za-z]{3}$/.test(String(j.landeswaehrung || ''))) p.landesWaehrung = String(j.landeswaehrung).toUpperCase();
     R.updatedAt = Date.now(); changed(); renderRates(); writeForm(); render();
     stat(`Sätze für ${p.name} ermittelt und im Länderprofil gespeichert`);
     return true;
@@ -2040,12 +2071,13 @@ function apiErr(s, j) {
   if (s === 529 || s === 503) return 'API überlastet, bitte später nochmals versuchen';
   return `API-Fehler ${s}${m ? ': ' + m : ''}`;
 }
+let LAST_RAW = '';
 async function callClaude(prompt, maxUses, signal) {
   const model = CFG.ai.model.trim() || 'claude-sonnet-5-5';
   const messages = [{ role: 'user', content: prompt }];
   let content = [], searches = 0;
   for (let i = 0; i < 4; i++) {
-    const body = { model, max_tokens: 4096, messages };
+    const body = { model, max_tokens: 16000, messages };
     if (maxUses > 0) body.tools = [{ type: 'web_search_20250305', name: 'web_search', max_uses: maxUses }];
     const res = await fetch(API_URL, { method: 'POST', signal, headers: apiHeaders(), body: JSON.stringify(body) });
     const j = await res.json().catch(() => ({}));
@@ -2053,15 +2085,49 @@ async function callClaude(prompt, maxUses, signal) {
     searches += (j.usage && j.usage.server_tool_use && j.usage.server_tool_use.web_search_requests) || 0;
     content = content.concat(j.content || []);
     if (j.stop_reason === 'pause_turn') { messages.push({ role: 'assistant', content: j.content }); continue; }
+    if (j.stop_reason === 'max_tokens') { // abgeschnitten: genau dort weiterschreiben lassen
+      messages.push({ role: 'assistant', content: (j.content || []).filter(b => b.type === 'text') });
+      messages.push({ role: 'user', content: 'Deine Antwort wurde abgeschnitten. Schreibe ohne Wiederholung genau dort weiter, wo du aufgehört hast.' });
+      continue;
+    }
     break;
   }
-  return { content, searches, model, text: content.filter(b => b.type === 'text').map(b => b.text).join('') };
+  const text = content.filter(b => b.type === 'text').map(b => b.text).join('');
+  LAST_RAW = text;
+  return { content, searches, model, text };
 }
 function extractJSON(t) {
-  const c = []; const m = t.match(/```json\s*([\s\S]*?)```/i); if (m) c.push(m[1]);
-  const s = t.indexOf('{'), e = t.lastIndexOf('}'); if (s >= 0 && e > s) c.push(t.slice(s, e + 1));
-  for (const x of c) { try { return JSON.parse(x); } catch (_) { } }
+  t = String(t || '');
+  const cands = [];
+  const re = /```(?:json)?\s*([\s\S]*?)```/gi; let m; while ((m = re.exec(t))) cands.push(m[1]);
+  // alle vollständigen Objekte auf oberster Ebene (Klammern zählen, Strings beachten)
+  let depth = 0, start = -1, inStr = false, esc_ = false;
+  for (let i = 0; i < t.length; i++) {
+    const ch = t[i];
+    if (inStr) { if (esc_) esc_ = false; else if (ch === '\\') esc_ = true; else if (ch === '"') inStr = false; continue; }
+    if (ch === '"') inStr = true;
+    else if (ch === '{') { if (depth === 0) start = i; depth++; }
+    else if (ch === '}' && depth > 0) { depth--; if (depth === 0 && start >= 0) { cands.push(t.slice(start, i + 1)); start = -1; } }
+  }
+  const clean = s => { // Kommentare ausserhalb von Strings entfernen, dann überzählige Kommas
+    let o = '', q = false, e2 = false;
+    for (let i = 0; i < s.length; i++) {
+      const ch = s[i];
+      if (q) { o += ch; if (e2) e2 = false; else if (ch === '\\') e2 = true; else if (ch === '"') q = false; continue; }
+      if (ch === '"') { q = true; o += ch; continue; }
+      if (ch === '/' && s[i + 1] === '/') { while (i < s.length && s[i] !== '\n') i++; o += '\n'; continue; }
+      if (ch === '/' && s[i + 1] === '*') { i = s.indexOf('*/', i + 2); if (i < 0) break; i++; continue; }
+      o += ch;
+    }
+    return o.replace(/,\s*([}\]])/g, '$1');
+  };
+  const order = cands.slice().sort((a, b) => b.length - a.length); // grösstes zuerst
+  for (const c of order) { for (const v of [c, clean(c)]) { try { const o = JSON.parse(v); if (o && typeof o === 'object') return o; } catch (_) { } } }
   return null;
+}
+function showRaw() {
+  $('rawText').value = LAST_RAW || '(keine Antwort gespeichert)';
+  $('rawDialog').showModal();
 }
 function convCur(v, from, to) {
   v = num(v); if (!isFinite(v)) return NaN;
@@ -2100,7 +2166,7 @@ Lokale Währung: ${cur}
 
 Suche im Web nach aktuellen Preisen. Flüge: Wähle für jeden Techniker einen konkreten, real existierenden Hin- und Rückflug an seinen Reisedaten – bevorzugt Direktflug bzw. kurze Gesamtreisezeit, Abflug nicht vor 07:00 – und gib Airline, Flugnummer(n), Datum, Abflug- und Ankunftszeit (Ortszeit), Umsteigeort sowie pro Strecke die Reisedauer vom Abflug bis zur Ankunft inkl. Umsteigezeit in Stunden (Zeitverschiebung berücksichtigt) an. Gib für diesen Flug die Retourpreise in Economy, Premium Economy und Business an. Zusatzgepäck: Gebühr dieser Airline für das angegebene Zusatzgepäck des Technikers, Hin- und Rückflug zusammen, in CHF, je Klasse (0, wenn im Tarif enthalten).
 Visum: Prüfe für jede Nationalität, ob für diese Geschäftsreise mit Montagearbeit im Zielland ein Visum oder eine elektronische Einreisegenehmigung nötig ist, mit Kosten in CHF und Vorlaufzeit.
-Antworte am Schluss mit genau einem JSON-Objekt in einem \`\`\`json-Block, ohne Text danach. Unbekannte Werte als null:
+Fasse vor dem Ergebnis höchstens in 2–3 Sätzen zusammen. Antworte am Schluss mit genau einem JSON-Objekt in einem \`\`\`json-Block, ohne Text danach. Unbekannte Werte als null:
 {
   "fluege": [ { "techniker": "Name", "von": "IATA", "nach": "IATA", "flugdauer_h": Zahl, "umstiege": Zahl,
       "preise_chf": { "economy": Zahl, "premium_economy": Zahl, "business": Zahl },
@@ -2128,7 +2194,7 @@ async function runResearch(isAuto) {
   try {
     const res = await callClaude(buildPrompt(r), maxUses, RES_ABORT.signal);
     const json = extractJSON(res.text);
-    if (!json) throw new Error('Die Antwort enthielt kein auswertbares Ergebnis');
+    if (!json) throw Object.assign(new Error('Die Antwort enthielt kein auswertbares Ergebnis'), { raw: true });
     const src = new Map();
     res.content.forEach(b => { if (b.type === 'text' && Array.isArray(b.citations)) b.citations.forEach(c => c.url && !src.has(c.url) && src.set(c.url, c.title || c.url)); });
     (Array.isArray(json.quellen) ? json.quellen : []).forEach(q => q && q.url && !src.has(q.url) && src.set(q.url, q.titel || q.url));
@@ -2139,7 +2205,7 @@ async function runResearch(isAuto) {
     applyResearch(true);
     toast(isAuto ? 'Online-Werte ermittelt und übernommen' : 'Recherche abgeschlossen und übernommen');
   } catch (e) {
-    $('resStatus').textContent = e.name === 'AbortError' ? 'Abgebrochen.' : 'Fehler: ' + e.message;
+    $('resStatus').innerHTML = e.name === 'AbortError' ? 'Abgebrochen.' : 'Fehler: ' + esc(e.message) + (LAST_RAW ? ' · <a href="#" id="lnkRaw" style="color:var(--brand-2)">Rohantwort anzeigen</a>' : '');
   } finally { RES_ABORT = null; setResBusy(false); }
 }
 function flightPrices(x) {
@@ -2325,6 +2391,9 @@ $('btnWipe').addEventListener('click', () => { if (!confirm('Alle lokalen Daten,
 $('nav').addEventListener('click', ev => { const b = ev.target.closest('button'); if (b) showTab(b.dataset.tab); });
 $('ver').addEventListener('click', () => { $('vhList').innerHTML = vhHtml(); $('vhDialog').showModal(); });
 $('vhClose').addEventListener('click', () => $('vhDialog').close());
+$('rawClose').addEventListener('click', () => $('rawDialog').close());
+$('rawCopy').addEventListener('click', () => { navigator.clipboard && navigator.clipboard.writeText($('rawText').value).then(() => toast('Kopiert'), () => { $('rawText').select(); document.execCommand('copy'); toast('Kopiert'); }); });
+document.addEventListener('click', ev => { const a = ev.target.closest('#lnkRaw, [data-raw]'); if (a) { ev.preventDefault(); showRaw(); } });
 
 /* ---------- Start ---------- */
 $('ver').textContent = 'v' + APP_VERSION;
