@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-21",
   "verantwortlich": "",
-  "updatedAt": 1795260118455,
+  "updatedAt": 1795260776862,
   "profiles": [
    {
     "id": "ch",
@@ -78,7 +78,7 @@
    {
     "id": "m-konv",
     "name": "Konventionell",
-    "satz": ""
+    "satz": 165
    },
    {
     "id": "m-dig",
@@ -223,5 +223,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795260703385
+ "updatedAt": 1795260776862
 }
