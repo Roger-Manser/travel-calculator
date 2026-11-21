@@ -122,10 +122,11 @@
    "arten": [
     "Installationstechniker"
    ],
-   "updatedAt": 1795258900250,
+   "updatedAt": 1795258928253,
    "gepaeckKg": 30,
    "anreiseModus": "auto",
-   "autoH": 0.5
+   "autoH": 0.5,
+   "nationalitaet": "Österreich"
   }
  ],
  "kunden": [
@@ -159,5 +160,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795258900250
+ "updatedAt": 1795258928253
 }
