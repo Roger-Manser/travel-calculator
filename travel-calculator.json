@@ -108,11 +108,11 @@
  "techniker": [
   {
    "id": "mwqa1sita14sv",
-   "name": "Johannes Strauss",
-   "flughafen": "ZRH",
-   "gepaeck": false,
+   "name": "Johannes StraussZRH",
+   "flughafen": "",
+   "gepaeck": true,
    "arten": [],
-   "updatedAt": 1795257653935
+   "updatedAt": 1795257659628
   }
  ],
  "kunden": [
@@ -146,5 +146,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795257653935
+ "updatedAt": 1795257659628
 }
