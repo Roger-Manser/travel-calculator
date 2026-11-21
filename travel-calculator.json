@@ -122,12 +122,18 @@
    "arten": [
     "Installationstechniker"
    ],
-   "updatedAt": 1795258935524,
+   "updatedAt": 1795258958747,
    "gepaeckKg": 30,
    "anreiseModus": "auto",
-   "autoH": 0.5,
+   "autoH": 0.8,
    "nationalitaet": "Österreich",
-   "wohnort": "Wiener Neustadt"
+   "wohnort": "Wiener Neustadt",
+   "anreiseKm": 54,
+   "oevH": 1.25,
+   "oevRetourChf": 29.5,
+   "parkenTagChf": 29,
+   "anreiseBemerkung": "ÖV-Retourpreis geschätzt (ca. 16 EUR pro Weg, Normalpreis nicht direkt bei ÖBB verifiziert). Parkpreis: offizieller Parkplatz C, 31,50 EUR/Tag laut älterer Quelle, heute evtl. leicht höher. Kurs 1 EUR = 0.9213 CHF. Private Parkplätze ab ca. 6 EUR/Tag, aber nicht offiziell.",
+   "anreiseAusgewertet": 1795258958747
   }
  ],
  "kunden": [
@@ -161,5 +167,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795258935524
+ "updatedAt": 1795258958747
 }
