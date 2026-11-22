@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-21",
   "verantwortlich": "",
-  "updatedAt": 1795273181643,
+  "updatedAt": 1795336274186,
   "profiles": [
    {
     "id": "ch",
@@ -60,7 +60,7 @@
    "CHF": 1,
    "EUR": 0.9223,
    "USD": 0.8392,
-   "SEK": 0.082
+   "SEK": 0.0823
   },
   "classes": [
    {
@@ -94,7 +94,8 @@
   "vorlaufGepaeckH": 3,
   "kmPrivat": 0,
   "daily": {
-   "fx": "2026-11-21"
+   "fx": "2026-11-22",
+   "jahr": "2026-11-22"
   },
   "maschinen": [
    {
@@ -693,5 +694,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795273300720
+ "updatedAt": 1795336274186
 }
