@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v3.8 – Farbschema Anthrazit / Orange (hell und dunkel), neues App-Icon -->
+<!-- Gallus Travel Calculator v3.9 – geschätztes API-Guthaben (Aufladungen, Verbrauch pro Abfrage, Warnung) -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#151617">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="3.8">
+<meta name="app-version" content="3.9">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
 :root{--bg:#151617;--card:#1e2022;--card2:#26292c;--line:#34373b;--ink:#ececec;--muted:#a3a6aa;--brand:#d07020;--brand-2:#f3a35c;--red:#ef6b6b;--amber:#e8c547;--input:#18191b;
@@ -18,6 +18,9 @@
   --hdr:#ffffff;--errBg:#fdecea;--errTx:#a42a1f;--warnBg:#fff7d1;--warnTx:#6e5600;--pos:#b3261e;--ok:#1e7d4a;--redBtn:#b3261e;--shadow:0 1px 3px rgba(20,20,25,.08);color-scheme:light}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
+#budCard a{color:var(--brand-2)}
+.budBig{font-size:22px;font-weight:700;color:var(--brand)}.budBig.low{color:var(--red)}.budBig small{font-size:13px;font-weight:400;color:var(--muted)}
+.budTab{width:100%;border-collapse:collapse;font-size:13px}.budTab td{padding:4px 6px;border-bottom:1px solid var(--line)}.budTab td.r{text-align:right;white-space:nowrap}
 body{margin:0;font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
 .theme{background:var(--card2);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12px;cursor:pointer}
 header{position:sticky;top:0;z-index:10;background:var(--hdr);box-shadow:var(--shadow);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -349,6 +352,25 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
     </div>
     <div class="row" style="margin-top:12px"><button class="btn sec" id="btnTestApi">API testen</button><span class="muted" id="aiStatus"></span></div>
   </div>
+  <div class="card" id="budCard"><h2>API-Guthaben (Schätzung)</h2>
+    <p class="muted" style="margin-top:0">Anthropic bietet keine Abfrage des Restguthabens an. Die App rechnet deshalb selbst mit: Jede Abfrage wird mit ihren Tokens und Websuchen erfasst und abgezogen. Gleiche den Wert ab und zu mit der <a href="https://platform.claude.com/settings/billing" target="_blank" rel="noopener">Abrechnungsseite</a> ab.</p>
+    <div class="budBig" id="budBig">–</div>
+    <div class="grid" style="margin-top:10px">
+      <label>Betrag in USD<input id="budAmt" inputmode="decimal" placeholder="z.B. 20"></label>
+      <label>Bemerkung<input id="budTxt" placeholder="optional"></label>
+    </div>
+    <div class="row" style="margin-top:10px"><button class="btn" id="budAuf">+ Aufladung erfassen</button><button class="btn sec" id="budStand">Guthaben gemäss Abrechnung setzen</button></div>
+    <h3 style="margin:16px 0 6px;font-size:14px">Preise (USD) und Warnung</h3>
+    <div class="grid">
+      <label>Input pro Mio. Tokens<input data-cfg="ai.pIn" inputmode="decimal"></label>
+      <label>Output pro Mio. Tokens<input data-cfg="ai.pOut" inputmode="decimal"></label>
+      <label>pro Websuche<input data-cfg="ai.pSearch" inputmode="decimal"></label>
+      <label>Warnung unter USD<input data-cfg="ai.warnUsd" inputmode="decimal"></label>
+    </div>
+    <p class="muted" style="margin:6px 0 0">Vorgabe für Claude Sonnet 5.5: Input 2.–, Output 10.– pro Mio. Tokens, Websuche 0.01 pro Suche. Bei einem anderen Modell die Preise anpassen.</p>
+    <h3 style="margin:16px 0 6px;font-size:14px">Letzte Buchungen</h3>
+    <div id="budList" class="muted">–</div>
+  </div>
   <div class="card"><h2>Versionshistorie</h2><div class="vh" id="vhInfo"></div></div>
   <div class="card"><h2>Lokale Daten</h2>
     <p class="muted" style="margin-top:0">Löscht Daten, Entwurf und Einstellungen in diesem Browser. Die Daten im GitHub-Repo bleiben erhalten.</p>
@@ -375,8 +397,14 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '3.8';
+const APP_VERSION = '3.9';
 const VERSION_HISTORY = [
+  { v: '3.9', d: '2026-11-22', items: [
+    'Geschätztes API-Guthaben in den Einstellungen: Aufladungen und Guthaben gemäss Abrechnung erfassen',
+    'Jede API-Abfrage wird mit Tokens und Websuchen erfasst und als Kosten abgezogen',
+    'Kosten der Online-Ermittlung und Restguthaben direkt in der Kalkulation, Warnung bei tiefem Guthaben',
+    'Verbrauchsliste wird über GitHub synchronisiert – alle Geräte zählen mit',
+  ] },
   { v: '3.8', d: '2026-11-22', items: [
     'Farbschema Anthrazit / Orange für die helle und die dunkle Ansicht',
     'Warnungen in Gelb, «günstiger» und Sync-Status in Grün – unterscheidbar von der Grundfarbe Orange',
@@ -1031,11 +1059,11 @@ function ensureRates(r) {
   r.profiles.forEach(p => { if (p.taxi === undefined) { const dp = D.profiles.find(x => x.id === p.id); p.taxi = dp ? dp.taxi : 0; } });
   return r;
 }
-const LISTS = ['einsaetze', 'aufgaben', 'techniker', 'kunden'];
+const LISTS = ['einsaetze', 'aufgaben', 'techniker', 'kunden', 'apiLog'];
 function ensureData(d) {
   d = d || {};
   d.rates = ensureRates(d.rates); d.deleted = d.deleted || {};
-  d.einsaetze = d.einsaetze || []; d.techniker = d.techniker || []; d.kunden = d.kunden || [];
+  d.einsaetze = d.einsaetze || []; d.techniker = d.techniker || []; d.kunden = d.kunden || []; d.apiLog = d.apiLog || [];
   if (!Array.isArray(d.aufgaben)) d.aufgaben = defaultAufgaben();
   if (!d.aufgaben.some(a => a.id === 'a-umb') && !d.deleted['a-umb']) d.aufgaben.splice(Math.min(3, d.aufgaben.length), 0, { id: 'a-umb', name: 'Umbau', art: 'Installationstechniker', updatedAt: 0 }); // Migration v1.7
   d.techniker.forEach(t => { // Migration v1.4: Standard-Zusatzgepäck
@@ -1054,6 +1082,7 @@ const cfgStored = load(LS.cfg, {});
 let CFG = { gh: Object.assign({}, CFG_DEFAULT.gh, cfgStored.gh), ai: Object.assign({}, CFG_DEFAULT.ai, cfgStored.ai) };
 CFG.theme = cfgStored.theme || 'auto';
 if (CFG.ai.autoRes === undefined) CFG.ai.autoRes = true;
+CFG.ai = Object.assign({ pIn: '2', pOut: '10', pSearch: '0.01', warnUsd: '2' }, CFG.ai);
 CFG.offer = Object.assign({ lang: 'de', cur: 'CHF' }, cfgStored.offer);
 
 function blankE() {
@@ -1813,7 +1842,7 @@ Ermittle:
 Fasse vor dem Ergebnis höchstens in 2–3 Sätzen zusammen. Antworte am Schluss mit genau einem JSON-Objekt in einem \`\`\`json-Block, ohne Text danach. Unbekannte Werte als null:
 { "distanz_km": Zahl, "fahrzeit_auto_h": Zahl, "oev_dauer_h": Zahl, "oev_retour_chf": Zahl, "parkieren_pro_tag_chf": Zahl, "taxi_einfach_chf": Zahl, "bemerkung": "kurz, Deutsch (Schweiz), ss statt ß" }`;
   try {
-    const r = await callClaude(prompt, 3);
+    const r = await callClaude(prompt, 3, undefined, `Anreise ${t.name}`);
     const j = extractJSON(r.text); if (!j) throw new Error('Die Antwort enthielt kein auswertbares Ergebnis');
     const setN = (k, v, d) => { v = num(v); if (isFinite(v)) t[k] = Math.round(v * (d || 1)) / (d || 1); };
     setN('anreiseKm', j.distanz_km); setN('autoH', j.fahrzeit_auto_h, 100); setN('oevH', j.oev_dauer_h, 100);
@@ -1978,7 +2007,7 @@ Fasse vor dem Ergebnis höchstens in 2–3 Sätzen zusammen. Antworte am Schluss
   "bemerkung": "kurz, Deutsch (Schweiz), ss statt ß"
 }`;
   try {
-    const r = await callClaude(prompt, 3);
+    const r = await callClaude(prompt, 3, undefined, `Kunde ${k.name}`);
     const j = extractJSON(r.text);
     if (!j) throw new Error('Die Antwort enthielt kein auswertbares Ergebnis');
     const set = (key, v) => { if (v !== null && v !== undefined && v !== '') k[key] = v; };
@@ -2210,7 +2239,7 @@ async function syncNow(manual) {
     if (SYNC.again) { SYNC.again = false; scheduleSync(); }
   }
 }
-function refreshAll() { writeForm(); renderRates(); renderStamm(); renderList(); render(); }
+function refreshAll() { writeForm(); renderRates(); renderStamm(); renderList(); render(); renderBudget(); }
 
 /* ---------- Tägliche Aktualisierungen ---------- */
 // Jede automatische Aktualisierung läuft höchstens einmal pro Tag. Der Tag wird lokal und (über die Firmensätze) per Sync gemerkt,
@@ -2242,7 +2271,7 @@ Landeswährung im Profil: ${p.cur}
 Fasse vor dem Ergebnis höchstens in 2–3 Sätzen zusammen. Antworte am Schluss mit genau einem JSON-Objekt in einem \`\`\`json-Block, ohne Text danach. Unbekannte Werte als null:
 { "waehrung": "${p.cur}", "landeswaehrung": "ISO-Code der Landeswährung", "hotel_pro_nacht": Zahl, "mietwagen_pro_tag": Zahl, "taxi_pro_fahrt": Zahl, "bemerkung": "kurz, Deutsch (Schweiz), ss statt ß" }`;
   try {
-    const r = await callClaude(prompt, 3);
+    const r = await callClaude(prompt, 3, undefined, `Länderprofil ${p.name}`);
     const j = extractJSON(r.text); if (!j) throw new Error('Die Antwort enthielt kein auswertbares Ergebnis');
     const set = (k, v) => { v = convCur(v, j.waehrung || p.cur, p.cur); if (isFinite(v)) p[k] = Math.round(v * 100) / 100; };
     set('hotel', j.hotel_pro_nacht); set('car', j.mietwagen_pro_tag); set('taxi', j.taxi_pro_fahrt);
@@ -2333,11 +2362,11 @@ function apiErr(s, j) {
   if (s === 529 || s === 503) return 'API überlastet, bitte später nochmals versuchen';
   return `API-Fehler ${s}${m ? ': ' + m : ''}`;
 }
-let LAST_RAW = '';
-async function callClaude(prompt, maxUses, signal) {
+let LAST_RAW = '', LAST_USD = 0;
+async function callClaude(prompt, maxUses, signal, label) {
   const model = CFG.ai.model.trim() || 'claude-sonnet-5-5';
   const messages = [{ role: 'user', content: prompt }];
-  let content = [], searches = 0;
+  let content = [], searches = 0, usd = 0;
   for (let i = 0; i < 4; i++) {
     const body = { model, max_tokens: 16000, messages };
     if (maxUses > 0) body.tools = [{ type: 'web_search_20250305', name: 'web_search', max_uses: maxUses }];
@@ -2345,6 +2374,7 @@ async function callClaude(prompt, maxUses, signal) {
     const j = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(apiErr(res.status, j));
     searches += (j.usage && j.usage.server_tool_use && j.usage.server_tool_use.web_search_requests) || 0;
+    usd += logUsage(j.usage, label || 'API-Abfrage');
     content = content.concat(j.content || []);
     if (j.stop_reason === 'pause_turn') { messages.push({ role: 'assistant', content: j.content }); continue; }
     if (j.stop_reason === 'max_tokens') { // abgeschnitten: genau dort weiterschreiben lassen
@@ -2355,9 +2385,63 @@ async function callClaude(prompt, maxUses, signal) {
     break;
   }
   const text = content.filter(b => b.type === 'text').map(b => b.text).join('');
-  LAST_RAW = text;
-  return { content, searches, model, text };
+  LAST_RAW = text; LAST_USD = usd;
+  return { content, searches, model, text, usd };
 }
+/* ---------- API-Guthaben (Schätzung) ---------- */
+// Buchungen in DATA.apiLog (synchronisiert): typ 'stand' setzt das Guthaben, 'auf' addiert, 'use' zieht ab.
+function usageUsd(u) {
+  if (!u) return 0;
+  const pi = num(CFG.ai.pIn), po = num(CFG.ai.pOut), ps = num(CFG.ai.pSearch);
+  const inp = (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0) * 1.25 + (u.cache_read_input_tokens || 0) * 0.1;
+  const srch = (u.server_tool_use && u.server_tool_use.web_search_requests) || 0;
+  return (isFinite(pi) ? inp * pi : 0) / 1e6 + (isFinite(po) ? (u.output_tokens || 0) * po : 0) / 1e6 + (isFinite(ps) ? srch * ps : 0);
+}
+function logUsage(u, label) {
+  const usd = usageUsd(u); if (!(usd > 0)) return 0;
+  const srch = (u.server_tool_use && u.server_tool_use.web_search_requests) || 0;
+  const now = Date.now();
+  DATA.apiLog.push({ id: 'api-' + uid(), typ: 'use', at: now, usd: Math.round(usd * 10000) / 10000, text: label, tin: u.input_tokens || 0, tout: u.output_tokens || 0, srch, updatedAt: now });
+  changed(); renderBudget();
+  const b = budget();
+  if (b.known && b.bal < num(CFG.ai.warnUsd)) toast(`API-Guthaben tief: geschätzt noch USD ${fmt(b.bal)}`);
+  return usd;
+}
+function budget() {
+  const log = DATA.apiLog.filter(e => !(DATA.deleted[e.id] >= (e.updatedAt || 0))).slice().sort((a, b) => a.at - b.at);
+  let bal = 0, known = false, since = null, used = 0;
+  log.forEach(e => {
+    if (e.typ === 'stand') { bal = num(e.usd) || 0; known = true; since = e.at; used = 0; }
+    else if (e.typ === 'auf') { bal += num(e.usd) || 0; known = true; if (!since) since = e.at; }
+    else if (e.typ === 'use') { bal -= num(e.usd) || 0; used += num(e.usd) || 0; }
+  });
+  return { bal, known, since, used, log };
+}
+function renderBudget() {
+  const el = $('budBig'); if (!el) return;
+  const b = budget();
+  if (!b.known) { el.className = 'budBig'; el.innerHTML = '<small>Noch kein Guthaben erfasst – Betrag eingeben und «Guthaben gemäss Abrechnung setzen».</small>'; }
+  else {
+    el.className = 'budBig' + (b.bal < num(CFG.ai.warnUsd) ? ' low' : '');
+    el.innerHTML = `USD ${fmt(b.bal)} <small>geschätztes Restguthaben · seit ${new Date(b.since).toLocaleDateString('de-CH')} verbraucht USD ${fmt(b.used)}</small>`;
+  }
+  const typ = { stand: 'Guthaben gesetzt', auf: 'Aufladung', use: 'Verbrauch' };
+  const rows = b.log.slice(-20).reverse();
+  $('budList').innerHTML = rows.length ? `<table class="budTab">${rows.map(e => `<tr><td>${new Date(e.at).toLocaleString('de-CH', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</td><td>${typ[e.typ] || e.typ}</td><td>${esc(e.text || '')}${e.typ === 'use' ? ` <span class="muted">(${fmt0((e.tin || 0) / 1000)}k in · ${fmt0((e.tout || 0) / 1000)}k out${e.srch ? ' · ' + e.srch + ' Suchen' : ''})</span>` : ''}</td><td class="r">${e.typ === 'use' ? '−' : e.typ === 'auf' ? '+' : '='} ${e.typ === 'use' ? (+e.usd).toFixed(3) : fmt(+e.usd)}</td><td class="r"><button class="btn sec" style="padding:2px 8px" data-budel="${e.id}" title="Buchung löschen">✕</button></td></tr>`).join('')}</table>` : 'Noch keine Buchungen.';
+}
+function budBook(typ) {
+  const v = num($('budAmt').value);
+  if (!isFinite(v) || v < 0 || (typ === 'auf' && v === 0)) { toast('Bitte einen gültigen Betrag in USD eingeben'); return; }
+  const now = Date.now();
+  DATA.apiLog.push({ id: 'api-' + uid(), typ, at: now, usd: v, text: $('budTxt').value.trim(), updatedAt: now });
+  $('budAmt').value = ''; $('budTxt').value = '';
+  changed(); renderBudget(); toast(typ === 'auf' ? 'Aufladung erfasst' : 'Guthaben gesetzt');
+}
+function budCostTxt(usd) {
+  const b = budget();
+  return `Kosten ca. USD ${fmt(usd)}` + (b.known ? ` · Restguthaben ca. USD ${fmt(b.bal)}` : '');
+}
+
 function extractJSON(t) {
   t = String(t || '');
   const cands = [];
@@ -2451,10 +2535,10 @@ async function runResearch(isAuto) {
   if (r.p && P_API.some(k => !isFinite(num(r.p[k])))) { $('resStatus').textContent = `Ermittle zuerst die Länderprofil-Sätze für ${r.p.name} …`; await evalProfile(r.p.id, true); }
   if (!r.valid.length) { if (!isAuto) toast('Bitte mindestens einen Techniker wählen'); return; }
   const maxUses = Math.max(1, Math.min(20, parseInt(CFG.ai.maxSearches, 10) || 5));
-  RES_ABORT = new AbortController(); setResBusy(true);
+  RES_ABORT = new AbortController(); setResBusy(true); LAST_USD = 0;
   $('resStatus').textContent = (isAuto ? 'Automatische Online-Ermittlung läuft' : 'Recherche läuft') + ' … (kann 30–90 Sekunden dauern)'; $('resApplied').textContent = '';
   try {
-    const res = await callClaude(buildPrompt(r), maxUses, RES_ABORT.signal);
+    const res = await callClaude(buildPrompt(r), maxUses, RES_ABORT.signal, `Flüge ${E.name || 'Einsatz'}`);
     const json = extractJSON(res.text);
     if (!json) throw Object.assign(new Error('Die Antwort enthielt kein auswertbares Ergebnis'), { raw: true });
     const src = new Map();
@@ -2462,12 +2546,12 @@ async function runResearch(isAuto) {
     (Array.isArray(json.quellen) ? json.quellen : []).forEach(q => q && q.url && !src.has(q.url) && src.set(q.url, q.titel || q.url));
     res.content.forEach(b => { if (b.type === 'web_search_tool_result' && Array.isArray(b.content)) b.content.forEach(x => x.url && !src.has(x.url) && src.set(x.url, x.title || x.url)); });
     E.res = { at: Date.now(), key: resKey(), auto: !!isAuto, model: res.model, searches: res.searches, cur: r.cur, trip: `${origins(r).join('/')}–${r.k.flughafen || '?'} · ${dShort(r.S.first)}–${dShort(r.S.last)}`, data: json, sources: [...src].slice(0, 10).map(([url, title]) => ({ url, title })) };
-    $('resStatus').textContent = '';
+    $('resStatus').textContent = budCostTxt(res.usd);
     LAST = calc();
     applyResearch(true);
     toast(isAuto ? 'Online-Werte ermittelt und übernommen' : 'Recherche abgeschlossen und übernommen');
   } catch (e) {
-    $('resStatus').innerHTML = e.name === 'AbortError' ? 'Abgebrochen.' : 'Fehler: ' + esc(e.message) + (LAST_RAW ? ' · <a href="#" id="lnkRaw" style="color:var(--brand-2)">Rohantwort anzeigen</a>' : '');
+    $('resStatus').innerHTML = e.name === 'AbortError' ? 'Abgebrochen.' : 'Fehler: ' + esc(e.message) + (LAST_USD > 0 ? ' · ' + esc(budCostTxt(LAST_USD)) : '') + (LAST_RAW ? ' · <a href="#" id="lnkRaw" style="color:var(--brand-2)">Rohantwort anzeigen</a>' : '');
   } finally { RES_ABORT = null; setResBusy(false); }
 }
 function flightPrices(x) {
@@ -2563,6 +2647,7 @@ async function testApi() {
     const res = await fetch(API_URL, { method: 'POST', headers: apiHeaders(), body: JSON.stringify({ model: CFG.ai.model.trim() || 'claude-sonnet-5-5', max_tokens: 20, messages: [{ role: 'user', content: 'Antworte nur mit: OK' }] }) });
     const j = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(apiErr(res.status, j));
+    logUsage(j.usage, 'API-Test');
     $('aiStatus').textContent = `Verbindung OK (${j.model || CFG.ai.model}).`;
   } catch (e) { $('aiStatus').textContent = 'Fehler: ' + e.message; }
 }
@@ -2596,6 +2681,7 @@ function renderSettings() {
 function onCfgChange(ev) {
   const el = ev.target; if (!el.dataset.cfg) return;
   const [a, b] = el.dataset.cfg.split('.'); CFG[a][b] = el.value.trim(); store(LS.cfg, CFG);
+  if (a === 'ai') renderBudget();
   if (a === 'gh') setSync(ghReady() ? 'pending' : 'off', ghReady() ? 'Bereit – bitte synchronisieren' : 'Nur lokal');
 }
 function showTab(name) {
@@ -2658,6 +2744,10 @@ document.querySelector('section[data-tab="settings"]').addEventListener('change'
 $('btnSync').addEventListener('click', () => syncNow(true));
 $('syncBtn').addEventListener('click', () => syncNow(true));
 $('btnTestApi').addEventListener('click', testApi);
+$('budAuf').addEventListener('click', () => budBook('auf'));
+$('budStand').addEventListener('click', () => budBook('stand'));
+$('budList').addEventListener('click', ev => { const b = ev.target.closest('[data-budel]'); if (!b) return; if (!confirm('Diese Buchung löschen?')) return; const id = b.dataset.budel; DATA.deleted[id] = Date.now(); DATA.apiLog = DATA.apiLog.filter(e => e.id !== id); changed(); renderBudget(); });
+renderBudget();
 $('btnFx').addEventListener('click', () => updateFx(true));
 $('btnWipe').addEventListener('click', () => { if (!confirm('Alle lokalen Daten, den Entwurf und die Einstellungen (inkl. Token und API-Key) in diesem Browser löschen?')) return; Object.values(LS).forEach(k => localStorage.removeItem(k)); location.reload(); });
 $('nav').addEventListener('click', ev => { const b = ev.target.closest('button'); if (b) showTab(b.dataset.tab); });
