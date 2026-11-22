@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v3.7 – Design: helle und dunkle Ansicht mit Umschalter (Hell / Dunkel / Automatisch) -->
+<!-- Gallus Travel Calculator v3.8 – Farbschema Anthrazit / Orange (hell und dunkel), neues App-Icon -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -6,16 +6,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gallus Travel Calculator</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0d1c16">
+<meta name="theme-color" content="#151617">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="3.7">
+<meta name="app-version" content="3.8">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
-:root{--bg:#0d1c16;--card:#142a20;--card2:#1a3428;--line:#2a4b3b;--ink:#e6f0ea;--muted:#93ad9f;--brand:#2f8a62;--brand-2:#5fc79c;--red:#e46a6a;--amber:#e2b252;--input:#0f241b;
-  --hdr:#0a1712;--errBg:rgba(228,106,106,.15);--errTx:#ffb3b3;--warnBg:rgba(226,178,82,.14);--warnTx:#f3d48e;--pos:#f3a0a0;--redBtn:#7a2b2b;--shadow:none;color-scheme:dark}
-:root[data-theme="light"]{--bg:#eef2ef;--card:#ffffff;--card2:#f2f6f3;--line:#d2ddd6;--ink:#1b2b23;--muted:#5b6f64;--brand:#2a7d58;--brand-2:#1f7a52;--red:#c0392b;--amber:#a86a12;--input:#ffffff;
-  --hdr:#ffffff;--errBg:#fdecea;--errTx:#a42a1f;--warnBg:#fff4de;--warnTx:#7a4f0a;--pos:#b3261e;--redBtn:#b3261e;--shadow:0 1px 3px rgba(20,40,30,.08);color-scheme:light}
+:root{--bg:#151617;--card:#1e2022;--card2:#26292c;--line:#34373b;--ink:#ececec;--muted:#a3a6aa;--brand:#d07020;--brand-2:#f3a35c;--red:#ef6b6b;--amber:#e8c547;--input:#18191b;
+  --hdr:#0f1011;--errBg:rgba(239,107,107,.15);--errTx:#ffb3b3;--warnBg:rgba(232,197,71,.13);--warnTx:#f0d878;--pos:#f3a0a0;--ok:#6fcf97;--redBtn:#8f2f2f;--shadow:none;color-scheme:dark}
+:root[data-theme="light"]{--bg:#f1f2f3;--card:#ffffff;--card2:#f5f5f6;--line:#d9dbde;--ink:#1f2124;--muted:#62666b;--brand:#c8661a;--brand-2:#a8530f;--red:#c0392b;--amber:#8a6d00;--input:#ffffff;
+  --hdr:#ffffff;--errBg:#fdecea;--errTx:#a42a1f;--warnBg:#fff7d1;--warnTx:#6e5600;--pos:#b3261e;--ok:#1e7d4a;--redBtn:#b3261e;--shadow:0 1px 3px rgba(20,20,25,.08);color-scheme:light}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{margin:0;font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
@@ -25,7 +25,7 @@ h1{font-size:17px;margin:0}
 .ver{background:var(--card2);color:var(--brand-2);border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:12px;cursor:pointer}
 .sync{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);background:none;border:0;cursor:pointer}
 .dot{width:10px;height:10px;border-radius:50%;background:#666;display:inline-block}
-.dot.ok{background:var(--brand-2)}.dot.busy{background:var(--amber)}.dot.err{background:var(--red)}
+.dot.ok{background:var(--ok)}.dot.busy{background:var(--amber)}.dot.err{background:var(--red)}
 nav{display:flex;gap:4px;padding:8px 16px 0;flex-wrap:wrap;max-width:1300px;margin:0 auto}
 nav button{background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:8px 12px;font-size:14px;cursor:pointer}
 nav button.on{color:var(--ink);border-color:var(--brand-2)}
@@ -65,7 +65,7 @@ tr.grp td{background:var(--card2);font-weight:600;color:var(--brand-2)}
 .warnTxt{color:var(--amber)}
 .tbl-edit input,.tbl-edit select{padding:5px 7px}
 .tbl-edit td.num input{text-align:right;min-width:80px}
-.pos{color:var(--pos)}.neg{color:var(--brand-2)}
+.pos{color:var(--pos)}.neg{color:var(--ok)}
 .trow{display:flex;gap:6px 12px;align-items:center;flex-wrap:wrap;padding:7px 0;border-bottom:1px solid var(--line)}
 .trow .chk{margin:0}
 .trow.on b{color:var(--brand-2)}
@@ -375,8 +375,13 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '3.7';
+const APP_VERSION = '3.8';
 const VERSION_HISTORY = [
+  { v: '3.8', d: '2026-11-22', items: [
+    'Farbschema Anthrazit / Orange für die helle und die dunkle Ansicht',
+    'Warnungen in Gelb, «günstiger» und Sync-Status in Grün – unterscheidbar von der Grundfarbe Orange',
+    'App-Icon in Anthrazit / Orange'
+  ] },
   { v: '3.7', d: '2026-11-22', items: [
     'Helle Ansicht zusätzlich zur dunklen',
     'Umschalter oben rechts: Hell, Dunkel oder Automatisch (folgt der System-Einstellung von Windows bzw. Handy)',
@@ -2668,7 +2673,7 @@ function applyTheme() {
   const m = CFG.theme || 'auto';
   const dark = m === 'dark' || (m === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
   document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-  const tc = document.querySelector('meta[name="theme-color"]'); if (tc) tc.content = dark ? '#0d1c16' : '#ffffff';
+  const tc = document.querySelector('meta[name="theme-color"]'); if (tc) tc.content = dark ? '#151617' : '#ffffff';
   $('themeBtn').textContent = THEMES[m];
 }
 $('themeBtn').addEventListener('click', () => {
