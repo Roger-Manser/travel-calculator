@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v3.6 – Preisbasis Endkunde / Intercompany pro Einsatz; Spesensätze in den Stammdaten -->
+<!-- Gallus Travel Calculator v3.7 – Design: helle und dunkle Ansicht mit Umschalter (Hell / Dunkel / Automatisch) -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -9,24 +9,28 @@
 <meta name="theme-color" content="#0d1c16">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="3.6">
+<meta name="app-version" content="3.7">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
-:root{--bg:#0d1c16;--card:#142a20;--card2:#1a3428;--line:#2a4b3b;--ink:#e6f0ea;--muted:#93ad9f;--brand:#2f8a62;--brand-2:#5fc79c;--red:#e46a6a;--amber:#e2b252;--input:#0f241b}
+:root{--bg:#0d1c16;--card:#142a20;--card2:#1a3428;--line:#2a4b3b;--ink:#e6f0ea;--muted:#93ad9f;--brand:#2f8a62;--brand-2:#5fc79c;--red:#e46a6a;--amber:#e2b252;--input:#0f241b;
+  --hdr:#0a1712;--errBg:rgba(228,106,106,.15);--errTx:#ffb3b3;--warnBg:rgba(226,178,82,.14);--warnTx:#f3d48e;--pos:#f3a0a0;--redBtn:#7a2b2b;--shadow:none;color-scheme:dark}
+:root[data-theme="light"]{--bg:#eef2ef;--card:#ffffff;--card2:#f2f6f3;--line:#d2ddd6;--ink:#1b2b23;--muted:#5b6f64;--brand:#2a7d58;--brand-2:#1f7a52;--red:#c0392b;--amber:#a86a12;--input:#ffffff;
+  --hdr:#ffffff;--errBg:#fdecea;--errTx:#a42a1f;--warnBg:#fff4de;--warnTx:#7a4f0a;--pos:#b3261e;--redBtn:#b3261e;--shadow:0 1px 3px rgba(20,40,30,.08);color-scheme:light}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{margin:0;font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
-header{position:sticky;top:0;z-index:10;background:#0a1712;border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.theme{background:var(--card2);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12px;cursor:pointer}
+header{position:sticky;top:0;z-index:10;background:var(--hdr);box-shadow:var(--shadow);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 h1{font-size:17px;margin:0}
 .ver{background:var(--card2);color:var(--brand-2);border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:12px;cursor:pointer}
-.sync{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);background:none;border:0;cursor:pointer}
+.sync{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);background:none;border:0;cursor:pointer}
 .dot{width:10px;height:10px;border-radius:50%;background:#666;display:inline-block}
 .dot.ok{background:var(--brand-2)}.dot.busy{background:var(--amber)}.dot.err{background:var(--red)}
 nav{display:flex;gap:4px;padding:8px 16px 0;flex-wrap:wrap;max-width:1300px;margin:0 auto}
 nav button{background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:8px 12px;font-size:14px;cursor:pointer}
 nav button.on{color:var(--ink);border-color:var(--brand-2)}
 main{max-width:1300px;margin:0 auto;padding:12px 16px 60px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.card{box-shadow:var(--shadow);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px}
 .card h2{font-size:13px;margin:0 0 10px;color:var(--brand-2);text-transform:uppercase;letter-spacing:.5px}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 14px}
 .grid.g4{grid-template-columns:repeat(4,1fr)}
@@ -43,7 +47,7 @@ input[readonly]{opacity:.7}
 .chk{display:flex;align-items:center;font-size:13px;color:var(--ink);margin-top:6px}
 .btn{background:var(--brand);color:#fff;border:0;border-radius:8px;padding:8px 14px;font:inherit;cursor:pointer}
 .btn.sec{background:var(--card2);color:var(--ink);border:1px solid var(--line)}
-.btn.red{background:#7a2b2b;color:#fff;border:0}
+.btn.red{background:var(--redBtn);color:#fff;border:0}
 .btn.sm{padding:4px 9px;font-size:12.5px}
 .btn:disabled{opacity:.5;cursor:default}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -55,13 +59,13 @@ tr.total td{font-weight:700;font-size:15px;border-top:2px solid var(--brand-2);b
 tr.grp td{background:var(--card2);font-weight:600;color:var(--brand-2)}
 .msgs{margin:10px 0 0;padding:0;list-style:none}
 .msgs li{padding:6px 10px;border-radius:7px;margin-bottom:6px;font-size:13px}
-.msgs .err{background:rgba(228,106,106,.15);color:#ffb3b3}
-.msgs .warn{background:rgba(226,178,82,.14);color:#f3d48e}
+.msgs .err{background:var(--errBg);color:var(--errTx)}
+.msgs .warn{background:var(--warnBg);color:var(--warnTx)}
 .muted{color:var(--muted);font-size:12.5px}
 .warnTxt{color:var(--amber)}
 .tbl-edit input,.tbl-edit select{padding:5px 7px}
 .tbl-edit td.num input{text-align:right;min-width:80px}
-.pos{color:#f3a0a0}.neg{color:var(--brand-2)}
+.pos{color:var(--pos)}.neg{color:var(--brand-2)}
 .trow{display:flex;gap:6px 12px;align-items:center;flex-wrap:wrap;padding:7px 0;border-bottom:1px solid var(--line)}
 .trow .chk{margin:0}
 .trow.on b{color:var(--brand-2)}
@@ -92,10 +96,16 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 </style>
 </head>
 <body>
+<script>
+(function () { try { var c = JSON.parse(localStorage.getItem('tc_cfg') || '{}'), m = c.theme || 'auto';
+  var dark = m === 'dark' || (m === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light'); } catch (e) { } })();
+</script>
 <header>
   <h1>Gallus Travel Calculator</h1>
   <button class="ver" id="ver" title="Versionshistorie anzeigen"></button>
-  <button class="sync" id="syncBtn" title="Jetzt synchronisieren"><span class="dot" id="syncDot"></span><span id="syncTxt">Nur lokal</span></button>
+  <button class="sync" id="syncBtn" title="Jetzt synchronisieren" style="margin-left:auto"><span class="dot" id="syncDot"></span><span id="syncTxt">Nur lokal</span></button>
+  <button class="theme" id="themeBtn" title="Ansicht wechseln: Hell / Dunkel / Automatisch"></button>
 </header>
 <nav id="nav">
   <button data-tab="calc" class="on">Kalkulation</button>
@@ -365,8 +375,13 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '3.6';
+const APP_VERSION = '3.7';
 const VERSION_HISTORY = [
+  { v: '3.7', d: '2026-11-22', items: [
+    'Helle Ansicht zusätzlich zur dunklen',
+    'Umschalter oben rechts: Hell, Dunkel oder Automatisch (folgt der System-Einstellung von Windows bzw. Handy)',
+    'Einstellung wird pro Gerät gespeichert'
+  ] },
   { v: '3.6', d: '2026-11-21', items: [
     'Preisbasis pro Einsatz: Endkunde oder Intercompany',
     'Stundensatz pro Maschinentyp je für Endkunde und Intercompany',
@@ -1032,6 +1047,7 @@ let DATA = ensureData(load(LS.data, null));
 const CFG_DEFAULT = { gh: { owner: 'roger-manser', repo: 'travel-calculator-daten', branch: 'main', path: 'travel-calculator.json', token: '' }, ai: { key: '', model: 'claude-sonnet-5-5', maxSearches: 5 } };
 const cfgStored = load(LS.cfg, {});
 let CFG = { gh: Object.assign({}, CFG_DEFAULT.gh, cfgStored.gh), ai: Object.assign({}, CFG_DEFAULT.ai, cfgStored.ai) };
+CFG.theme = cfgStored.theme || 'auto';
 if (CFG.ai.autoRes === undefined) CFG.ai.autoRes = true;
 CFG.offer = Object.assign({ lang: 'de', cur: 'CHF' }, cfgStored.offer);
 
@@ -2645,6 +2661,22 @@ $('vhClose').addEventListener('click', () => $('vhDialog').close());
 $('rawClose').addEventListener('click', () => $('rawDialog').close());
 $('rawCopy').addEventListener('click', () => { navigator.clipboard && navigator.clipboard.writeText($('rawText').value).then(() => toast('Kopiert'), () => { $('rawText').select(); document.execCommand('copy'); toast('Kopiert'); }); });
 document.addEventListener('click', ev => { const a = ev.target.closest('#lnkRaw, [data-raw]'); if (a) { ev.preventDefault(); showRaw(); } });
+
+/* ---------- Design: Hell / Dunkel / Automatisch ---------- */
+const THEMES = { auto: '◐ Automatisch', light: '☀ Hell', dark: '☾ Dunkel' };
+function applyTheme() {
+  const m = CFG.theme || 'auto';
+  const dark = m === 'dark' || (m === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  const tc = document.querySelector('meta[name="theme-color"]'); if (tc) tc.content = dark ? '#0d1c16' : '#ffffff';
+  $('themeBtn').textContent = THEMES[m];
+}
+$('themeBtn').addEventListener('click', () => {
+  const order = ['auto', 'light', 'dark']; CFG.theme = order[(order.indexOf(CFG.theme || 'auto') + 1) % 3];
+  store(LS.cfg, CFG); applyTheme(); toast('Ansicht: ' + THEMES[CFG.theme].slice(2));
+});
+if (window.matchMedia) { const mq = matchMedia('(prefers-color-scheme: dark)'); (mq.addEventListener ? mq.addEventListener('change', applyTheme) : mq.addListener(applyTheme)); }
+applyTheme();
 
 /* ---------- Start ---------- */
 $('ver').textContent = 'v' + APP_VERSION;
