@@ -2544,13 +2544,18 @@
    "id": "mwt9jjt153r8q",
    "name": "Achim Storch",
    "nationalitaet": "Deutscher",
-   "wohnort": "",
+   "wohnort": "35625 Hüttenberg",
    "flughafen": "ZRH",
-   "gepaeck": false,
+   "gepaeck": true,
    "gepaeckKg": 30,
-   "arten": [],
+   "arten": [
+    "Installationstechniker"
+   ],
    "anreiseModus": "auto",
-   "updatedAt": 1795438201612
+   "updatedAt": 1795438223293,
+   "maschinen": [
+    "m-konv"
+   ]
   }
  ],
  "kunden": [
@@ -2789,5 +2794,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795438201612
+ "updatedAt": 1795438223293
 }
