@@ -2562,14 +2562,27 @@
    "id": "mwt96tjpoc7cu",
    "name": "LLC Goznak",
    "adresse": "St. Intergelpostreet 1",
-   "land": "KG",
+   "land": "Kirgisistan",
    "ort": "Bischkek",
    "profileId": "",
-   "flughafen": "",
-   "flughafenName": "",
-   "distanzKm": "",
-   "fahrzeitMin": "",
-   "updatedAt": 1795437671976
+   "flughafen": "FRU",
+   "flughafenName": "Manas International Airport",
+   "distanzKm": 28,
+   "fahrzeitMin": 40,
+   "updatedAt": 1795437686707,
+   "waehrung": "KGS",
+   "alternativen": [
+    {
+     "iata": "ALA",
+     "name": "Almaty International Airport (Kasachstan)",
+     "distanz_km": 240
+    }
+   ],
+   "bemerkung": "Adresse nur ueber Eintrag 'GOZNAK.kg, Intergelpo str. 1A, Bishkek' zugeordnet (1 statt 1A). Distanz und Fahrzeit geschaetzt. Fahrzeit je nach Verkehr 30 bis 60 Min. Almaty nur mit Grenzuebertritt, ca. 4 bis 5 Std. Fahrt. Verbindungen aus Europa nach FRU meist mit Umsteigen (z. B. Istanbul).",
+   "calcStand": {
+    "at": 1795437686707,
+    "src": "api"
+   }
   }
  ],
  "apiLog": [
@@ -2668,10 +2681,21 @@
    "tout": 9985,
    "srch": 5,
    "updatedAt": 1795424096270
+  },
+  {
+   "id": "api-mwt98pf4yhi55",
+   "typ": "use",
+   "at": 1795437686704,
+   "usd": 0.0709,
+   "text": "Kunde LLC Goznak",
+   "tin": 18369,
+   "tout": 1413,
+   "srch": 2,
+   "updatedAt": 1795437686704
   }
  ],
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795437671976
+ "updatedAt": 1795437686707
 }
