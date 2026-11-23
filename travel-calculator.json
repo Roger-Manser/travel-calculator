@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-23",
   "verantwortlich": "",
-  "updatedAt": 1795439526204,
+  "updatedAt": 1795439597937,
   "profiles": [
    {
     "id": "ch",
@@ -115,11 +115,11 @@
      },
      "flug": {
       "src": "api",
-      "at": 1795437895429
+      "at": 1795439597937
      },
      "flugH": {
       "src": "api",
-      "at": 1795437895429
+      "at": 1795439597937
      },
      "spesen": {
       "src": "manuell",
@@ -133,8 +133,8 @@
     },
     "apiBemerkung": "Kurs ca. 1 EUR = 96 KGS (Wise, Nov. 2026). Treibstoff AI-92 ca. 88-90 KGS/l, Diesel ca. 100-102 KGS/l (staatlich gestuetzt, Preisbindung bis Ende 2026); Mietwagen ca. 50 USD/Tag kompakt bei Miete ab 8 Tagen, meist ohne km-Gebuehr, Kaution ca. 300 USD. Hotel (ca. 4800 KGS, 3-Sterne/Businesshotel in Bischkek/Osch) und Taxi (ca. 900-1000 KGS, Flughafen Manas - Bischkek, Preis vorher vereinbaren oder per App) sind Schaetzwerte ohne direkte Quelle.",
     "landesWaehrung": "KGS",
-    "flug": 466.23,
-    "flugH": 18.1
+    "flug": 357.8,
+    "flugH": 12.3
    }
   ],
   "fx": {
@@ -2815,10 +2815,21 @@
    "tout": 2392,
    "srch": 3,
    "updatedAt": 1795438270625
+  },
+  {
+   "id": "api-mwtado4u73sla",
+   "typ": "use",
+   "at": 1795439597934,
+   "usd": 0.2855,
+   "text": "Flüge FitCheck an verschiedenen Maschinen",
+   "tin": 84458,
+   "tout": 6662,
+   "srch": 5,
+   "updatedAt": 1795439597934
   }
  ],
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795439526204
+ "updatedAt": 1795439597937
 }
