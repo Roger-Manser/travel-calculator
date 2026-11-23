@@ -2768,20 +2768,20 @@
     "Installationstechniker"
    ],
    "anreiseModus": "oev",
-   "updatedAt": 1795423121146,
+   "updatedAt": 1795440413070,
    "maschinen": [
     "m-konv"
    ],
    "anreiseKm": 40,
    "autoH": 0.7,
-   "oevH": 1.25,
+   "oevH": 0.75,
    "oevRetourChf": 44,
    "parkenTagChf": 13.4,
    "taxiEinfachChf": 160,
    "anreiseBemerkung": "Distanz, Fahrzeit, ÖV-Dauer, Billettpreis (ZVV, ca. 2 x 22 CHF) und Taxipreis sind Schätzungen, nicht verifiziert. Parkieren: Online-Buchung P60/P65 ab 94 CHF pro Woche (ca. 13.40 CHF/Tag); vor Ort im P6 19 CHF pro Tag ab dem 8. Tag. Dorf ZH hat keinen Bahnhof; Anreise per Postauto nach Andelfingen oder Henggart, dann Bahn via Winterthur zum Flughafen. Fahrplanzeiten nicht ermittelbar, bitte auf sbb.ch prüfen.",
    "anreiseStand": {
-    "at": 1795423121146,
-    "src": "api"
+    "at": 1795440413070,
+    "src": "manuell"
    }
   },
   {
@@ -3071,5 +3071,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795439887153
+ "updatedAt": 1795440413070
 }
