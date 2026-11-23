@@ -1,23 +1,18 @@
 {
  "rates": {
-  "stand": "2026-11-21",
+  "stand": "2026-11-23",
   "verantwortlich": "",
-  "updatedAt": 1795336274186,
+  "updatedAt": 1795410259961,
   "profiles": [
    {
     "id": "ch",
     "name": "Schweiz",
     "cur": "CHF",
-    "hotel": 170,
-    "car": 70,
+    "hotel": "",
+    "car": "",
     "spesen": 60,
     "nk": 10,
-    "taxi": 115,
-    "apiStand": {
-     "at": 1795262663721,
-     "src": "api"
-    },
-    "apiBemerkung": "Richtwerte Nov. 2026: Hotel 3-4 Sterne ausserhalb der Zentren, exkl. Frühstück/Übernachtungstaxe; Mietwagen Kompaktklasse inkl. Basisversicherung bei Wochenmiete (Portal-Durchschnitte tiefer, ca. 45-50); Taxi ca. 30 km nach Tarif ca. 3.80 CHF/km plus Grundtaxe, vorbestellt teils günstiger (ca. 100)."
+    "taxi": ""
    },
    {
     "id": "de",
@@ -38,29 +33,12 @@
     "spesen": 70,
     "nk": 15,
     "taxi": ""
-   },
-   {
-    "id": "mwqc8e4oh4bk8",
-    "name": "Schweden",
-    "cur": "SEK",
-    "hotel": 120,
-    "car": 45,
-    "spesen": 60,
-    "nk": 10,
-    "taxi": 50,
-    "apiStand": {
-     "at": 1795269764262,
-     "src": "api"
-    },
-    "apiBemerkung": "Schätzung, Umrechnung ca. 1 SEK = 0.08 CHF (nicht live geprüft). Hotel ca. 1'400-1'600 SEK, Mietwagen ca. 450-600 SEK (Wochenmiete eher tiefer), Taxi ca. 550-700 SEK Festpreis. Hotel und Mietwagen sind Richtwerte, die Quellen sind teils Stockholm-lastig und uneinheitlich.",
-    "landesWaehrung": "SEK"
    }
   ],
   "fx": {
    "CHF": 1,
    "EUR": 0.9223,
-   "USD": 0.8392,
-   "SEK": 0.0823
+   "USD": 0.8392
   },
   "classes": [
    {
@@ -84,41 +62,38 @@
   "kmSatz": 0.25,
   "carAbKm": 30,
   "lokalKm": 30,
-  "fxStand": {
-   "date": "2026-11-20",
-   "src": "EZB via Frankfurter"
-  },
   "gepaeckArt": "Installationstechniker",
   "gepaeckKg": 30,
   "vorlaufH": 2,
   "vorlaufGepaeckH": 3,
   "kmPrivat": 0,
-  "daily": {
-   "fx": "2026-11-22",
-   "jahr": "2026-11-22"
-  },
   "maschinen": [
    {
     "id": "m-konv",
     "name": "Konventionell",
-    "satz": 185,
-    "satzIC": 165
+    "satz": ""
    },
    {
     "id": "m-dig",
     "name": "Digital",
-    "satz": 200,
-    "satzIC": 180
+    "satz": ""
    }
   ],
   "stundensaetze": {},
-  "arbStdTag": 10,
-  "reiseStdTag": 13,
+  "arbStdTag": 8,
+  "reiseStdTag": 8,
   "reiseProz": 100,
-  "nkAktiv": true,
+  "nkAktiv": false,
   "ecoPlusAbH": 10,
   "ueZuschlag": 45,
-  "ofRundung": 50
+  "ofRundung": 50,
+  "fxStand": {
+   "date": "2026-11-20",
+   "src": "EZB via Frankfurter"
+  },
+  "daily": {
+   "fx": "2026-11-23"
+  }
  },
  "einsaetze": [
   {
@@ -693,6 +668,7 @@
    }
   }
  ],
+ "apiLog": [],
  "deleted": {},
- "updatedAt": 1795336274186
+ "updatedAt": 1795410259961
 }
