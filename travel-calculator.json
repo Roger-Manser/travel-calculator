@@ -2552,10 +2552,21 @@
     "Installationstechniker"
    ],
    "anreiseModus": "taxi",
-   "updatedAt": 1795438247766,
+   "updatedAt": 1795438270627,
    "maschinen": [
     "m-konv"
-   ]
+   ],
+   "anreiseKm": 70,
+   "autoH": 1,
+   "oevH": 2.6,
+   "oevRetourChf": 35,
+   "parkenTagChf": 8.5,
+   "taxiEinfachChf": 140,
+   "anreiseBemerkung": "Distanz, ÖV-Dauer und ÖV-Preis sind Schätzungen (Bus 310 nach Giessen, dann Bahn). Parkieren = Holiday Parking ab EUR 64/7 Tage, Kurs ca. 0.93. Taxi aus Tarif Hüttenberg hochgerechnet; Fixpreis-Transfers ab ca. EUR 92. Fahrplanzeiten nicht verifizierbar, daher null.",
+   "anreiseStand": {
+    "at": 1795438270627,
+    "src": "api"
+   }
   }
  ],
  "kunden": [
@@ -2789,10 +2800,21 @@
    "tout": 8678,
    "srch": 5,
    "updatedAt": 1795437895427
+  },
+  {
+   "id": "api-mwt9l7z5yw7jk",
+   "typ": "use",
+   "at": 1795438270625,
+   "usd": 0.1214,
+   "text": "Anreise Achim Storch",
+   "tin": 33733,
+   "tout": 2392,
+   "srch": 3,
+   "updatedAt": 1795438270625
   }
  ],
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795438247766
+ "updatedAt": 1795438270627
 }
