@@ -2406,6 +2406,246 @@
    "ofCur": "EUR",
    "ofEdited": true,
    "ziel": "Mexiko"
+  },
+  {
+   "id": "mwtajf0glm8nh",
+   "name": "FitCheck an verschiedenen Maschinen",
+   "gep": {},
+   "visa": {},
+   "aufgabeId": "mwqjcgh9pc2au",
+   "kundeId": "mwt96tjpoc7cu",
+   "techs": [
+    {
+     "id": "mwsy0ezl0pttb",
+     "flug": "",
+     "role": "inst",
+     "flugInfo": {
+      "hinflug": {
+       "datum": "2027-01-25",
+       "airline": "Pegasus Airlines",
+       "flugnummern": null,
+       "von": "ZRH",
+       "ab": "11:40",
+       "nach": "FRU",
+       "an": "05:00",
+       "umsteigeort": "Istanbul Sabiha Gökçen (SAW)",
+       "dauer_h": 12.3
+      },
+      "rueckflug": {
+       "datum": "2027-02-05",
+       "airline": "Pegasus Airlines",
+       "flugnummern": null,
+       "von": "FRU",
+       "ab": "05:30",
+       "nach": "ZRH",
+       "an": "15:00",
+       "umsteigeort": "Istanbul Sabiha Gökçen (SAW)",
+       "dauer_h": 14.5
+      },
+      "flugdauer_h": 12.3,
+      "umstiege": 1,
+      "preise": {
+       "eco": 330
+      },
+      "gepaeck": {},
+      "quelle": "https://www.kayak.ch/fl%C3%BCge/Zuerich-ZRH/Bischkek-Manas-FRU",
+      "at": 1795439597937
+     },
+     "flugManuell": false,
+     "flugSrc": "online"
+    }
+   ],
+   "profileId": "mwt98vk6o3voq",
+   "auftrag": "TCS250089 / TCS250120701 / TCS250161203 / RCS330102",
+   "bemerkung": "",
+   "maschId": "m-konv",
+   "preis": "ic",
+   "ab": "2027-01-25",
+   "rueck": "2027-02-05",
+   "ueInst": "10",
+   "ueTrain": "",
+   "ueInst2": "",
+   "ueTrain2": "",
+   "instTage": "10",
+   "training": false,
+   "handTage": "",
+   "trainTage": "",
+   "klasse": "Economy",
+   "carMode": "auto",
+   "regel": "mit",
+   "man": {
+    "hotel": null,
+    "car": null,
+    "spesen": null
+   },
+   "ov": {
+    "hotel": "",
+    "car": "",
+    "spesen": "",
+    "nk": "",
+    "taxi": ""
+   },
+   "nkPausch": "",
+   "res": {
+    "at": 1795439597936,
+    "key": "{\"k\":\"mwt96tjpoc7cu\",\"ab\":\"2027-01-25\",\"i\":\"10\",\"tr\":false,\"h\":\"\",\"d\":\"\",\"t\":[\"mwsy0ezl0pttb:\"]}",
+    "auto": false,
+    "model": "claude-sonnet-5-5",
+    "searches": 5,
+    "cur": "EUR",
+    "trip": "ZRH–FRU · 25.01.2027–05.02.2027",
+    "data": {
+     "fluege": [
+      {
+       "techniker": "Lars Baunack",
+       "von": "ZRH",
+       "nach": "FRU",
+       "flugdauer_h": 12.3,
+       "umstiege": 1,
+       "preise_chf": {
+        "economy": 330,
+        "premium_economy": null,
+        "business": null
+       },
+       "zusatzgepaeck_chf": {
+        "economy": null,
+        "premium_economy": null,
+        "business": null
+       },
+       "hinflug": {
+        "datum": "2027-01-25",
+        "airline": "Pegasus Airlines",
+        "flugnummern": null,
+        "von": "ZRH",
+        "ab": "11:40",
+        "nach": "FRU",
+        "an": "05:00",
+        "umsteigeort": "Istanbul Sabiha Gökçen (SAW)",
+        "dauer_h": 12.3
+       },
+       "rueckflug": {
+        "datum": "2027-02-05",
+        "airline": "Pegasus Airlines",
+        "flugnummern": null,
+        "von": "FRU",
+        "ab": "05:30",
+        "nach": "ZRH",
+        "an": "15:00",
+        "umsteigeort": "Istanbul Sabiha Gökçen (SAW)",
+        "dauer_h": 14.5
+       },
+       "quelle": "https://www.kayak.ch/fl%C3%BCge/Zuerich-ZRH/Bischkek-Manas-FRU",
+       "bemerkung": "Kein Direktflug ZRH–FRU verfügbar. Zeiten und Umsteigeort stammen aus Aggregator-Listings (Kayak, Momondo, Flightconnections) und nicht aus einer Buchungsabfrage für den 25.01./05.02.2027. Flugnummern konnten nicht verifiziert werden. Hinflug ab 11:40 liegt nach 09:15 (Vorgabe erfüllt). Der Flug kommt am 26.01.2027 um ca. 05:00 in Bischkek an. Rückflug Landung ca. 15:00 ZRH, deutlich vor 21:15. Die Dauer des Rückflugs ist aus den Uhrzeiten mit Winter-Zeitverschiebung berechnet, die Quelle nennt 13:30 h. Der Economy-Preis ist ein Richtwert aus Angeboten für andere Daten (Pegasus ca. CHF 313–346 retour, Turkish Airlines ca. CHF 392–414). Premium Economy und Business sind nicht belegt. Pegasus bietet auf dieser Route voraussichtlich keine Premium Economy an. Die Gebühr für 30 kg Zusatzgepäck konnte nicht ermittelt werden und muss vor der Buchung bei der Airline geklärt werden."
+      }
+     ],
+     "wechselkurs": {
+      "chf_pro_einheit": 0.9186,
+      "waehrung": "EUR"
+     },
+     "visa": [
+      {
+       "nationalitaet": "Deutschland",
+       "benoetigt": "elektronische Genehmigung",
+       "art": "E-Visum Typ SW1 (Entsandte Mitarbeiter für Montage/Reparatur von Anlagen) über evisa.e-gov.kg",
+       "kosten_chf": null,
+       "vorlauf_tage": null,
+       "hinweis": "Für Touristen ist die Einreise für Deutsche visumfrei. Ein Aufenthalt von 12 Tagen läge innerhalb der Frist, die je nach Quelle 30 oder 60 Tage beträgt. Die visumfreie Einreise und das Business-Visum (B, ca. USD 60) erlauben aber keine Erwerbstätigkeit. Für die Installation und Inbetriebnahme beim Kunden ist laut dem E-Visa-Portal der Typ SW1 vorgesehen (gültig bis 60 Tage). Gebühr und Bearbeitungszeit habe ich nicht gefunden. Bitte beim Kunden und über das Portal bestätigen lassen. Der Reisepass sollte mindestens 3–6 Monate gültig sein."
+      }
+     ],
+     "zusammenfassung": "Es gibt keinen Direktflug ZRH–FRU. Vorgeschlagen ist Pegasus über Istanbul (SAW) mit Abflug 11:40 und Rückkunft ca. 15:00, beides innerhalb der Erreichbarkeit; Economy ca. CHF 330 als Richtwert, Flugnummern, Premium-Economy-/Business-Preise und Zusatzgepäckgebühren konnten nicht belegt werden. Für die Montagearbeit in Kirgisistan reicht die visumfreie Einreise nicht, nötig ist ein E-Visum Typ SW1 (Kosten und Vorlaufzeit unbestätigt). Wechselkurs 1 EUR = 0.9186 CHF.",
+     "quellen": [
+      {
+       "titel": "Kayak – Flüge Zürich–Bischkek",
+       "url": "https://www.kayak.ch/fl%C3%BCge/Zuerich-ZRH/Bischkek-Manas-FRU"
+      },
+      {
+       "titel": "Momondo – Flüge Zürich–Bischkek",
+       "url": "https://www.momondo.ch/fluege/zuerich/bischkek"
+      },
+      {
+       "titel": "Flightconnections – FRU–ZRH",
+       "url": "https://www.flightconnections.com/flights-from-fru-to-zrh"
+      },
+      {
+       "titel": "Kyrgyzstan e-Visa – Visa types (SW1, B)",
+       "url": "https://www.evisa.e-gov.kg/get_information.php?lng=en"
+      },
+      {
+       "titel": "Kyrgyzstan Visa Information (30/60-Tage-Regel)",
+       "url": "https://central-asia.guide/kyrgyzstan/kyrgyzstan-visa-information/"
+      },
+      {
+       "titel": "Buch-dein-Visum – Einreisebestimmungen Kirgisistan",
+       "url": "https://www.buch-dein-visum.de/en/kirgisistan/laenderinfo/einreisebestimmungen"
+      },
+      {
+       "titel": "VisaPassage – Kyrgyzstan Visa Requirements 2026",
+       "url": "https://visapassage.com/destinations/kyrgyzstan"
+      },
+      {
+       "titel": "Wise – EUR/CHF Wechselkurs",
+       "url": "https://wise.com/us/currency-converter/eur-to-chf-rate/history"
+      }
+     ]
+    },
+    "sources": [
+     {
+      "url": "https://www.kayak.ch/fl%C3%BCge/Zuerich-ZRH/Bischkek-Manas-FRU",
+      "title": "Kayak – Flüge Zürich–Bischkek"
+     },
+     {
+      "url": "https://www.momondo.ch/fluege/zuerich/bischkek",
+      "title": "Momondo – Flüge Zürich–Bischkek"
+     },
+     {
+      "url": "https://www.flightconnections.com/flights-from-fru-to-zrh",
+      "title": "Flightconnections – FRU–ZRH"
+     },
+     {
+      "url": "https://www.evisa.e-gov.kg/get_information.php?lng=en",
+      "title": "Kyrgyzstan e-Visa – Visa types (SW1, B)"
+     },
+     {
+      "url": "https://central-asia.guide/kyrgyzstan/kyrgyzstan-visa-information/",
+      "title": "Kyrgyzstan Visa Information (30/60-Tage-Regel)"
+     },
+     {
+      "url": "https://www.buch-dein-visum.de/en/kirgisistan/laenderinfo/einreisebestimmungen",
+      "title": "Buch-dein-Visum – Einreisebestimmungen Kirgisistan"
+     },
+     {
+      "url": "https://visapassage.com/destinations/kyrgyzstan",
+      "title": "VisaPassage – Kyrgyzstan Visa Requirements 2026"
+     },
+     {
+      "url": "https://wise.com/us/currency-converter/eur-to-chf-rate/history",
+      "title": "Wise – EUR/CHF Wechselkurs"
+     },
+     {
+      "url": "https://www.opodo.ch/flug/zurich-bischkek/ZRH/FRU/",
+      "title": "Günstigste Flüge von Zürich nach Bischkek ab CHF 121"
+     },
+     {
+      "url": "https://www.skyscanner.de/routen/zrh/fru/zurich-nach-bishkek.html",
+      "title": "Skyscanner"
+     }
+    ]
+   },
+   "ofEdit": {
+    "all|flight": {
+     "cur": "EUR",
+     "ppu": 1000
+    }
+   },
+   "useApi": false,
+   "ovSrc": {},
+   "createdAt": 1795439866048,
+   "updatedAt": 1795439866048,
+   "total": 22109.520235000004,
+   "ofTotal": 24965.5,
+   "ofCur": "EUR",
+   "ofEdited": true,
+   "ziel": "Kirgisistan"
   }
  ],
  "aufgaben": [
@@ -2831,5 +3071,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795439597937
+ "updatedAt": 1795439866049
 }
