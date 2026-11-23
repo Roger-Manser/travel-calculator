@@ -644,7 +644,7 @@
   },
   {
    "id": "mwsy0ezl0pttb",
-   "name": "Neuer Techniker",
+   "name": "Lars Baunack",
    "nationalitaet": "",
    "wohnort": "",
    "flughafen": "ZRH",
@@ -652,7 +652,7 @@
    "gepaeckKg": 30,
    "arten": [],
    "anreiseModus": "auto",
-   "updatedAt": 1795418824161
+   "updatedAt": 1795418829330
   }
  ],
  "kunden": [
@@ -713,5 +713,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795418824161
+ "updatedAt": 1795418829330
 }
