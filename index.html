@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v4.0 – Preislisten FY27 (CHF/EUR, Endkunde/Intercompany), Überstunden 45/90 %, Fahrzeug 1.20 €/km, Sonderkondition pro Kunde -->
+<!-- Gallus Travel Calculator v4.1 – keine Passwort-Speicherabfrage mehr, alle Bereiche auf- und zuklappbar (Standard zugeklappt) -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#151617">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="4.0">
+<meta name="app-version" content="4.1">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
 :root{--bg:#151617;--card:#1e2022;--card2:#26292c;--line:#34373b;--ink:#ececec;--muted:#a3a6aa;--brand:#d07020;--brand-2:#f3a35c;--red:#ef6b6b;--amber:#e8c547;--input:#18191b;
@@ -35,6 +35,20 @@ nav button.on{color:var(--ink);border-color:var(--brand-2)}
 main{max-width:1300px;margin:0 auto;padding:12px 16px 60px}
 .card{box-shadow:var(--shadow);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px}
 .card h2{font-size:13px;margin:0 0 10px;color:var(--brand-2);text-transform:uppercase;letter-spacing:.5px}
+.card.coll>h2{cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px}
+.card.coll>h2::before{content:'▸';display:inline-block;width:12px;color:var(--brand);transition:transform .15s}
+.card.coll:not(.closed)>h2::before{transform:rotate(90deg)}
+.card.closed>h2{margin-bottom:0}
+.card.closed>.cbody{display:none}
+.card h2 .csum{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:600;color:var(--ink);font-size:13px}
+.card:not(.closed) h2 .csum{display:none}
+.secret{-webkit-text-security:disc;text-security:disc}
+.secret.show{-webkit-text-security:none;text-security:none}
+.secwrap{display:flex;gap:6px;align-items:center}.secwrap input{flex:1}
+tr.grp.gt td{cursor:pointer;user-select:none}
+tr.grp.gt td:first-child::before{content:'▸ ';color:var(--brand)}
+tr.grp.gt.open td:first-child::before{content:'▾ '}
+tr.gl.hid{display:none}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 14px}
 .grid.g4{grid-template-columns:repeat(4,1fr)}
 .span2{grid-column:span 2}
@@ -193,7 +207,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
   <div class="card"><h2>Reiseplan &amp; Einreise</h2>
     <div id="plan"></div>
   </div>
-  <div class="card"><h2>Kostenübersicht</h2>
+  <div class="card"><h2>Kostenübersicht <span class="csum" id="costSum"></span></h2>
     <div style="overflow-x:auto">
     <table id="costTable"><thead><tr><th>Posten</th><th class="num">Menge</th><th class="num">Satz</th><th class="num">Betrag CHF</th></tr></thead><tbody></tbody></table>
     </div>
@@ -344,14 +358,14 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
       <label>Daten-Repo<input data-cfg="gh.repo"></label>
       <label>Branch<input data-cfg="gh.branch"></label>
       <label>Datei<input data-cfg="gh.path"></label>
-      <label class="span2">Token (fine-grained)<input type="password" data-cfg="gh.token" autocomplete="off"></label>
+      <label class="span2">Token (fine-grained)<span class="secwrap"><input type="text" class="secret" data-cfg="gh.token" autocomplete="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore data-form-type="other"><button type="button" class="btn sec sm" data-eye title="Anzeigen / verbergen">👁</button></span></label>
     </div>
     <div class="row" style="margin-top:12px"><button class="btn" id="btnSync">Verbinden / jetzt synchronisieren</button><span class="muted" id="ghStatus"></span></div>
   </div>
   <div class="card"><h2>Anthropic API</h2>
     <p class="muted" style="margin-top:0">Für die Kunden-Auswertung und die Online-Recherche. Der Key bleibt nur in diesem Browser gespeichert und wird nicht synchronisiert.</p>
     <div class="grid">
-      <label>API-Key<input type="password" data-cfg="ai.key" autocomplete="off"></label>
+      <label>API-Key<span class="secwrap"><input type="text" class="secret" data-cfg="ai.key" autocomplete="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore data-form-type="other"><button type="button" class="btn sec sm" data-eye title="Anzeigen / verbergen">👁</button></span></label>
       <label>Modell<input data-cfg="ai.model"></label>
       <label>Max. Websuchen<input data-cfg="ai.maxSearches" inputmode="numeric"></label>
     </div>
@@ -402,8 +416,13 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '4.0';
+const APP_VERSION = '4.1';
 const VERSION_HISTORY = [
+  { v: '4.1', d: '2026-11-23', items: [
+    'GitHub-Token und API-Key ohne Passwortfeld – der Browser fragt nicht mehr, ob ein Passwort gespeichert werden soll (Anzeigen per 👁)',
+    'Alle Bereiche (Karten) per Klick auf den Titel auf- und zuklappbar, beim Start zugeklappt',
+    'Kostenübersicht: Gruppen pro Techniker auf- und zuklappbar mit Zwischentotal, beim Start zugeklappt; Total und Anzahl Hinweise im Titel sichtbar',
+  ] },
   { v: '4.0', d: '2026-11-23', items: [
     'Preislisten FY27 (ab 1.4.2026): pro Maschinentyp Endkunde CHF/EUR und Intercompany CHF/EUR – Konventionell 171/190/149/165, Digital 186/207/162/180',
     'Schweizer Kunden mit CHF-Sätzen, alle anderen mit festen EUR-Sätzen; Richtpreis-Währung automatisch nach Kundenland',
@@ -1669,10 +1688,13 @@ async function copyOffer() {
     toast('Richtpreis kopiert – in Word einfügen (Ctrl+V)');
   } catch (e) { toast('Kopieren nicht möglich: ' + e.message); }
 }
-function linesHtml(lines) {
-  let g = null, h = '';
+const OPEN_G = new Set();
+function linesHtml(lines, coll) {
+  let g = null, h = '', gi = -1;
+  const sums = {}; lines.forEach(l => sums[l.grp] = (sums[l.grp] || 0) + (l.chf || 0));
   lines.forEach(l => {
-    if (l.grp !== g) { g = l.grp; h += `<tr class="grp"><td colspan="4">${esc(g)}</td></tr>`; }
+    if (l.grp !== g) { g = l.grp; gi++; h += coll ? `<tr class="grp gt${OPEN_G.has(g) ? ' open' : ''}" data-cg="${esc(g)}"><td colspan="3">${esc(g)}</td><td class="num">${fmt(sums[g])}</td></tr>` : `<tr class="grp"><td colspan="4">${esc(g)}</td></tr>`; }
+    if (coll) { h += `<tr class="gl${OPEN_G.has(g) ? '' : ' hid'}" data-gl="${esc(g)}"><td>${esc(l.name)}${l.note ? `<div class="muted">${esc(l.note)}</div>` : ''}</td><td class="num">${fmt0(l.qty)} ${esc(l.unit)}</td><td class="num">${fmt(l.satz)} ${esc(l.cur)}</td><td class="num">${fmt(l.chf)}</td></tr>`; return; }
     h += `<tr><td>${esc(l.name)}${l.note ? `<div class="muted">${esc(l.note)}</div>` : ''}</td><td class="num">${fmt0(l.qty)} ${esc(l.unit)}</td><td class="num">${fmt(l.satz)} ${esc(l.cur)}</td><td class="num">${fmt(l.chf)}</td></tr>`;
   });
   return h;
@@ -1700,7 +1722,8 @@ function render() {
   const CORDER = CATS;
   $('catTable').tBodies[0].innerHTML = CORDER.filter(c => r.cats[c] !== undefined).map(c => `<tr><td>${esc(c)}</td><td class="num">${fmt(r.cats[c])}</td></tr>`).join('') + `<tr class="total"><td>Total</td><td class="num">CHF ${fmt(r.total)}</td></tr>`;
   const eurX = num(DATA.rates.fx.EUR), eurTxt = !r.CH && eurX > 0 ? ` <span class="muted" style="font-weight:400">≈ EUR ${fmt(r.total / eurX)}</span>` : '';
-  $('costTable').tBodies[0].innerHTML = linesHtml(r.lines) + `<tr class="total"><td colspan="3">Total${r.valid.length > 1 ? ` (${r.valid.length} Techniker)` : ''}${r.sonder ? ' – nach Preisliste (Vergleich)' : ''}</td><td class="num">CHF ${fmt(r.total)}${eurTxt}</td></tr>`;
+  $('costSum').textContent = `CHF ${fmt(r.total)}${r.msgs.length ? ` · ${r.msgs.length} Hinweis${r.msgs.length > 1 ? 'e' : ''}` : ''}`;
+  $('costTable').tBodies[0].innerHTML = linesHtml(r.lines, true) + `<tr class="total"><td colspan="3">Total${r.valid.length > 1 ? ` (${r.valid.length} Techniker)` : ''}${r.sonder ? ' – nach Preisliste (Vergleich)' : ''}</td><td class="num">CHF ${fmt(r.total)}${eurTxt}</td></tr>`;
   const sb = $('sonderBox');
   if (r.sonder) {
     const so = r.sonder, dif = so.chf - r.total;
@@ -2840,6 +2863,23 @@ document.querySelector('section[data-tab="settings"]').addEventListener('change'
 $('btnSync').addEventListener('click', () => syncNow(true));
 $('syncBtn').addEventListener('click', () => syncNow(true));
 $('btnTestApi').addEventListener('click', testApi);
+document.querySelectorAll('.card').forEach(c => {
+  const h = c.querySelector(':scope > h2'); if (!h) return;
+  const body = document.createElement('div'); body.className = 'cbody';
+  while (h.nextSibling) body.appendChild(h.nextSibling);
+  c.appendChild(body); c.classList.add('coll', 'closed'); h.tabIndex = 0; h.setAttribute('role', 'button');
+  const tg = () => c.classList.toggle('closed');
+  h.addEventListener('click', tg); h.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tg(); } });
+});
+document.addEventListener('click', ev => { const b = ev.target.closest('[data-eye]'); if (!b) return; const i = b.parentElement.querySelector('.secret'); if (i) i.classList.toggle('show'); });
+$('costTable').addEventListener('pointerdown', ev => { // pointerdown: greift auch, wenn ein Feld-Blur die Tabelle gleichzeitig neu zeichnet
+  if (ev.button !== 0) return;
+  const tr = ev.target.closest('tr.gt'); if (!tr) return;
+  const g = tr.dataset.cg, open = !OPEN_G.has(g);
+  if (open) OPEN_G.add(g); else OPEN_G.delete(g);
+  tr.classList.toggle('open', open);
+  tr.parentElement.querySelectorAll('tr.gl').forEach(x => { if (x.dataset.gl === g) x.classList.toggle('hid', !open); });
+});
 $('budAuf').addEventListener('click', () => budBook('auf'));
 $('budStand').addEventListener('click', () => budBook('stand'));
 $('budList').addEventListener('click', ev => { const b = ev.target.closest('[data-budel]'); if (!b) return; if (!confirm('Diese Buchung löschen?')) return; const id = b.dataset.budel; DATA.deleted[id] = Date.now(); DATA.apiLog = DATA.apiLog.filter(e => e.id !== id); changed(); renderBudget(); });
