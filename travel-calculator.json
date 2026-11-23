@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-23",
   "verantwortlich": "",
-  "updatedAt": 1795428230196,
+  "updatedAt": 1795428310803,
   "profiles": [
    {
     "id": "ch",
@@ -49,7 +49,10 @@
      "src": "api"
     },
     "apiBemerkung": "Richtwerte fuer Industrieregionen (Queretaro, Monterrey, Bajio). Benzin Magna ca. 23.7 MXN/l, Diesel ca. 27.0 MXN/l (Nov. 2026); Diesel ergibt ca. 1.48 MXN/km. Mietwagen meist mit unbegrenzten km, Vollkasko kostet 200-600 MXN/Tag extra. Taxipreis geschaetzt (Flughafentaxi mit Festtarif, 500-900 MXN), nicht per Quelle belegt.",
-    "landesWaehrung": "MXN"
+    "landesWaehrung": "MXN",
+    "erf": {
+     "flug": 2500
+    }
    }
   ],
   "fx": {
@@ -2625,5 +2628,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795428230196
+ "updatedAt": 1795428310803
 }
