@@ -2634,15 +2634,15 @@
    "ofEdit": {
     "all|flight": {
      "cur": "EUR",
-     "ppu": 1000
+     "ppu": 1500
     }
    },
    "useApi": false,
    "ovSrc": {},
    "createdAt": 1795439866048,
-   "updatedAt": 1795439866048,
+   "updatedAt": 1795439887153,
    "total": 22109.520235000004,
-   "ofTotal": 24965.5,
+   "ofTotal": 25465.5,
    "ofCur": "EUR",
    "ofEdited": true,
    "ziel": "Kirgisistan"
@@ -3071,5 +3071,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795439866049
+ "updatedAt": 1795439887153
 }
