@@ -706,7 +706,7 @@
   },
   {
    "id": "mwt0mu19wpm2l",
-   "name": "Etique",
+   "name": "Etiquetas CCL, S.A. De C.V.",
    "adresse": "",
    "land": "",
    "ort": "",
@@ -715,7 +715,7 @@
    "flughafenName": "",
    "distanzKm": "",
    "fahrzeitMin": "",
-   "updatedAt": 1795423237315
+   "updatedAt": 1795423248007
   }
  ],
  "apiLog": [
@@ -775,5 +775,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795423237315
+ "updatedAt": 1795423248007
 }
