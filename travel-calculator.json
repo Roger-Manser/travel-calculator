@@ -632,6 +632,18 @@
     "at": 1795260703385,
     "src": "api"
    }
+  },
+  {
+   "id": "mwsuqtt79w38b",
+   "name": "Neuer Techniker",
+   "nationalitaet": "",
+   "wohnort": "",
+   "flughafen": "ZRH",
+   "gepaeck": false,
+   "gepaeckKg": 30,
+   "arten": [],
+   "anreiseModus": "auto",
+   "updatedAt": 1795413337963
   }
  ],
  "kunden": [
@@ -682,5 +694,5 @@
   }
  ],
  "deleted": {},
- "updatedAt": 1795410419585
+ "updatedAt": 1795413337963
 }
