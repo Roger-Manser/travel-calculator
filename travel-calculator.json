@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-23",
   "verantwortlich": "",
-  "updatedAt": 1795429376701,
+  "updatedAt": 1795437694662,
   "profiles": [
    {
     "id": "ch",
@@ -84,6 +84,18 @@
     },
     "flug": 2500,
     "merged": true
+   },
+   {
+    "id": "mwt98vk6o3voq",
+    "name": "Kirgisistan",
+    "cur": "EUR",
+    "erfV2": true,
+    "merged": true,
+    "hotel": "",
+    "car": "",
+    "spesen": 0,
+    "nk": 0,
+    "taxi": ""
    }
   ],
   "fx": {
@@ -2564,12 +2576,12 @@
    "adresse": "St. Intergelpostreet 1",
    "land": "Kirgisistan",
    "ort": "Bischkek",
-   "profileId": "",
+   "profileId": "mwt98vk6o3voq",
    "flughafen": "FRU",
    "flughafenName": "Manas International Airport",
    "distanzKm": 28,
    "fahrzeitMin": 40,
-   "updatedAt": 1795437686707,
+   "updatedAt": 1795437694662,
    "waehrung": "KGS",
    "alternativen": [
     {
@@ -2697,5 +2709,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795437686707
+ "updatedAt": 1795437694662
 }
