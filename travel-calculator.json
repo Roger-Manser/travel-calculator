@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-23",
   "verantwortlich": "",
-  "updatedAt": 1795423320746,
+  "updatedAt": 1795423551639,
   "profiles": [
    {
     "id": "ch",
@@ -38,11 +38,18 @@
     "id": "mwt0osfudivhy",
     "name": "Mexiko",
     "cur": "MXN",
-    "hotel": "",
-    "car": "",
+    "hotel": 1800,
+    "car": 700,
     "spesen": 0,
     "nk": 0,
-    "taxi": ""
+    "taxi": 700,
+    "km": 1.54,
+    "apiStand": {
+     "at": 1795423551639,
+     "src": "api"
+    },
+    "apiBemerkung": "Richtwerte fuer Industrieregionen (Queretaro, Monterrey, Bajio). Benzin Magna ca. 23.7 MXN/l, Diesel ca. 27.0 MXN/l (Nov. 2026); Diesel ergibt ca. 1.48 MXN/km. Mietwagen meist mit unbegrenzten km, Vollkasko kostet 200-600 MXN/Tag extra. Taxipreis geschaetzt (Flughafentaxi mit Festtarif, 500-900 MXN), nicht per Quelle belegt.",
+    "landesWaehrung": "MXN"
    }
   ],
   "fx": {
@@ -810,10 +817,21 @@
    "tout": 983,
    "srch": 0,
    "updatedAt": 1795423303781
+  },
+  {
+   "id": "api-mwt0tqqb7u4jn",
+   "typ": "use",
+   "at": 1795423551635,
+   "usd": 0.1101,
+   "text": "Länderprofil Mexiko",
+   "tin": 30451,
+   "tout": 1919,
+   "srch": 3,
+   "updatedAt": 1795423551635
   }
  ],
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795423320746
+ "updatedAt": 1795423551639
 }
