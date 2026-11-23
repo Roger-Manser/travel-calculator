@@ -708,14 +708,32 @@
    "id": "mwt0mu19wpm2l",
    "name": "Etiquetas CCL, S.A. De C.V.",
    "adresse": "Avenida Michoacán 20 Modulo 21, Colonia Renovación, Del. Iztapalapa",
-   "land": "MX",
-   "ort": "09209 Ciudad de México",
+   "land": "Mexiko",
+   "ort": "Mexiko-Stadt (Iztapalapa)",
    "profileId": "",
-   "flughafen": "",
-   "flughafenName": "",
-   "distanzKm": "",
-   "fahrzeitMin": "",
-   "updatedAt": 1795423296088
+   "flughafen": "MEX",
+   "flughafenName": "Aeropuerto Internacional Benito Juárez Ciudad de México",
+   "distanzKm": 14,
+   "fahrzeitMin": 40,
+   "updatedAt": 1795423303785,
+   "waehrung": "MXN",
+   "alternativen": [
+    {
+     "iata": "NLU",
+     "name": "Aeropuerto Internacional Felipe Ángeles (AIFA)",
+     "distanz_km": 60
+    },
+    {
+     "iata": "TLC",
+     "name": "Aeropuerto Internacional de Toluca",
+     "distanz_km": 70
+    }
+   ],
+   "bemerkung": "Distanzen und Fahrzeit sind Schätzwerte. Fahrzeit bei normalem Verkehr, zu Stosszeiten deutlich länger. MEX ist die beste Wahl mit den meisten Europa-Verbindungen. AIFA und Toluca haben nur wenige Verbindungen aus Europa.",
+   "calcStand": {
+    "at": 1795423303785,
+    "src": "api"
+   }
   }
  ],
  "apiLog": [
@@ -770,10 +788,21 @@
    "tout": 1949,
    "srch": 3,
    "updatedAt": 1795423121143
+  },
+  {
+   "id": "api-mwt0ofhhix476",
+   "typ": "use",
+   "at": 1795423303781,
+   "usd": 0.0166,
+   "text": "Kunde Etiquetas CCL, S.A. De C.V.",
+   "tin": 3384,
+   "tout": 983,
+   "srch": 0,
+   "updatedAt": 1795423303781
   }
  ],
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795423296088
+ "updatedAt": 1795423303785
 }
