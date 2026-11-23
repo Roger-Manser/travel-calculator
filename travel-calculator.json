@@ -2542,7 +2542,7 @@
   },
   {
    "id": "mwt9jjt153r8q",
-   "name": "Neuer Techniker",
+   "name": "Achim Storch",
    "nationalitaet": "",
    "wohnort": "",
    "flughafen": "ZRH",
@@ -2550,7 +2550,7 @@
    "gepaeckKg": 30,
    "arten": [],
    "anreiseModus": "auto",
-   "updatedAt": 1795438192645
+   "updatedAt": 1795438199102
   }
  ],
  "kunden": [
@@ -2789,5 +2789,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795438192645
+ "updatedAt": 1795438199102
 }
