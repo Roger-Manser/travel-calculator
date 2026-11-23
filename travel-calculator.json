@@ -645,14 +645,14 @@
   {
    "id": "mwsy0ezl0pttb",
    "name": "Lars Baunack",
-   "nationalitaet": "",
+   "nationalitaet": "Deutschland",
    "wohnort": "",
    "flughafen": "ZRH",
    "gepaeck": false,
    "gepaeckKg": 30,
    "arten": [],
    "anreiseModus": "auto",
-   "updatedAt": 1795418829330
+   "updatedAt": 1795418833434
   }
  ],
  "kunden": [
@@ -713,5 +713,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795418829330
+ "updatedAt": 1795418833434
 }
