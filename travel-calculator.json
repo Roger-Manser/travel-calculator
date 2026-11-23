@@ -709,13 +709,13 @@
    "name": "Etiquetas CCL, S.A. De C.V.",
    "adresse": "Avenida Michoacán 20 Modulo 21, Colonia Renovación, Del. Iztapalapa\n\nMexiko",
    "land": "MX",
-   "ort": "",
+   "ort": "09209 Ciudad de México",
    "profileId": "",
    "flughafen": "",
    "flughafenName": "",
    "distanzKm": "",
    "fahrzeitMin": "",
-   "updatedAt": 1795423279903
+   "updatedAt": 1795423282901
   }
  ],
  "apiLog": [
@@ -775,5 +775,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795423279903
+ "updatedAt": 1795423282901
 }
