@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-23",
   "verantwortlich": "",
-  "updatedAt": 1795423780385,
+  "updatedAt": 1795428230196,
   "profiles": [
    {
     "id": "ch",
@@ -120,6 +120,1462 @@
   },
   "daily": {
    "fx": "2026-11-23"
+  },
+  "hotelMinEUR": 120,
+  "depl": {
+   "jahr": 2026,
+   "quelle": "KFM Deplacementkosten 2026 (GFRAG_Deplacement_2026)",
+   "rows": [
+    {
+     "de": "Aegypten",
+     "en": "Egypt",
+     "iso": "EG",
+     "cur": "CHF",
+     "u": 65,
+     "v": 50
+    },
+    {
+     "de": "Aethiopien",
+     "en": "Ethiopia",
+     "iso": "ET",
+     "cur": "USD",
+     "u": 66,
+     "v": 40
+    },
+    {
+     "de": "Afghanistan",
+     "en": "Afghanistan",
+     "iso": "AF",
+     "cur": "USD",
+     "u": 60,
+     "v": 41
+    },
+    {
+     "de": "Alaska",
+     "en": "Alaska",
+     "iso": "US",
+     "cur": "USD",
+     "u": 99,
+     "v": 50
+    },
+    {
+     "de": "Albanien",
+     "en": "Albania",
+     "iso": "AL",
+     "cur": "EUR",
+     "u": 90,
+     "v": 32
+    },
+    {
+     "de": "Algerien",
+     "en": "Algeria",
+     "iso": "DZ",
+     "cur": "EUR",
+     "u": 60,
+     "v": 45
+    },
+    {
+     "de": "Andorra",
+     "en": "Andorra",
+     "iso": "AD",
+     "cur": "EUR",
+     "u": 65,
+     "v": 45
+    },
+    {
+     "de": "Angola",
+     "en": "Angola",
+     "iso": "AO",
+     "cur": "USD",
+     "u": 176,
+     "v": 77
+    },
+    {
+     "de": "Argentinien",
+     "en": "Argentina",
+     "iso": "AR",
+     "cur": "USD",
+     "u": 99,
+     "v": 50
+    },
+    {
+     "de": "Armenien",
+     "en": "Armenia",
+     "iso": "AM",
+     "cur": "EUR",
+     "u": 80,
+     "v": 35
+    },
+    {
+     "de": "Aserbaidschan",
+     "en": "Azerbaijan",
+     "iso": "AZ",
+     "cur": "EUR",
+     "u": 100,
+     "v": 45
+    },
+    {
+     "de": "Australien",
+     "en": "Australia",
+     "iso": "AU",
+     "cur": "AUD",
+     "u": 135,
+     "v": 108
+    },
+    {
+     "de": "Bahamas",
+     "en": "Bahamas",
+     "iso": "BS",
+     "cur": "USD",
+     "u": 88,
+     "v": 55
+    },
+    {
+     "de": "Bahrain",
+     "en": "Bahrain",
+     "iso": "BH",
+     "cur": "BHD",
+     "u": 55,
+     "v": 32
+    },
+    {
+     "de": "Bangladesch",
+     "en": "Bangladesh",
+     "iso": "BD",
+     "cur": "USD",
+     "u": 65,
+     "v": 50
+    },
+    {
+     "de": "Barbados",
+     "en": "Barbados",
+     "iso": "BB",
+     "cur": "USD",
+     "u": 71,
+     "v": 45
+    },
+    {
+     "de": "Belgien",
+     "en": "Belgium",
+     "iso": "BE",
+     "cur": "EUR",
+     "u": 82,
+     "v": 62
+    },
+    {
+     "de": "Belize",
+     "en": "Belize",
+     "iso": "BZ",
+     "cur": "USD",
+     "u": 60,
+     "v": 40
+    },
+    {
+     "de": "Benin",
+     "en": "Benin",
+     "iso": "BJ",
+     "cur": "EUR",
+     "u": 56,
+     "v": 46
+    },
+    {
+     "de": "Bermudas",
+     "en": "Bermuda",
+     "iso": "BM",
+     "cur": "USD",
+     "u": 71,
+     "v": 45
+    },
+    {
+     "de": "Bhutan",
+     "en": "Bhutan",
+     "iso": "BT",
+     "cur": "USD",
+     "u": 100,
+     "v": 30
+    },
+    {
+     "de": "Bolivien",
+     "en": "Bolivia",
+     "iso": "BO",
+     "cur": "USD",
+     "u": 55,
+     "v": 45
+    },
+    {
+     "de": "Bosnien-Herzegowina",
+     "en": "Bosnia and Herzegovina",
+     "iso": "BA",
+     "cur": "EUR",
+     "u": 90,
+     "v": 39
+    },
+    {
+     "de": "Botswana",
+     "en": "Botswana",
+     "iso": "BW",
+     "cur": "BWP",
+     "u": 550,
+     "v": 350
+    },
+    {
+     "de": "Brasilien",
+     "en": "Brazil",
+     "iso": "BR",
+     "cur": "USD",
+     "u": 115,
+     "v": 60
+    },
+    {
+     "de": "Brunei",
+     "en": "Brunei",
+     "iso": "BN",
+     "cur": "BND",
+     "u": 120,
+     "v": 100
+    },
+    {
+     "de": "Bulgarien",
+     "en": "Bulgaria",
+     "iso": "BG",
+     "cur": "EUR",
+     "u": 80,
+     "v": 35
+    },
+    {
+     "de": "Burkina Faso",
+     "en": "Burkina Faso",
+     "iso": "BF",
+     "cur": "EUR",
+     "u": 42,
+     "v": 32
+    },
+    {
+     "de": "Burundi",
+     "en": "Burundi",
+     "iso": "BI",
+     "cur": "USD",
+     "u": 66,
+     "v": 40
+    },
+    {
+     "de": "Chile",
+     "en": "Chile",
+     "iso": "CL",
+     "cur": "USD",
+     "u": 97,
+     "v": 75
+    },
+    {
+     "de": "China",
+     "en": "China",
+     "iso": "CN",
+     "cur": "CNY",
+     "u": 550,
+     "v": 440
+    },
+    {
+     "de": "Costa Rica",
+     "en": "Costa Rica",
+     "iso": "CR",
+     "cur": "USD",
+     "u": 82,
+     "v": 43
+    },
+    {
+     "de": "Dänemark",
+     "en": "Denmark",
+     "iso": "DK",
+     "cur": "DKK",
+     "u": 600,
+     "v": 480
+    },
+    {
+     "de": "Deutschland",
+     "en": "Germany",
+     "iso": "DE",
+     "cur": "EUR",
+     "u": 92,
+     "v": 60
+    },
+    {
+     "de": "Djibouti",
+     "en": "Djibouti",
+     "iso": "DJ",
+     "cur": "USD",
+     "u": 90,
+     "v": 50
+    },
+    {
+     "de": "Dominikanische Rep.",
+     "en": "Dominican Republic",
+     "iso": "DO",
+     "cur": "USD",
+     "u": 82,
+     "v": 49
+    },
+    {
+     "de": "Ecuador",
+     "en": "Ecuador",
+     "iso": "EC",
+     "cur": "USD",
+     "u": 88,
+     "v": 49
+    },
+    {
+     "de": "El Salvador",
+     "en": "El Salvador",
+     "iso": "SV",
+     "cur": "USD",
+     "u": 88,
+     "v": 50
+    },
+    {
+     "de": "Elfenbeinküste",
+     "en": "Côte d'Ivoire",
+     "iso": "CI",
+     "cur": "EUR",
+     "u": 60,
+     "v": 43
+    },
+    {
+     "de": "Eritrea",
+     "en": "Eritrea",
+     "iso": "ER",
+     "cur": "USD",
+     "u": 66,
+     "v": 50
+    },
+    {
+     "de": "Estland",
+     "en": "Estonia",
+     "iso": "EE",
+     "cur": "EUR",
+     "u": 85,
+     "v": 38
+    },
+    {
+     "de": "Fidji",
+     "en": "Fiji",
+     "iso": "FJ",
+     "cur": "FJD",
+     "u": 104,
+     "v": 75
+    },
+    {
+     "de": "Finnland",
+     "en": "Finland",
+     "iso": "FI",
+     "cur": "EUR",
+     "u": 100,
+     "v": 62
+    },
+    {
+     "de": "Frankreich",
+     "en": "France",
+     "iso": "FR",
+     "cur": "EUR",
+     "u": 71,
+     "v": 55
+    },
+    {
+     "de": "Franz. Guyana",
+     "en": "French Guiana",
+     "iso": "GF",
+     "cur": "EUR",
+     "u": 67,
+     "v": 53
+    },
+    {
+     "de": "Gabun",
+     "en": "Gabon",
+     "iso": "GA",
+     "cur": "EUR",
+     "u": 70,
+     "v": 58
+    },
+    {
+     "de": "Gambia",
+     "en": "Gambia",
+     "iso": "GM",
+     "cur": "USD",
+     "u": 60,
+     "v": 45
+    },
+    {
+     "de": "Georgien",
+     "en": "Georgia",
+     "iso": "GE",
+     "cur": "EUR",
+     "u": 80,
+     "v": 36
+    },
+    {
+     "de": "Ghana",
+     "en": "Ghana",
+     "iso": "GH",
+     "cur": "USD",
+     "u": 88,
+     "v": 60
+    },
+    {
+     "de": "Griechenland",
+     "en": "Greece",
+     "iso": "GR",
+     "cur": "EUR",
+     "u": 88,
+     "v": 49
+    },
+    {
+     "de": "Grönland",
+     "en": "Greenland",
+     "iso": "GL",
+     "cur": "DKK",
+     "u": 600,
+     "v": 440
+    },
+    {
+     "de": "Grossbritannien",
+     "en": "United Kingdom",
+     "iso": "GB",
+     "cur": "GBP",
+     "u": 80,
+     "v": 50
+    },
+    {
+     "de": "Guadeloupe",
+     "en": "Guadeloupe",
+     "iso": "GP",
+     "cur": "EUR",
+     "u": 71,
+     "v": 50
+    },
+    {
+     "de": "Guatemala",
+     "en": "Guatemala",
+     "iso": "GT",
+     "cur": "USD",
+     "u": 82,
+     "v": 50
+    },
+    {
+     "de": "Guinea Bissau",
+     "en": "Guinea-Bissau",
+     "iso": "GW",
+     "cur": "EUR",
+     "u": 47,
+     "v": 32
+    },
+    {
+     "de": "Guinea Republik",
+     "en": "Guinea",
+     "iso": "GN",
+     "cur": "USD",
+     "u": 66,
+     "v": 45
+    },
+    {
+     "de": "Guyana",
+     "en": "Guyana",
+     "iso": "GY",
+     "cur": "USD",
+     "u": 60,
+     "v": 45
+    },
+    {
+     "de": "Haiti",
+     "en": "Haiti",
+     "iso": "HT",
+     "cur": "USD",
+     "u": 66,
+     "v": 50
+    },
+    {
+     "de": "Honduras",
+     "en": "Honduras",
+     "iso": "HN",
+     "cur": "USD",
+     "u": 82,
+     "v": 45
+    },
+    {
+     "de": "Hongkong",
+     "en": "Hong Kong",
+     "iso": "HK",
+     "cur": "HKD",
+     "u": 900,
+     "v": 600
+    },
+    {
+     "de": "Indien",
+     "en": "India",
+     "iso": "IN",
+     "cur": "INR",
+     "u": 6500,
+     "v": 3100
+    },
+    {
+     "de": "Indonesien",
+     "en": "Indonesia",
+     "iso": "ID",
+     "cur": "USD",
+     "u": 100,
+     "v": 60
+    },
+    {
+     "de": "Irak",
+     "en": "Iraq",
+     "iso": "IQ",
+     "cur": "USD",
+     "u": 100,
+     "v": 50
+    },
+    {
+     "de": "Iran",
+     "en": "Iran",
+     "iso": "IR",
+     "cur": "EUR",
+     "u": 125,
+     "v": 45
+    },
+    {
+     "de": "Irland",
+     "en": "Ireland",
+     "iso": "IE",
+     "cur": "EUR",
+     "u": 70,
+     "v": 55
+    },
+    {
+     "de": "Island",
+     "en": "Iceland",
+     "iso": "IS",
+     "cur": "ISK",
+     "u": 15700,
+     "v": 11500
+    },
+    {
+     "de": "Israel",
+     "en": "Israel",
+     "iso": "IL",
+     "cur": "USD",
+     "u": 132,
+     "v": 65
+    },
+    {
+     "de": "Italien",
+     "en": "Italy",
+     "iso": "IT",
+     "cur": "EUR",
+     "u": 71,
+     "v": 55
+    },
+    {
+     "de": "Jamaika",
+     "en": "Jamaica",
+     "iso": "JM",
+     "cur": "USD",
+     "u": 110,
+     "v": 60
+    },
+    {
+     "de": "Japan",
+     "en": "Japan",
+     "iso": "JP",
+     "cur": "JPY",
+     "u": 15000,
+     "v": 11000
+    },
+    {
+     "de": "Jemen",
+     "en": "Yemen",
+     "iso": "YE",
+     "cur": "USD",
+     "u": 66,
+     "v": 45
+    },
+    {
+     "de": "Jordanien",
+     "en": "Jordan",
+     "iso": "JO",
+     "cur": "USD",
+     "u": 93,
+     "v": 50
+    },
+    {
+     "de": "Kambotscha",
+     "en": "Cambodia",
+     "iso": "KH",
+     "cur": "USD",
+     "u": 50,
+     "v": 45
+    },
+    {
+     "de": "Kamerun",
+     "en": "Cameroon",
+     "iso": "CM",
+     "cur": "EUR",
+     "u": 65,
+     "v": 46
+    },
+    {
+     "de": "Kanada",
+     "en": "Canada",
+     "iso": "CA",
+     "cur": "CAD",
+     "u": 130,
+     "v": 105
+    },
+    {
+     "de": "Kapverdische Inseln",
+     "en": "Cape Verde",
+     "iso": "CV",
+     "cur": "EUR",
+     "u": 73,
+     "v": 37
+    },
+    {
+     "de": "Kasachstan",
+     "en": "Kazakhstan",
+     "iso": "KZ",
+     "cur": "EUR",
+     "u": 80,
+     "v": 52
+    },
+    {
+     "de": "Kenia",
+     "en": "Kenya",
+     "iso": "KE",
+     "cur": "USD",
+     "u": 66,
+     "v": 50
+    },
+    {
+     "de": "Kirgistan",
+     "en": "Kyrgyzstan",
+     "iso": "KG",
+     "cur": "EUR",
+     "u": 80,
+     "v": 40
+    },
+    {
+     "de": "Kolumbien",
+     "en": "Colombia",
+     "iso": "CO",
+     "cur": "USD",
+     "u": 99,
+     "v": 55
+    },
+    {
+     "de": "Kongo (Rep. Brazaville)",
+     "en": "Congo, Republic",
+     "iso": "CG",
+     "cur": "EUR",
+     "u": 82,
+     "v": 51
+    },
+    {
+     "de": "Kongo Demokratische Republik",
+     "en": "Congo, Democratic Republic",
+     "iso": "CD",
+     "cur": "USD",
+     "u": 93,
+     "v": 50
+    },
+    {
+     "de": "Königreich Eswatini (früher: Swasiland)",
+     "en": "Swaziland",
+     "iso": "SZ",
+     "cur": "SZL",
+     "u": 660,
+     "v": 450
+    },
+    {
+     "de": "Korea Süd",
+     "en": "South Korea",
+     "iso": "KR",
+     "cur": "USD",
+     "u": 150,
+     "v": 70
+    },
+    {
+     "de": "Kosovo",
+     "en": "Serbia",
+     "iso": "XK",
+     "cur": "EUR",
+     "u": 60,
+     "v": 35
+    },
+    {
+     "de": "Kroatien",
+     "en": "Croatia",
+     "iso": "HR",
+     "cur": "EUR",
+     "u": 65,
+     "v": 40
+    },
+    {
+     "de": "Kuba",
+     "en": "Cuba",
+     "iso": "CU",
+     "cur": "USD",
+     "u": 60,
+     "v": 45
+    },
+    {
+     "de": "Kuwait",
+     "en": "Kuwait",
+     "iso": "KW",
+     "cur": "KWD",
+     "u": 50,
+     "v": 20
+    },
+    {
+     "de": "Laos",
+     "en": "Laos",
+     "iso": "LA",
+     "cur": "USD",
+     "u": 50,
+     "v": 45
+    },
+    {
+     "de": "Lesotho",
+     "en": "Lesotho",
+     "iso": "LS",
+     "cur": "ZAR",
+     "u": 770,
+     "v": 300
+    },
+    {
+     "de": "Lettland",
+     "en": "Latvia",
+     "iso": "LV",
+     "cur": "EUR",
+     "u": 85,
+     "v": 40
+    },
+    {
+     "de": "Libanon",
+     "en": "Lebanon",
+     "iso": "LB",
+     "cur": "USD",
+     "u": 88,
+     "v": 55
+    },
+    {
+     "de": "Liberia",
+     "en": "Liberia",
+     "iso": "LR",
+     "cur": "USD",
+     "u": 65,
+     "v": 50
+    },
+    {
+     "de": "Libyen",
+     "en": "Libya",
+     "iso": "LY",
+     "cur": "LYD",
+     "u": 400,
+     "v": 110
+    },
+    {
+     "de": "Liechtenstein",
+     "en": "Liechtenstein",
+     "iso": "LI",
+     "cur": "CHF",
+     "u": 110,
+     "v": 65
+    },
+    {
+     "de": "Litauen",
+     "en": "Lithuania",
+     "iso": "LT",
+     "cur": "EUR",
+     "u": 85,
+     "v": 47
+    },
+    {
+     "de": "Luxemburg",
+     "en": "Luxembourg",
+     "iso": "LU",
+     "cur": "EUR",
+     "u": 66,
+     "v": 55
+    },
+    {
+     "de": "Macao",
+     "en": "Macao",
+     "iso": "MO",
+     "cur": "MOP",
+     "u": 880,
+     "v": 480
+    },
+    {
+     "de": "Madagaskar",
+     "en": "Madagascar",
+     "iso": "MG",
+     "cur": "USD",
+     "u": 55,
+     "v": 35
+    },
+    {
+     "de": "Malawi",
+     "en": "Malawi",
+     "iso": "MW",
+     "cur": "USD",
+     "u": 66,
+     "v": 40
+    },
+    {
+     "de": "Malaysia",
+     "en": "Malaysia",
+     "iso": "MY",
+     "cur": "MYR",
+     "u": 200,
+     "v": 180
+    },
+    {
+     "de": "Mali",
+     "en": "Mali",
+     "iso": "ML",
+     "cur": "EUR",
+     "u": 80,
+     "v": 40
+    },
+    {
+     "de": "Malta",
+     "en": "Malta",
+     "iso": "MT",
+     "cur": "EUR",
+     "u": 60,
+     "v": 43
+    },
+    {
+     "de": "Marokko",
+     "en": "Morocco",
+     "iso": "MA",
+     "cur": "MAD",
+     "u": 990,
+     "v": 550
+    },
+    {
+     "de": "Mauretanien",
+     "en": "Mauritania",
+     "iso": "MR",
+     "cur": "USD",
+     "u": 77,
+     "v": 50
+    },
+    {
+     "de": "Mauritius",
+     "en": "Mauritius",
+     "iso": "MU",
+     "cur": "USD",
+     "u": 120,
+     "v": 48
+    },
+    {
+     "de": "Mexico",
+     "en": "Mexico",
+     "iso": "MX",
+     "cur": "USD",
+     "u": 99,
+     "v": 55
+    },
+    {
+     "de": "Moldavien",
+     "en": "Moldova",
+     "iso": "MD",
+     "cur": "EUR",
+     "u": 80,
+     "v": 32
+    },
+    {
+     "de": "Monaco",
+     "en": "Monaco",
+     "iso": "MC",
+     "cur": "EUR",
+     "u": 71,
+     "v": 55
+    },
+    {
+     "de": "Mongolei",
+     "en": "Mongolia",
+     "iso": "MN",
+     "cur": "USD",
+     "u": 75,
+     "v": 65
+    },
+    {
+     "de": "Montenegro",
+     "en": "Montenegro",
+     "iso": "ME",
+     "cur": "EUR",
+     "u": 60,
+     "v": 35
+    },
+    {
+     "de": "Mosambik",
+     "en": "Mozambique",
+     "iso": "MZ",
+     "cur": "USD",
+     "u": 77,
+     "v": 53
+    },
+    {
+     "de": "Myanmar (Burma)",
+     "en": "Myanmar (Burma)",
+     "iso": "BU",
+     "cur": "USD",
+     "u": 80,
+     "v": 50
+    },
+    {
+     "de": "Namibia",
+     "en": "Namibia",
+     "iso": "NA",
+     "cur": "NAD",
+     "u": 770,
+     "v": 430
+    },
+    {
+     "de": "Nepal",
+     "en": "Nepal",
+     "iso": "NP",
+     "cur": "USD",
+     "u": 40,
+     "v": 30
+    },
+    {
+     "de": "Neuseeland",
+     "en": "New Zealand",
+     "iso": "NZ",
+     "cur": "NZD",
+     "u": 130,
+     "v": 80
+    },
+    {
+     "de": "Nicaragua",
+     "en": "Nicaragua",
+     "iso": "NI",
+     "cur": "USD",
+     "u": 77,
+     "v": 40
+    },
+    {
+     "de": "Niederl. Antillen",
+     "en": "Netherlands Antilles",
+     "iso": "AN",
+     "cur": "USD",
+     "u": 82,
+     "v": 50
+    },
+    {
+     "de": "Niederlande",
+     "en": "Netherlands",
+     "iso": "NL",
+     "cur": "EUR",
+     "u": 82,
+     "v": 58
+    },
+    {
+     "de": "Niger",
+     "en": "Niger",
+     "iso": "NE",
+     "cur": "EUR",
+     "u": 60,
+     "v": 42
+    },
+    {
+     "de": "Nigeria",
+     "en": "Nigeria",
+     "iso": "NG",
+     "cur": "USD",
+     "u": 120,
+     "v": 75
+    },
+    {
+     "de": "Nordmazedonien",
+     "en": "Macedonia",
+     "iso": "MK",
+     "cur": "EUR",
+     "u": 60,
+     "v": 35
+    },
+    {
+     "de": "Norwegen",
+     "en": "Norway",
+     "iso": "NO",
+     "cur": "NOK",
+     "u": 1200,
+     "v": 810
+    },
+    {
+     "de": "Oesterreich",
+     "en": "Austria",
+     "iso": "AT",
+     "cur": "EUR",
+     "u": 75,
+     "v": 55
+    },
+    {
+     "de": "Oman",
+     "en": "Oman",
+     "iso": "OM",
+     "cur": "OMR",
+     "u": 50,
+     "v": 33
+    },
+    {
+     "de": "Pakistan",
+     "en": "Pakistan",
+     "iso": "PK",
+     "cur": "USD",
+     "u": 90,
+     "v": 55
+    },
+    {
+     "de": "Panama",
+     "en": "Panama",
+     "iso": "PA",
+     "cur": "USD",
+     "u": 77,
+     "v": 55
+    },
+    {
+     "de": "Papua-Neuguinea",
+     "en": "Papua New Guinea",
+     "iso": "PG",
+     "cur": "USD",
+     "u": 93,
+     "v": 45
+    },
+    {
+     "de": "Paraguay",
+     "en": "Paraguay",
+     "iso": "PY",
+     "cur": "USD",
+     "u": 77,
+     "v": 40
+    },
+    {
+     "de": "Peru",
+     "en": "Peru",
+     "iso": "PE",
+     "cur": "USD",
+     "u": 93,
+     "v": 62
+    },
+    {
+     "de": "Philippinen",
+     "en": "Philippines",
+     "iso": "PH",
+     "cur": "USD",
+     "u": 90,
+     "v": 55
+    },
+    {
+     "de": "Polen",
+     "en": "Poland",
+     "iso": "PL",
+     "cur": "EUR",
+     "u": 88,
+     "v": 41
+    },
+    {
+     "de": "Portugal",
+     "en": "Portugal",
+     "iso": "PT",
+     "cur": "EUR",
+     "u": 66,
+     "v": 45
+    },
+    {
+     "de": "Puerto Rico",
+     "en": "Puerto Rico",
+     "iso": "PR",
+     "cur": "USD",
+     "u": 88,
+     "v": 44
+    },
+    {
+     "de": "Qatar",
+     "en": "Qatar",
+     "iso": "QA",
+     "cur": "QAR",
+     "u": 550,
+     "v": 250
+    },
+    {
+     "de": "Reunion",
+     "en": "Reunion",
+     "iso": "RE",
+     "cur": "EUR",
+     "u": 66,
+     "v": 48
+    },
+    {
+     "de": "Ruanda",
+     "en": "Rwanda",
+     "iso": "RW",
+     "cur": "USD",
+     "u": 60,
+     "v": 45
+    },
+    {
+     "de": "Rumänien",
+     "en": "Romania",
+     "iso": "RO",
+     "cur": "EUR",
+     "u": 80,
+     "v": 40
+    },
+    {
+     "de": "Russland",
+     "en": "Russia",
+     "iso": "RU",
+     "cur": "CHF",
+     "u": 130,
+     "v": 75
+    },
+    {
+     "de": "Sambia",
+     "en": "Zambia",
+     "iso": "ZM",
+     "cur": "USD",
+     "u": 77,
+     "v": 55
+    },
+    {
+     "de": "Saudi-Arabien",
+     "en": "Saudi Arabia",
+     "iso": "SA",
+     "cur": "SAR",
+     "u": 500,
+     "v": 240
+    },
+    {
+     "de": "Schweden",
+     "en": "Sweden",
+     "iso": "SE",
+     "cur": "SEK",
+     "u": 1100,
+     "v": 660
+    },
+    {
+     "de": "Schweiz",
+     "en": "Switzerland",
+     "iso": "CH",
+     "cur": "CHF",
+     "u": 110,
+     "v": 65
+    },
+    {
+     "de": "Senegal",
+     "en": "Senegal",
+     "iso": "SN",
+     "cur": "EUR",
+     "u": 67,
+     "v": 35
+    },
+    {
+     "de": "Serbien",
+     "en": "Serbia",
+     "iso": "RS",
+     "cur": "EUR",
+     "u": 65,
+     "v": 38
+    },
+    {
+     "de": "Sierra Leone",
+     "en": "Sierra Leone",
+     "iso": "SL",
+     "cur": "USD",
+     "u": 71,
+     "v": 40
+    },
+    {
+     "de": "Simbabwe",
+     "en": "Zimbabwe",
+     "iso": "ZW",
+     "cur": "USD",
+     "u": 82,
+     "v": 60
+    },
+    {
+     "de": "Singapur",
+     "en": "Singapore",
+     "iso": "SG",
+     "cur": "SGD",
+     "u": 220,
+     "v": 110
+    },
+    {
+     "de": "Slowakische Republik",
+     "en": "Slovakia",
+     "iso": "SK",
+     "cur": "EUR",
+     "u": 80,
+     "v": 35
+    },
+    {
+     "de": "Slowenien",
+     "en": "Slovenia",
+     "iso": "SI",
+     "cur": "EUR",
+     "u": 60,
+     "v": 35
+    },
+    {
+     "de": "Somalia",
+     "en": "Somalia",
+     "iso": "SO",
+     "cur": "USD",
+     "u": 66,
+     "v": 40
+    },
+    {
+     "de": "Spanien",
+     "en": "Spain",
+     "iso": "ES",
+     "cur": "EUR",
+     "u": 71,
+     "v": 53
+    },
+    {
+     "de": "Sri Lanka",
+     "en": "Sri Lanka",
+     "iso": "LK",
+     "cur": "USD",
+     "u": 75,
+     "v": 45
+    },
+    {
+     "de": "Südafrika",
+     "en": "South Africa",
+     "iso": "ZA",
+     "cur": "ZAR",
+     "u": 660,
+     "v": 670
+    },
+    {
+     "de": "Sudan",
+     "en": "Sudan",
+     "iso": "SD",
+     "cur": "USD",
+     "u": 66,
+     "v": 40
+    },
+    {
+     "de": "Sudan Süd",
+     "en": "South Sudan",
+     "iso": "SS",
+     "cur": "USD",
+     "u": 66,
+     "v": 40
+    },
+    {
+     "de": "Surinam",
+     "en": "Suriname",
+     "iso": "SR",
+     "cur": "USD",
+     "u": 60,
+     "v": 45
+    },
+    {
+     "de": "Syrien",
+     "en": "Syria",
+     "iso": "SY",
+     "cur": "USD",
+     "u": 90,
+     "v": 50
+    },
+    {
+     "de": "Tadschikistan",
+     "en": "Tajikistan",
+     "iso": "TJ",
+     "cur": "EUR",
+     "u": 80,
+     "v": 50
+    },
+    {
+     "de": "Taiwan",
+     "en": "Taiwan",
+     "iso": "TW",
+     "cur": "TWD",
+     "u": 2750,
+     "v": 2000
+    },
+    {
+     "de": "Tansania",
+     "en": "Tanzania",
+     "iso": "TZ",
+     "cur": "USD",
+     "u": 66,
+     "v": 45
+    },
+    {
+     "de": "Thailand",
+     "en": "Thailand",
+     "iso": "TH",
+     "cur": "USD",
+     "u": 68,
+     "v": 45
+    },
+    {
+     "de": "Togo",
+     "en": "Togo",
+     "iso": "TG",
+     "cur": "EUR",
+     "u": 55,
+     "v": 37
+    },
+    {
+     "de": "Trinidad / Tobago",
+     "en": "Trinidad & Tobago",
+     "iso": "TT",
+     "cur": "USD",
+     "u": 77,
+     "v": 55
+    },
+    {
+     "de": "Tschad",
+     "en": "Chad",
+     "iso": "TD",
+     "cur": "EUR",
+     "u": 55,
+     "v": 37
+    },
+    {
+     "de": "Tschechische Republik",
+     "en": "Czech Republic",
+     "iso": "CZ",
+     "cur": "EUR",
+     "u": 80,
+     "v": 35
+    },
+    {
+     "de": "Tunesien",
+     "en": "Tunisia",
+     "iso": "TN",
+     "cur": "EUR",
+     "u": 46,
+     "v": 38
+    },
+    {
+     "de": "Türkei",
+     "en": "Turkey",
+     "iso": "TR",
+     "cur": "EUR",
+     "u": 80,
+     "v": 45
+    },
+    {
+     "de": "Turkmenistan",
+     "en": "Turkmenistan",
+     "iso": "TM",
+     "cur": "EUR",
+     "u": 90,
+     "v": 50
+    },
+    {
+     "de": "Uganda",
+     "en": "Uganda",
+     "iso": "UG",
+     "cur": "USD",
+     "u": 82,
+     "v": 48
+    },
+    {
+     "de": "Ukraine",
+     "en": "Ukraine",
+     "iso": "UA",
+     "cur": "EUR",
+     "u": 80,
+     "v": 50
+    },
+    {
+     "de": "Ungarn",
+     "en": "Hungary",
+     "iso": "HU",
+     "cur": "EUR",
+     "u": 80,
+     "v": 45
+    },
+    {
+     "de": "Uruguay",
+     "en": "Uruguay",
+     "iso": "UY",
+     "cur": "USD",
+     "u": 71,
+     "v": 55
+    },
+    {
+     "de": "USA",
+     "en": "United States of America",
+     "iso": "US",
+     "cur": "USD",
+     "u": 110,
+     "v": 85
+    },
+    {
+     "de": "Usbekistan",
+     "en": "Uzbekistan",
+     "iso": "UZ",
+     "cur": "EUR",
+     "u": 80,
+     "v": 50
+    },
+    {
+     "de": "Venezuela",
+     "en": "Venezuela",
+     "iso": "VE",
+     "cur": "USD",
+     "u": 120,
+     "v": 80
+    },
+    {
+     "de": "Vereinigte Arabische Emirate",
+     "en": "United Arab Emirates",
+     "iso": "AE",
+     "cur": "AED",
+     "u": 430,
+     "v": 300
+    },
+    {
+     "de": "Vietnam",
+     "en": "Vietnam",
+     "iso": "VN",
+     "cur": "USD",
+     "u": 65,
+     "v": 45
+    },
+    {
+     "de": "Weissrussland (Belarus)",
+     "en": "Belarus",
+     "iso": "BY",
+     "cur": "EUR",
+     "u": 80,
+     "v": 50
+    },
+    {
+     "de": "Zentralafrik. Republik",
+     "en": "Central African Republic",
+     "iso": "CF",
+     "cur": "EUR",
+     "u": 55,
+     "v": 40
+    },
+    {
+     "de": "Zypern",
+     "en": "Cyprus",
+     "iso": "CY",
+     "cur": "EUR",
+     "u": 60,
+     "v": 40
+    }
+   ],
+   "at": 1795428230195
   }
  },
  "einsaetze": [
@@ -1169,5 +2625,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795424517741
+ "updatedAt": 1795428230196
 }
