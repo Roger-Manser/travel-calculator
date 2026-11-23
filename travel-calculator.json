@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-23",
   "verantwortlich": "",
-  "updatedAt": 1795410259961,
+  "updatedAt": 1795415114104,
   "profiles": [
    {
     "id": "ch",
@@ -71,12 +71,18 @@
    {
     "id": "m-konv",
     "name": "Konventionell",
-    "satz": ""
+    "satz": 171,
+    "satzEUR": 190,
+    "satzIC": 149,
+    "satzICEUR": 165
    },
    {
     "id": "m-dig",
     "name": "Digital",
-    "satz": ""
+    "satz": 186,
+    "satzEUR": 207,
+    "satzIC": 162,
+    "satzICEUR": 180
    }
   ],
   "stundensaetze": {},
@@ -93,7 +99,10 @@
   },
   "daily": {
    "fx": "2026-11-23"
-  }
+  },
+  "ueZuschlag2": 90,
+  "kmFahrzeugEUR": 1.2,
+  "preisliste": "FY27"
  },
  "einsaetze": [
   {
