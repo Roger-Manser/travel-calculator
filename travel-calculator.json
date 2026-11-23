@@ -691,8 +691,16 @@
    "tout": 4,
    "srch": 0,
    "updatedAt": 1795410419585
+  },
+  {
+   "id": "api-mwsv02cdl49jc",
+   "typ": "stand",
+   "at": 1795413768925,
+   "usd": 25.05,
+   "text": "",
+   "updatedAt": 1795413768925
   }
  ],
  "deleted": {},
- "updatedAt": 1795413337963
+ "updatedAt": 1795413768926
 }
