@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-23",
   "verantwortlich": "",
-  "updatedAt": 1795422951159,
+  "updatedAt": 1795423320746,
   "profiles": [
    {
     "id": "ch",
@@ -33,12 +33,23 @@
     "spesen": 70,
     "nk": 15,
     "taxi": ""
+   },
+   {
+    "id": "mwt0osfudivhy",
+    "name": "Mexiko",
+    "cur": "MXN",
+    "hotel": "",
+    "car": "",
+    "spesen": 0,
+    "nk": 0,
+    "taxi": ""
    }
   ],
   "fx": {
    "CHF": 1,
    "EUR": 0.9223,
-   "USD": 0.8392
+   "USD": 0.8392,
+   "MXN": 0.044
   },
   "classes": [
    {
@@ -710,12 +721,12 @@
    "adresse": "Avenida Michoacán 20 Modulo 21, Colonia Renovación, Del. Iztapalapa",
    "land": "Mexiko",
    "ort": "Mexiko-Stadt (Iztapalapa)",
-   "profileId": "",
+   "profileId": "mwt0osfudivhy",
    "flughafen": "MEX",
    "flughafenName": "Aeropuerto Internacional Benito Juárez Ciudad de México",
    "distanzKm": 14,
    "fahrzeitMin": 40,
-   "updatedAt": 1795423303785,
+   "updatedAt": 1795423320570,
    "waehrung": "MXN",
    "alternativen": [
     {
@@ -804,5 +815,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795423303785
+ "updatedAt": 1795423320746
 }
