@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-23",
   "verantwortlich": "",
-  "updatedAt": 1795437895429,
+  "updatedAt": 1795439526204,
   "profiles": [
    {
     "id": "ch",
@@ -93,7 +93,7 @@
     "merged": true,
     "hotel": 50,
     "car": 45,
-    "spesen": 0,
+    "spesen": 79,
     "nk": 0,
     "taxi": 10,
     "vsrc": {
@@ -120,6 +120,10 @@
      "flugH": {
       "src": "api",
       "at": 1795437895429
+     },
+     "spesen": {
+      "src": "manuell",
+      "at": 1795439526204
      }
     },
     "km": 0.06,
@@ -2816,5 +2820,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795438270627
+ "updatedAt": 1795439526204
 }
