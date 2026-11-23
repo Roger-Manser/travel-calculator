@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-23",
   "verantwortlich": "",
-  "updatedAt": 1795429253153,
+  "updatedAt": 1795429254808,
   "profiles": [
    {
     "id": "ch",
@@ -79,7 +79,7 @@
      },
      "flug": {
       "src": "manuell",
-      "at": 1795429253152
+      "at": 1795429254808
      }
     },
     "flug": 2710.61,
