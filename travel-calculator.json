@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-23",
   "verantwortlich": "",
-  "updatedAt": 1795429254808,
+  "updatedAt": 1795429325150,
   "profiles": [
    {
     "id": "ch",
@@ -79,10 +79,10 @@
      },
      "flug": {
       "src": "manuell",
-      "at": 1795429254808
+      "at": 1795429325150
      }
     },
-    "flug": 2710.61,
+    "flug": 2500,
     "merged": true
    }
   ],
@@ -2660,5 +2660,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795428563917
+ "updatedAt": 1795429325150
 }
