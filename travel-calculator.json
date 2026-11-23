@@ -653,8 +653,8 @@
    "arten": [
     "Installationstechniker"
    ],
-   "anreiseModus": "auto",
-   "updatedAt": 1795418863993,
+   "anreiseModus": "oev",
+   "updatedAt": 1795418868745,
    "maschinen": [
     "m-konv"
    ]
@@ -718,5 +718,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795418863993
+ "updatedAt": 1795418868745
 }
