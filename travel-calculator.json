@@ -646,13 +646,13 @@
    "id": "mwsy0ezl0pttb",
    "name": "Lars Baunack",
    "nationalitaet": "Deutschland",
-   "wohnort": "",
+   "wohnort": "8458 Dorf",
    "flughafen": "ZRH",
    "gepaeck": false,
    "gepaeckKg": 30,
    "arten": [],
    "anreiseModus": "auto",
-   "updatedAt": 1795418833434
+   "updatedAt": 1795418859634
   }
  ],
  "kunden": [
@@ -713,5 +713,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795418833434
+ "updatedAt": 1795418859634
 }
