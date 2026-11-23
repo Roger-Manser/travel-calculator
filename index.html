@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v5.2 – Spesensätze pro Land ins Länderprofil verschoben -->
+<!-- Gallus Travel Calculator v5.4 – Richtpreis: Positionen mit Betrag 0 ausgeblendet, Positionsnummern fortlaufend -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#151617">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="5.2">
+<meta name="app-version" content="5.4">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
 :root{--bg:#151617;--card:#1e2022;--card2:#26292c;--line:#34373b;--ink:#ececec;--muted:#a3a6aa;--brand:#d07020;--brand-2:#f3a35c;--red:#ef6b6b;--amber:#e8c547;--input:#18191b;
@@ -339,7 +339,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
     <p class="muted" style="margin-bottom:0">Ist der Kunde mindestens «Mietwagen ab Distanz» vom Flughafen entfernt, wird automatisch ein Mietwagen gerechnet, sonst Taxi. Kilometer = 2 × Distanz Flughafen–Kunde + Mietwagentage × tägliche Fahrstrecke. Flugklasse: ab der eingestellten Flugdauer (einfach) Premium Economy, sonst Economy. Privatauto 0 = keine km-Entschädigung.</p>
   </div>
   <div class="card"><h2>Länderprofile</h2>
-    <p class="muted" style="margin-top:0">Erfahrungswerte pro Land – alle Beträge in EUR, die Schweiz in CHF. Flug und Zusatzgepäck retour, Economy ab Schweiz. Diese Werte gelten vor der API; leere Werte füllt die API (Vermerk «API» mit Datum), von Hand erfasste Werte («manuell») überschreibt sie nicht. Der Profilname wird mit dem Land des Kunden abgeglichen.<br>Spesen: ausserhalb der Schweiz gilt die Deplacement-Liste – 0.6 × (Unterkunft + Verpflegung), mit dem Tageskurs in EUR umgerechnet, auf 1 EUR gerundet, für Endkunde und Intercompany gleich. Die Schweiz (CHF) und Länder ohne Eintrag (EUR) verwenden den manuellen Satz.</p>
+    <p class="muted" style="margin-top:0">Erfahrungswerte pro Land – alle Beträge in EUR, die Schweiz in CHF. Flug und Zusatzgepäck retour, Economy ab Schweiz. Diese Werte gelten vor der API; leere Werte füllt die API (Vermerk «API» mit Datum), von Hand erfasste Werte («manuell») überschreibt sie nicht. Der Profilname wird mit dem Land des Kunden abgeglichen.<br>Spesen: ausserhalb der Schweiz gilt die Deplacement-Liste – 0.6 × (Unterkunft + Verpflegung), mit dem Tageskurs in EUR umgerechnet, auf 1 EUR gerundet, für Endkunde und Intercompany gleich. Die Schweiz ebenfalls aus der Liste, aber in CHF. Länder ohne Eintrag verwenden den manuellen Satz.</p>
     <div class="row" style="margin-bottom:10px"><button class="btn sec" id="btnDeplImp">Deplacement-Liste importieren (.json)</button><input type="file" id="deplFile" accept=".json,application/json" hidden><span class="muted" id="deplInfo"></span></div>
     <div style="overflow-x:auto">
     <table class="tbl-edit" id="profTable"><thead><tr><th>Name</th><th>Währung</th><th class="num">Hotel/Nacht</th><th class="num">Mietwagen/Tag</th><th class="num">Mietwagen/km</th><th class="num">Taxi/Fahrt</th><th class="num">Flug retour</th><th class="num">Zusatzgepäck retour</th><th class="num">Flugdauer h</th><th>Spesen/Tag</th><th class="num nkcol">Nebenk./Tag</th><th>Stand</th><th></th></tr></thead><tbody></tbody></table>
@@ -421,8 +421,16 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '5.2';
+const APP_VERSION = '5.4';
 const VERSION_HISTORY = [
+  { v: '5.4', d: '2026-11-23', items: [
+    'Richtpreis-Ausgabe (Drucken/PDF, Für Word kopieren): Positionen mit Betrag 0 werden ausgeblendet, Positionsnummern laufen lückenlos 0010, 0020, …',
+    'Tabellen ohne Betrag (z.B. Schulung ohne Kosten) entfallen in der Ausgabe',
+    'In der Vorschau bleiben 0-Positionen editierbar, sind aber blass mit «wird nicht ausgegeben» markiert',
+  ] },
+  { v: '5.3', d: '2026-11-23', items: [
+    'Spesen Schweiz ebenfalls aus der Deplacement-Liste: 0.6 × (Unterkunft + Verpflegung) in CHF, auf 1 CHF gerundet (2026: CHF 105.–)',
+  ] },
   { v: '5.2', d: '2026-11-23', items: [
     'Spesensätze pro Land jetzt im Länderprofil (Spalte «Spesen/Tag» mit Deplacement-Eintrag); Import der Deplacement-Liste ebenfalls dort',
     'Karte «Spesensätze pro Land» in den Stammdaten entfernt',
@@ -1510,9 +1518,9 @@ function calcCore() {
   { const hm = num(R.hotelMinEUR), fe = num(R.fx.EUR); if (hm > 0 && fe > 0 && fx > 0 && isFinite(h)) { const min = Math.round(hm * fe / fx * 100) / 100; if (h < min) { h = min; hMinNote = ` · Mindestansatz EUR ${fmt(hm)}/Nacht`; } } }
   let s = p ? num(p.spesen) : NaN, sCur = cur, sFx = fx, sNote = '';
   { const DS = deplSpesen(p, R), CH = isCH(k, p);
-    if (DS && isFinite(DS.eur) && !CH) { s = DS.eur; sCur = 'EUR'; sFx = num(R.fx.EUR); sNote = `Deplacement ${DS.jahr} ${DS.row.de}: 0.6 × (${DS.row.cur} ${fmt(num(DS.row.u))} + ${fmt(num(DS.row.v))}), gerundet`; }
-    else if (DS && !CH) warn(`Spesen ${p.name}: Wechselkurs ${DS.row.cur} oder EUR fehlt – Spesensatz aus der Deplacement-Liste kann nicht umgerechnet werden. Bisheriger Satz verwendet.`);
-    else if (p && !CH && DATA.rates.depl && !E.frozen) warn(`Spesen ${p.name}: kein Eintrag in der Deplacement-Liste zugeordnet (Firmensätze → Länderprofile) – bisheriger Satz verwendet.`); }
+    if (DS && isFinite(DS.eur)) { s = DS.eur; sCur = DS.cur; sFx = DS.cur === 'CHF' ? 1 : num(R.fx.EUR); sNote = `Deplacement ${DS.jahr} ${DS.row.de}: 0.6 × (${DS.row.cur} ${fmt(num(DS.row.u))} + ${fmt(num(DS.row.v))}), gerundet`; }
+    else if (DS) warn(`Spesen ${p.name}: Wechselkurs ${DS.row.cur} oder EUR fehlt – Spesensatz aus der Deplacement-Liste kann nicht umgerechnet werden. Bisheriger Satz verwendet.`);
+    else if (p && DATA.rates.depl && !E.frozen) warn(`Spesen ${p.name}: kein Eintrag in der Deplacement-Liste zugeordnet (Firmensätze → Länderprofile) – bisheriger Satz verwendet.`); }
   if (p && !(s > 0)) warn(`Für ${p.name} ist kein Spesensatz erfasst (Firmensätze → Länderprofile, Spalte Spesen).`);
   const nk = nkOn ? rate('nk') : 0, taxi = car ? 0 : rate('taxi'), carR = car ? rate('car') : 0;
   const dest = k && k.flughafen ? k.flughafen : '?', destL = k && k.flughafen ? apLabel(k.flughafen, k.flughafenName) : '?';
@@ -1688,7 +1696,6 @@ function deplRow(p, R) {
   const D = R && R.depl; if (!p || !D || !Array.isArray(D.rows)) return null;
   if (p.deplKey === '-') return null;
   if (p.deplKey) return D.rows.find(x => x.de === p.deplKey) || null;
-  if (CH_RX.test(p.name || '')) return null;
   const strip = v => normUe(String(v || '').replace(/\(.*?\)/g, '')).replace(/[^a-z ]/g, ' ').replace(/\s+/g, ' ').trim();
   const pn = strip(p.name), q = [pn, strip(DEPL_ALIAS[pn] || '')].filter(Boolean);
   return D.rows.find(x => [x.de, x.en].some(n => q.includes(strip(n)))) || D.rows.find(x => x.iso && q.some(v => v === x.iso.toLowerCase())) || null;
@@ -1697,8 +1704,9 @@ function deplRow(p, R) {
 function deplSpesen(p, R) {
   const d = deplRow(p, R); if (!d) return null;
   const fc = d.cur === 'CHF' ? 1 : num(R.fx[d.cur]), fe = num(R.fx.EUR);
-  const eur = fc > 0 && fe > 0 ? Math.round(0.6 * (num(d.u) + num(d.v)) * fc / fe) : NaN;
-  return { row: d, eur, jahr: R.depl.jahr || '' };
+  const cur = profCur(p), ft = cur === 'CHF' ? 1 : fe; // Schweiz in CHF, sonst EUR
+  const eur = fc > 0 && ft > 0 ? Math.round(0.6 * (num(d.u) + num(d.v)) * fc / ft) : NaN;
+  return { row: d, eur, cur, jahr: R.depl.jahr || '' };
 }
 // Schweiz? → CHF-Sätze, sonst feste EUR-Sätze
 function isCH(k, p) { return !!((k && CH_RX.test(k.land || '')) || (!(k && k.land) && p && CH_RX.test(p.name || ''))); }
@@ -1787,6 +1795,9 @@ function offerData(r, lang, cur) {
       else { if (o.ppu !== undefined && o.ppu !== '') { x.ppu = cv(o.ppu, o.cur); x.ed.ppu = 1; } x.amt = x.qty > 0 ? x.qty * x.ppu : (x.ed.ppu ? 0 : x.amt); }
     });
     tb.total = tb.rows.reduce((s, x) => s + (isFinite(x.amt) ? x.amt : 0), 0);
+    let n = 0; // Positionen mit Betrag 0 ausblenden, übrige fortlaufend nummerieren
+    tb.rows.forEach(x => { x.zero = !(Math.abs(num(x.amt)) > 0.004); x.pos = x.zero ? '' : String(++n * 10).padStart(4, '0'); });
+    tb.visible = n > 0;
   });
   D.calcTotal = D.tables.reduce((s, t) => s + t.calcTotal, 0);
   D.total = D.tables.reduce((s, t) => s + t.total, 0);
@@ -1857,11 +1868,12 @@ function offerHtml(r, lang, cur, edit) {
   let html = `<div style="font-family:Arial,Helvetica,sans-serif;color:#000;font-size:11pt">
     <div style="font-size:15pt;font-weight:bold;margin-bottom:4px">${esc(T.title)}</div>${head ? `<div style="margin-bottom:10px">${head}</div>` : ''}`;
   if (D.eurMissing) html += `<p style="color:#b00">${lang === 'en' ? 'EUR exchange rate missing.' : 'Wechselkurs EUR fehlt (Firmensätze).'}</p>`;
-  D.tables.forEach(tb => {
+  const TBS = D.tables.filter(tb => edit || tb.visible);
+  TBS.forEach(tb => {
     html += `<div style="font-size:12.5pt;font-weight:bold;margin:14px 0 6px">${esc(tb.title)}</div>
     <table style="border-collapse:collapse;width:100%;${B}"><thead><tr>${th(T.pos)}${th(T.desc)}${th(T.qty)}${th(T.unit)}${th(T.ppu)}${th(T.amt + ' ' + cur)}</tr></thead><tbody>`
-      + tb.rows.map(x => `<tr>
-        <td style="${B}padding:7px 10px">${x.pos}</td>
+      + tb.rows.filter(x => edit || !x.zero).map(x => `<tr${x.zero ? ' style="opacity:.45" title="Betrag 0 – wird nicht ausgegeben"' : ''}>
+        <td style="${B}padding:7px 10px">${x.zero ? '<span style="font-size:8pt;font-style:italic">wird nicht ausgegeben</span>' : x.pos}</td>
         <td style="${B}padding:7px 10px">${x.art ? esc(x.art) + '<br>' : ''}${esc(x.label)}</td>
         <td style="${B}padding:7px 10px;text-align:center">${cell(x, 'qty', n2(x.qty))}</td>
         <td style="${B}padding:7px 10px;text-align:center">${esc(x.unit)}</td>
@@ -1869,7 +1881,7 @@ function offerHtml(r, lang, cur, edit) {
         <td style="${B}padding:7px 10px;text-align:right;white-space:nowrap">${cell(x, 'amt', n2(x.amt) + ' ' + cur)}${edit && x.ed ? ` <button type="button" class="ofreset" data-oreset="${esc(x.ek)}" title="Position auf Kalkulation zurücksetzen">↺</button>` : ''}</td></tr>`).join('')
       + `<tr><td colspan="5" style="${HB}${B}padding:8px 10px;font-size:12pt">${esc(T.fin)}</td><td style="${HB}${B}padding:8px 10px;text-align:right;font-size:12pt;white-space:nowrap">${n2(tb.total)} ${cur}</td></tr></tbody></table>`;
   });
-  if (D.tables.length > 1) html += `<table style="border-collapse:collapse;width:100%;margin-top:12px"><tr><td style="${HB}${B}padding:8px 10px;font-size:12.5pt;font-weight:bold">${esc(T.tot)} (${D.tables.map(t => esc(t.title)).join(' + ')})</td><td style="${HB}${B}padding:8px 10px;text-align:right;font-size:12.5pt;font-weight:bold;white-space:nowrap">${n2(D.total)} ${cur}</td></tr></table>`;
+  if (TBS.length > 1) html += `<table style="border-collapse:collapse;width:100%;margin-top:12px"><tr><td style="${HB}${B}padding:8px 10px;font-size:12.5pt;font-weight:bold">${esc(T.tot)} (${TBS.map(t => esc(t.title)).join(' + ')})</td><td style="${HB}${B}padding:8px 10px;text-align:right;font-size:12.5pt;font-weight:bold;white-space:nowrap">${n2(D.total)} ${cur}</td></tr></table>`;
   html += `<p style="font-size:8.5pt;color:#555;margin-top:10px">${esc(T.note)}</p></div>`;
   if (edit) {
     const pc = (a, b) => b > 0 ? ` (${a - b >= 0 ? '+' : ''}${fmt0(Math.round((a - b) / b * 1000) / 10)} %)` : '';
@@ -2405,10 +2417,10 @@ function nkCell(p, i, k) { return `<td class="num nkcol">${profInp(p, i, k)}</td
 function spesenCell(p, i) {
   const R = DATA.rates, DL = R.depl && Array.isArray(R.depl.rows) ? R.depl.rows : [], d = deplRow(p, R), ds = deplSpesen(p, R), ch = CH_RX.test(p.name || '');
   const opts = `<option value="" ${!p.deplKey ? 'selected' : ''}>Automatisch${!p.deplKey && d ? ' (' + esc(d.de) + ')' : !p.deplKey ? ' (kein Treffer)' : ''}</option><option value="-" ${p.deplKey === '-' ? 'selected' : ''}>– keiner (manuell) –</option>` + DL.map(x => `<option value="${esc(x.de)}" ${p.deplKey === x.de ? 'selected' : ''}>${esc(x.de)}</option>`).join('');
-  const top = ds && !ch
-    ? `<b>${isFinite(ds.eur) ? 'EUR ' + fmt0(ds.eur) : '<span class="warnTxt">Kurs fehlt</span>'}</b><div class="muted" style="font-size:11px;white-space:nowrap">Deplacement ${esc(String(ds.jahr))}: ${esc(d.cur)} ${fmt(num(d.u))} + ${fmt(num(d.v))}</div>`
+  const top = ds
+    ? `<b>${isFinite(ds.eur) ? ds.cur + ' ' + fmt0(ds.eur) : '<span class="warnTxt">Kurs fehlt</span>'}</b><div class="muted" style="font-size:11px;white-space:nowrap">Deplacement ${esc(String(ds.jahr))}: ${esc(d.cur)} ${fmt(num(d.u))} + ${fmt(num(d.v))}</div>`
     : `<input data-p="${i}" data-k="spesen" inputmode="decimal" style="min-width:80px" value="${esc(isFinite(num(p.spesen)) ? p.spesen : '')}"><div class="muted" style="font-size:11px">${ch ? 'manuell (Schweiz)' : 'manuell'}</div>`;
-  return `<td style="min-width:170px">${top}${DL.length && !ch ? `<select data-dk="${i}" style="margin-top:4px;font-size:12px;padding:3px 6px;max-width:190px">${opts}</select>` : ''}</td>`;
+  return `<td style="min-width:170px">${top}${DL.length ? `<select data-dk="${i}" style="margin-top:4px;font-size:12px;padding:3px 6px;max-width:190px">${opts}</select>` : ''}</td>`;
 }
 function renderRates() {
   const R = DATA.rates;
