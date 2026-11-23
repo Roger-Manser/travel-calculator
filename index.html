@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v4.1 – keine Passwort-Speicherabfrage mehr, alle Bereiche auf- und zuklappbar (Standard zugeklappt) -->
+<!-- Gallus Travel Calculator v4.3 – Richtpreis editierbar (Menge, Preis pro Einheit, Betrag), Anpassungen mit dem Einsatz gespeichert -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#151617">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="4.1">
+<meta name="app-version" content="4.3">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
 :root{--bg:#151617;--card:#1e2022;--card2:#26292c;--line:#34373b;--ink:#ececec;--muted:#a3a6aa;--brand:#d07020;--brand-2:#f3a35c;--red:#ef6b6b;--amber:#e8c547;--input:#18191b;
@@ -43,6 +43,13 @@ main{max-width:1300px;margin:0 auto;padding:12px 16px 60px}
 .card h2 .csum{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:600;color:var(--ink);font-size:13px}
 .card:not(.closed) h2 .csum{display:none}
 .secret{-webkit-text-security:disc;text-security:disc}
+#offerPrev .ofin{width:100px;padding:3px 6px;font:inherit;font-size:10.5pt;text-align:right;border:1px solid #c9c9c9;border-radius:4px;background:#fff;color:#000}
+#offerPrev td:nth-child(3) .ofin{text-align:center;width:80px}
+#offerPrev .ofin.ofed{background:#fde9d6;border-color:#d07020;font-weight:bold}
+#offerPrev .ofcalc{font-size:8pt;color:#777;margin-top:2px}
+#offerPrev .ofreset{border:0;background:none;color:#d07020;cursor:pointer;font-size:13pt;padding:0 2px}
+#offerPrev .ofsum{margin-top:10px;padding:8px 10px;background:#f4f4f4;border-radius:6px;font-size:10pt;color:#000}
+#offerPrev .ofsum .muted{color:#666}
 .secret.show{-webkit-text-security:none;text-security:none}
 .secwrap{display:flex;gap:6px;align-items:center}.secwrap input{flex:1}
 tr.grp.gt td{cursor:pointer;user-select:none}
@@ -328,7 +335,6 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
       <label>Vorlauf mit Zusatzgepäck (h)<input data-g="vorlaufGepaeckH" inputmode="decimal"></label>
       <label>Eigenes Auto / Firmenauto zum Flughafen (EUR/km)<input data-g="kmFahrzeugEUR" inputmode="decimal" title="Nutzungsentschädigung Fahrzeugnutzung gemäss Preisliste"></label>
       <label class="chk" style="align-self:end;padding-bottom:8px"><input type="checkbox" data-gb="nkAktiv">Nebenkosten rechnen</label>
-      <label>Mietwagen Kilometerkosten (CHF/km)<input data-g="kmSatz" inputmode="decimal"></label>
       <label>Mietwagen ab Distanz (km)<input data-g="carAbKm" inputmode="decimal"></label>
       <label>Tägliche Fahrstrecke vor Ort (km)<input data-g="lokalKm" inputmode="decimal"></label>
     </div>
@@ -337,7 +343,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
   <div class="card"><h2>Länderprofile</h2>
     <p class="muted" style="margin-top:0">Sätze in der Währung des Profils. Der Profilname wird mit dem Land des Kunden abgeglichen.</p>
     <div style="overflow-x:auto">
-    <table class="tbl-edit" id="profTable"><thead><tr><th>Name</th><th>Währung</th><th class="num">Hotel/Nacht</th><th class="num">Mietwagen/Tag</th><th class="num">Taxi/Fahrt</th><th class="num nkcol">Nebenk./Tag</th><th>Stand</th><th></th></tr></thead><tbody></tbody></table>
+    <table class="tbl-edit" id="profTable"><thead><tr><th>Name</th><th>Währung</th><th class="num">Hotel/Nacht</th><th class="num">Mietwagen/Tag</th><th class="num">Mietwagen/km</th><th class="num">Taxi/Fahrt</th><th class="num nkcol">Nebenk./Tag</th><th>Stand</th><th></th></tr></thead><tbody></tbody></table>
     </div>
     <button class="btn sec" id="btnAddProf" style="margin-top:10px">+ Profil</button>
   </div>
@@ -416,8 +422,19 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '4.1';
+const APP_VERSION = '4.3';
 const VERSION_HISTORY = [
+  { v: '4.3', d: '2026-11-23', items: [
+    'Richtpreis editierbar: Menge, Preis pro Einheit oder Betrag pro Position anpassen – Endpreis wird neu summiert',
+    'Angepasste Werte orange markiert mit dem Kalkulationswert darunter, pro Position und gesamt zurücksetzbar',
+    'Vergleich Richtpreis gegenüber Kalkulation (Zuschlag in Betrag und %) pro Tabelle und total',
+    'Anpassungen werden mit dem Einsatz gespeichert; Richtpreis zusätzlich in der Einsatzliste',
+  ] },
+  { v: '4.2', d: '2026-11-23', items: [
+    'Mietwagen-Kilometerkosten (Treibstoff pro km) neu pro Land im Länderprofil, per API ermittelt zusammen mit Hotel, Mietwagen und Taxi',
+    'Globaler km-Satz für Mietwagen in den Firmensätzen entfernt',
+    'Automatische Ermittlung überschreibt manuell erfasste Länderprofil-Werte nicht – es werden nur fehlende Werte ergänzt',
+  ] },
   { v: '4.1', d: '2026-11-23', items: [
     'GitHub-Token und API-Key ohne Passwortfeld – der Browser fragt nicht mehr, ob ein Passwort gespeichert werden soll (Anzeigen per 👁)',
     'Alle Bereiche (Karten) per Klick auf den Titel auf- und zuklappbar, beim Start zugeklappt',
@@ -619,7 +636,7 @@ const VERSION_HISTORY = [
 /* ---------- Hilfsfunktionen ---------- */
 const $ = id => document.getElementById(id);
 const LS = { data: 'tc_data', cfg: 'tc_cfg', draft: 'tc_draft', daily: 'tc_daily' };
-const LBL = { hotel: 'Hotel', car: 'Mietwagen', spesen: 'Spesen', nk: 'Nebenkosten', taxi: 'Taxi' };
+const LBL = { hotel: 'Hotel', car: 'Mietwagen', km: 'Mietwagen km-Kosten', spesen: 'Spesen', nk: 'Nebenkosten', taxi: 'Taxi' };
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 const clone = o => JSON.parse(JSON.stringify(o));
@@ -1082,6 +1099,7 @@ function defaultAufgaben() {
 }
 function ensureRates(r, frozen) {
   const D = defaultRates(); r = r || D;
+  if (frozen) (r.profiles || []).forEach(p => { if (p.km === undefined) { const f = num((r.fx || {})[p.cur]); p.km = num(r.kmSatz) >= 0 && f > 0 ? num(r.kmSatz) / f : 0; } }); // vor v4.2: globaler km-Satz in CHF
   if (frozen && r.kmFahrzeugEUR === undefined) { const e = num((r.fx || {}).EUR); r.kmFahrzeugEUR = num(r.kmPrivat) > 0 && e > 0 ? num(r.kmPrivat) / e : 0; } // eingefrorene Sätze nicht verändern
   ['arten', 'gepaeck', 'kmSatz', 'carAbKm', 'lokalKm', 'classes', 'gepaeckArt', 'gepaeckKg', 'vorlaufH', 'vorlaufGepaeckH', 'kmPrivat', 'maschinen', 'stundensaetze', 'arbStdTag', 'reiseStdTag', 'reiseProz', 'nkAktiv', 'ecoPlusAbH', 'ueZuschlag', 'ofRundung', 'ueZuschlag2', 'kmFahrzeugEUR'].forEach(k => { if (r[k] === undefined) r[k] = clone(D[k]); });
   if (!frozen && r.preisliste !== 'FY27') { // Migration v4.0: Preislisten FY27 (gültig ab 1.4.2026) einsetzen
@@ -1125,13 +1143,14 @@ if (!CFG.offer.v40) { CFG.offer.cur = 'auto'; CFG.offer.v40 = true; } // v4.0: W
 
 function blankE() {
   const p = DATA.rates.profiles[0], a = DATA.aufgaben[0];
-  return { id: null, name: '', gep: {}, visa: {}, aufgabeId: a ? a.id : '', kundeId: '', techs: [], profileId: p ? p.id : '', auftrag: '', bemerkung: '', maschId: (DATA.rates.maschinen[0] || {}).id || '', preis: 'ek', ab: '', rueck: '', ueInst: '', ueTrain: '', ueInst2: '', ueTrain2: '', instTage: '', training: false, handTage: '', trainTage: '', klasse: 'Economy', carMode: 'auto', regel: 'mit', man: { hotel: null, car: null, spesen: null }, ov: { hotel: '', car: '', spesen: '', nk: '', taxi: '' }, nkPausch: '', res: null };
+  return { id: null, name: '', gep: {}, visa: {}, aufgabeId: a ? a.id : '', kundeId: '', techs: [], profileId: p ? p.id : '', auftrag: '', bemerkung: '', maschId: (DATA.rates.maschinen[0] || {}).id || '', preis: 'ek', ab: '', rueck: '', ueInst: '', ueTrain: '', ueInst2: '', ueTrain2: '', instTage: '', training: false, handTage: '', trainTage: '', klasse: 'Economy', carMode: 'auto', regel: 'mit', man: { hotel: null, car: null, spesen: null }, ov: { hotel: '', car: '', spesen: '', nk: '', taxi: '' }, nkPausch: '', res: null, ofEdit: {} };
 }
 function normE(o) {
   const e = Object.assign(blankE(), o || {});
   e.man = Object.assign({ hotel: null, car: null, spesen: null }, e.man);
   e.ov = Object.assign({ hotel: '', car: '', spesen: '', nk: '', taxi: '' }, e.ov);
   if (!Array.isArray(e.techs)) e.techs = [];
+  e.ofEdit = e.ofEdit && typeof e.ofEdit === 'object' ? e.ofEdit : {};
   e.gep = e.gep || {}; e.visa = e.visa || {}; e.flugLog = Array.isArray(e.flugLog) ? e.flugLog : [];
   if (o && o.instTage === undefined && o.ab && o.rueck) { const d = Math.round((isoUTC(o.rueck) - isoUTC(o.ab)) / 864e5); if (d >= 1) e.instTage = String(d - 1); } // Migration ≤ v1.5
   if (!['auto', 'ja', 'nein'].includes(e.carMode)) e.carMode = 'auto';
@@ -1483,8 +1502,8 @@ function calcCore() {
     const lk = num(R.lokalKm) || 0;
     if (!isFinite(dist)) warn('Distanz Flughafen–Kunde unbekannt – Kilometer nur aus täglicher Fahrstrecke.');
     km = (isFinite(dist) ? 2 * dist : 0) + carD * lk;
-    const ks = num(R.kmSatz);
-    add('Gemeinsam', 'Transport vor Ort', cf, 'Mietwagen Kilometer', km, 'km', ks, 'CHF', km * ks, `${isFinite(dist) ? `2 × ${fmt0(dist)} km + ` : ''}${fmt0(carD)} Tage × ${fmt0(lk)} km`);
+    const ks = rate('km');
+    add('Gemeinsam', 'Transport vor Ort', cf, 'Mietwagen Kilometer', km, 'km', ks, cur, km * ks * fx, `${isFinite(dist) ? `2 × ${fmt0(dist)} km + ` : ''}${fmt0(carD)} Tage × ${fmt0(lk)} km`);
   }
   const stdUsed = [[E.aufgabeId, S.P1]].concat(E.training ? [['a-hand', 'Handover'], ['a-train', 'Training']] : []);
   const stdTxt = masch ? (isFinite(stdSatz()) ? `${stCur} ${fmt(stdSatz())}/h <span class="muted">(${esc(maschName)}, ${PB} ${CH ? 'Schweiz' : 'Ausland'}${SR.legacy ? ', alter Satz' : ''})</span>` : `<span class="warnTxt">${PB} ${stCur} fehlt für ${esc(maschName)}</span>`) : '<span class="warnTxt">Maschinentyp wählen</span>';
@@ -1591,12 +1610,34 @@ function posOf(l) {
   if (l.cat === 'Nebenkosten') return 'other';
   return 'flight';
 }
+// Richtpreis mit den manuellen Anpassungen des Einsatzes (E.ofEdit: 'tabelle|position' → {qty, ppu, amt, cur})
 function offerData(r, lang, cur) {
+  const D = offerDataCalc(r, lang, cur), R = E.frozen ? E.frozen.rates : DATA.rates, eur = num(R.fx.EUR);
+  const cv = (v, from) => { v = num(v); if (!isFinite(v) || !from || from === cur) return v; if (!(eur > 0)) return NaN; return from === 'CHF' ? v / eur : v * eur; };
+  const OE = E.ofEdit || {};
+  D.tables.forEach(tb => {
+    tb.calcTotal = tb.total;
+    tb.rows.forEach(x => {
+      x.calc = { qty: x.qty, ppu: x.ppu, amt: x.amt };
+      const o = OE[tb.key + '|' + x.k]; x.ek = tb.key + '|' + x.k; if (!o) return;
+      x.ed = {};
+      if (o.qty !== undefined && o.qty !== '') { x.qty = num(o.qty); x.ed.qty = 1; }
+      if (o.amt !== undefined && o.amt !== '') { x.amt = cv(o.amt, o.cur); x.ppu = x.qty > 0 ? x.amt / x.qty : x.amt; x.ed.amt = 1; }
+      else { if (o.ppu !== undefined && o.ppu !== '') { x.ppu = cv(o.ppu, o.cur); x.ed.ppu = 1; } x.amt = x.qty > 0 ? x.qty * x.ppu : (x.ed.ppu ? 0 : x.amt); }
+    });
+    tb.total = tb.rows.reduce((s, x) => s + (isFinite(x.amt) ? x.amt : 0), 0);
+  });
+  D.calcTotal = D.tables.reduce((s, t) => s + t.calcTotal, 0);
+  D.total = D.tables.reduce((s, t) => s + t.total, 0);
+  D.edited = D.tables.some(t => t.rows.some(x => x.ed));
+  return D;
+}
+function offerDataCalc(r, lang, cur) {
   const T = OF_TXT[lang] || OF_TXT.de, R = E.frozen ? E.frozen.rates : DATA.rates;
   const eur = num(R.fx.EUR), conv = chf => cur === 'EUR' ? (eur > 0 ? chf / eur : NaN) : chf;
   const aName = r.a ? r.a.name : 'Einsatz';
   const P1n = lang === 'en' ? ({ 'Installation Neumaschine': 'Installation New Machine', 'Erweiterung Neumaschine': 'Extension New Machine', 'Umbau': 'Conversion', 'Troubleshooting': 'Troubleshooting', 'Handover': 'Handover', 'Training': 'Training' }[aName] || aName) : aName;
-  const tables = E.training ? [{ title: `${P1n} ${T.inst}`, phases: [r.S.P1, 'Handover'] }, { title: T.train, phases: ['Training'] }] : [{ title: P1n, phases: r.S.phases }];
+  const tables = E.training ? [{ key: 'inst', title: `${P1n} ${T.inst}`, phases: [r.S.P1, 'Handover'] }, { key: 'train', title: T.train, phases: ['Training'] }] : [{ key: 'all', title: P1n, phases: r.S.phases }];
   if (r.sonder) return offerSonder(r, T, lang, cur, conv, tables);
   const st = r.stV * (r.stFx > 0 ? r.stFx : NaN), uz = (num(R.ueZuschlag) || 0) / 100, uz2 = (num(R.ueZuschlag2) || 0) / 100;
   const pfx = r.fx > 0 ? r.fx : 1, p = r.p || {};
@@ -1621,7 +1662,7 @@ function offerData(r, lang, cur) {
       if (step && (k === 'flight' || k === 'other') && exact > 0.004) { amt = up(exact); ppu = amt; } // Pauschale auf 50 aufrunden
       const ppuOut = ppu;
       const label = k === 'ot' || k === 'ot2' ? `${lbl[lang] || lbl.de} (+${fmt0((k === 'ot2' ? uz2 : uz) * 100)}%)` : (lbl[lang] || lbl.de);
-      return { pos, art, label, qty, unit, ppu: ppuOut, amt, exact };
+      return { k, pos, art, label, qty, unit, ppu: ppuOut, amt, exact };
     });
     tb.total = tb.rows.reduce((s, x) => s + (isFinite(x.amt) ? x.amt : 0), 0);
   });
@@ -1634,14 +1675,20 @@ function offerSonder(r, T, lang, cur, conv, tables) {
   tables.forEach(tb => {
     let d = 0; so.per.forEach(x => { if (!isFinite(x.days)) return; d += x.days * Object.entries(x.frac || {}).filter(([ph]) => tb.phases.includes(ph)).reduce((a, [, v]) => a + v, 0); });
     d = Math.round(d * 100) / 100;
-    tb.rows = [{ pos: '0010', art: '', label: lbl, qty: d, unit: lang === 'en' ? 'Days' : 'Tage', ppu, amt: d * ppu, exact: d * ppu }];
+    tb.rows = [{ k: 'sonder', pos: '0010', art: '', label: lbl, qty: d, unit: lang === 'en' ? 'Days' : 'Tage', ppu, amt: d * ppu, exact: d * ppu }];
     tb.total = d * ppu;
   });
   const T2 = Object.assign({}, T, { note: lang === 'en' ? `Special agreement${so.bis ? ' valid until ' + fmtDate(so.bis) : ''}: daily rate per technician incl. overtime, travel, accommodation, rental car and expenses.` : `Sonderkondition${so.bis ? ' gültig bis ' + fmtDate(so.bis) : ''}: Tagespauschale pro Techniker inkl. Überstunden, Reise, Hotel, Mietwagen und Spesen.` });
   return { T: T2, cur, tables, total: tables.reduce((s, t) => s + t.total, 0), eurMissing: cur === 'EUR' && !(num((E.frozen ? E.frozen.rates : DATA.rates).fx.EUR) > 0) };
 }
-function offerHtml(r, lang, cur) {
+function offerHtml(r, lang, cur, edit) {
   const D = offerData(r, lang, cur), T = D.T, k = r.k;
+  const n2i = v => isFinite(v) ? (Math.round(v * 100) / 100).toFixed(2) : '';
+  const cell = (x, f, txt) => {
+    if (!edit) return txt;
+    const on = x.ed && x.ed[f];
+    return `<input class="ofin${on ? ' ofed' : ''}" data-oe="${esc(x.ek)}" data-of="${f}" inputmode="decimal" value="${n2i(x[f])}">${on ? `<div class="ofcalc">Kalk. ${n2(x.calc[f])}</div>` : ''}`;
+  };
   const n2 = v => isFinite(v) ? v.toLocaleString('de-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '–';
   const B = 'border:1px solid #000;', HB = 'background:#365f91;color:#fff;';
   const th = (t, al) => `<th style="${HB}${B}padding:8px 10px;font-weight:normal;text-align:${al || 'center'};text-transform:none;letter-spacing:0;font-size:11pt">${t}</th>`;
@@ -1655,20 +1702,42 @@ function offerHtml(r, lang, cur) {
       + tb.rows.map(x => `<tr>
         <td style="${B}padding:7px 10px">${x.pos}</td>
         <td style="${B}padding:7px 10px">${x.art ? esc(x.art) + '<br>' : ''}${esc(x.label)}</td>
-        <td style="${B}padding:7px 10px;text-align:center">${n2(x.qty)}</td>
+        <td style="${B}padding:7px 10px;text-align:center">${cell(x, 'qty', n2(x.qty))}</td>
         <td style="${B}padding:7px 10px;text-align:center">${esc(x.unit)}</td>
-        <td style="${B}padding:7px 10px;text-align:right;white-space:nowrap">${n2(x.ppu)} ${cur}</td>
-        <td style="${B}padding:7px 10px;text-align:right;white-space:nowrap">${n2(x.amt)} ${cur}</td></tr>`).join('')
+        <td style="${B}padding:7px 10px;text-align:right;white-space:nowrap">${cell(x, 'ppu', n2(x.ppu) + ' ' + cur)}</td>
+        <td style="${B}padding:7px 10px;text-align:right;white-space:nowrap">${cell(x, 'amt', n2(x.amt) + ' ' + cur)}${edit && x.ed ? ` <button type="button" class="ofreset" data-oreset="${esc(x.ek)}" title="Position auf Kalkulation zurücksetzen">↺</button>` : ''}</td></tr>`).join('')
       + `<tr><td colspan="5" style="${HB}${B}padding:8px 10px;font-size:12pt">${esc(T.fin)}</td><td style="${HB}${B}padding:8px 10px;text-align:right;font-size:12pt;white-space:nowrap">${n2(tb.total)} ${cur}</td></tr></tbody></table>`;
   });
   if (D.tables.length > 1) html += `<table style="border-collapse:collapse;width:100%;margin-top:12px"><tr><td style="${HB}${B}padding:8px 10px;font-size:12.5pt;font-weight:bold">${esc(T.tot)} (${D.tables.map(t => esc(t.title)).join(' + ')})</td><td style="${HB}${B}padding:8px 10px;text-align:right;font-size:12.5pt;font-weight:bold;white-space:nowrap">${n2(D.total)} ${cur}</td></tr></table>`;
   html += `<p style="font-size:8.5pt;color:#555;margin-top:10px">${esc(T.note)}</p></div>`;
+  if (edit) {
+    const pc = (a, b) => b > 0 ? ` (${a - b >= 0 ? '+' : ''}${fmt0(Math.round((a - b) / b * 1000) / 10)} %)` : '';
+    const dl = (a, b) => `${a - b >= 0 ? '+' : ''}${n2(a - b)} ${cur}${pc(a, b)}`;
+    html += `<div class="ofsum">${D.edited ? `<b>Angepasst</b> – ${D.tables.map(t => `${esc(t.title)}: ${n2(t.total)} ${cur} <span class="muted">(Kalkulation ${n2(t.calcTotal)}, ${dl(t.total, t.calcTotal)})</span>`).join(' · ')}${D.tables.length > 1 ? `<br><b>Total ${n2(D.total)} ${cur}</b> <span class="muted">(Kalkulation ${n2(D.calcTotal)}, ${dl(D.total, D.calcTotal)})</span>` : ''} <button type="button" class="btn sec sm" id="ofResetAll">Alle Anpassungen zurücksetzen</button>` : '<span class="muted">Menge, Preis pro Einheit oder Betrag direkt im Richtpreis ändern – die Anpassungen werden mit dem Einsatz gespeichert.</span>'}</div>`;
+  }
   return html;
+}
+function onOfferEdit(ev) {
+  const t = ev.target; if (!t.dataset.oe) return;
+  const key = t.dataset.oe, f = t.dataset.of, cur = offerCur(LAST || calc());
+  const o = Object.assign({}, E.ofEdit[key]);
+  const raw = t.value.trim();
+  if (raw !== '' && !(num(raw) >= 0)) { toast('Bitte eine gültige Zahl ≥ 0 eingeben'); render(); return; }
+  if (o.cur && o.cur !== cur) { // bestehende Beträge in die aktuelle Währung übernehmen
+    const D = offerData(LAST || calc(), CFG.offer.lang, cur), x = D.tables.flatMap(tb => tb.rows).find(z => z.ek === key);
+    if (x) { if (o.ppu !== undefined) o.ppu = x.ppu; if (o.amt !== undefined) o.amt = x.amt; }
+  }
+  o.cur = cur;
+  if (raw === '') delete o[f]; else o[f] = num(raw);
+  if (f === 'amt' && raw !== '') delete o.ppu;          // Betrag gesetzt → Preis pro Einheit ergibt sich
+  if ((f === 'ppu' || f === 'qty') && raw !== '') delete o.amt; // Menge oder Preis gesetzt → Betrag wird gerechnet
+  if (o.qty === undefined && o.ppu === undefined && o.amt === undefined) delete E.ofEdit[key]; else E.ofEdit[key] = o;
+  render();
 }
 function renderOffer(r) {
   $('ofLang').value = CFG.offer.lang; $('ofCur').value = ['CHF', 'EUR'].includes(CFG.offer.cur) ? CFG.offer.cur : 'auto';
   $('ofCurAuto').textContent = `Automatisch (${autoCur(r)})`;
-  $('offerPrev').innerHTML = offerHtml(r, CFG.offer.lang, offerCur(r));
+  $('offerPrev').innerHTML = offerHtml(r, CFG.offer.lang, offerCur(r), true);
 }
 function printOffer() {
   const r = calc();
@@ -1757,7 +1826,7 @@ function render() {
 }
 
 /* ---------- Einsätze ---------- */
-function strip(o) { const c = clone(o); ['updatedAt', 'createdAt', 'total', 'ziel'].forEach(k => delete c[k]); return JSON.stringify(normE(c)); }
+function strip(o) { const c = clone(o); ['updatedAt', 'createdAt', 'total', 'ziel', 'ofTotal', 'ofCur', 'ofEdited'].forEach(k => delete c[k]); return JSON.stringify(normE(c)); }
 function isDirty() {
   if (!E.id) return !!(E.name || E.kundeId || E.techs.length || E.ab);
   const s = DATA.einsaetze.find(x => x.id === E.id);
@@ -1771,7 +1840,8 @@ function saveEinsatz() {
   if (!E.name.trim()) { E.name = [r.a && r.a.name, r.k && r.k.name, E.ab ? fmtDate(E.ab) : ''].filter(Boolean).join(' – ') || 'Einsatz'; }
   const now = Date.now();
   if (!E.id) { E.id = uid(); E.createdAt = now; }
-  E.updatedAt = now; E.total = r.sonder && isFinite(r.sonder.chf) ? r.sonder.chf : r.total; E.ziel = r.p ? r.p.name : '';
+  E.updatedAt = now; E.total = r.sonder && isFinite(r.sonder.chf) ? r.sonder.chf : r.total;
+  { const oc = offerCur(r), od = offerData(r, CFG.offer.lang, oc); E.ofTotal = Math.round(od.total * 100) / 100; E.ofCur = oc; E.ofEdited = !!od.edited; } E.ziel = r.p ? r.p.name : '';
   const copy = clone(E); const i = DATA.einsaetze.findIndex(x => x.id === E.id);
   if (i >= 0) DATA.einsaetze[i] = copy; else DATA.einsaetze.push(copy);
   changed(); writeForm(); render(); renderList(); toast('Einsatz gespeichert');
@@ -1813,7 +1883,7 @@ function renderList() {
     <td><b>${esc(e.name)}</b>${e.auftrag ? `<div class="muted">${esc(e.auftrag)}</div>` : ''}</td>
     <td>${statusBadge(e)}${e.preis === 'ic' ? '<div class="muted">Intercompany</div>' : ''}</td>
     <td>${esc(i.aufgabe)}</td><td>${esc(i.kunde)}${i.ort ? `<div class="muted">${esc(i.ort)}</div>` : ''}</td><td>${esc(i.techs)}</td>
-    <td>${fmtDate(e.ab)} – ${fmtDate(e.rueck)}</td><td class="num">${fmt(e.total)}</td>
+    <td>${fmtDate(e.ab)} – ${fmtDate(e.rueck)}</td><td class="num">${fmt(e.total)}${isFinite(num(e.ofTotal)) ? `<div class="muted">Richtpreis ${esc(e.ofCur || '')} ${fmt(num(e.ofTotal))}${e.ofEdited ? ' ✎' : ''}</div>` : ''}</td>
     <td class="num"><button class="btn sm" data-open="${esc(e.id)}">Öffnen</button> <button class="btn sec sm" data-dup="${esc(e.id)}">Duplizieren</button> <button class="btn red sm" data-del="${esc(e.id)}">Löschen</button></td></tr>`).join('')
     : `<tr><td colspan="8" class="muted">Noch keine Einsätze gespeichert.</td></tr>`;
 }
@@ -2149,7 +2219,7 @@ Fasse vor dem Ergebnis höchstens in 2–3 Sätzen zusammen. Antworte am Schluss
 }
 
 /* ---------- Firmensätze ---------- */
-const PNUM = ['hotel', 'car', 'taxi', 'spesen', 'spesenIC', 'nk'], P_API = ['hotel', 'car', 'taxi'], PCOLS = ['hotel', 'car', 'taxi', 'nk'];
+const PNUM = ['hotel', 'car', 'km', 'taxi', 'spesen', 'spesenIC', 'nk'], P_API = ['hotel', 'car', 'km', 'taxi'], PCOLS = ['hotel', 'car', 'km', 'taxi', 'nk'];
 const GNUM = ['gepaeck', 'kmSatz', 'carAbKm', 'lokalKm'];
 function ratesChanged() { DATA.rates.updatedAt = Date.now(); changed(); writeForm(); render(); }
 function renderStdTable() {
@@ -2385,16 +2455,19 @@ Landeswährung im Profil: ${p.cur}
 
 - Hotel: Mittelklasse-Businesshotel, Einzelzimmer, pro Nacht – typischer Wert für Geschäftsreisen in Industrieregionen (nicht Luxus, nicht Hauptstadt-Spitzenpreis)
 - Mietwagen: Kompaktklasse, pro Tag, inkl. Basisversicherung, bei Miete über 1–3 Wochen
+- Mietwagen-Kilometerkosten: Treibstoffkosten pro gefahrenem km für einen Kompaktwagen (ca. 6.5 l/100 km Benzin bzw. 5.5 l/100 km Diesel) zum aktuellen Treibstoffpreis im Land, plus allfällige km-Gebühren des Vermieters
 - Taxi: einfache Fahrt Flughafen – Hotel/Kunde, typische Strecke 20–40 km
 
 Fasse vor dem Ergebnis höchstens in 2–3 Sätzen zusammen. Antworte am Schluss mit genau einem JSON-Objekt in einem \`\`\`json-Block, ohne Text danach. Unbekannte Werte als null:
-{ "waehrung": "${p.cur}", "landeswaehrung": "ISO-Code der Landeswährung", "hotel_pro_nacht": Zahl, "mietwagen_pro_tag": Zahl, "taxi_pro_fahrt": Zahl, "bemerkung": "kurz, Deutsch (Schweiz), ss statt ß" }`;
+{ "waehrung": "${p.cur}", "landeswaehrung": "ISO-Code der Landeswährung", "hotel_pro_nacht": Zahl, "mietwagen_pro_tag": Zahl, "mietwagen_pro_km": Zahl, "taxi_pro_fahrt": Zahl, "bemerkung": "kurz, Deutsch (Schweiz), ss statt ß" }`;
   try {
     const r = await callClaude(prompt, 3, undefined, `Länderprofil ${p.name}`);
     const j = extractJSON(r.text); if (!j) throw new Error('Die Antwort enthielt kein auswertbares Ergebnis');
-    const set = (k, v) => { v = convCur(v, j.waehrung || p.cur, p.cur); if (isFinite(v)) p[k] = Math.round(v * 100) / 100; };
-    set('hotel', j.hotel_pro_nacht); set('car', j.mietwagen_pro_tag); set('taxi', j.taxi_pro_fahrt);
-    p.apiStand = { at: Date.now(), src: 'api' }; p.apiBemerkung = j.bemerkung || '';
+    const onlyMissing = quiet && p.apiStand && p.apiStand.src === 'manuell'; // manuelle Werte nie automatisch überschreiben
+    const set = (k, v, dec) => { if (onlyMissing && isFinite(num(p[k]))) return; v = convCur(v, j.waehrung || p.cur, p.cur); if (isFinite(v)) p[k] = Math.round(v * (dec || 100)) / (dec || 100); };
+    set('hotel', j.hotel_pro_nacht); set('car', j.mietwagen_pro_tag); set('km', j.mietwagen_pro_km, 1000); set('taxi', j.taxi_pro_fahrt);
+    if (!onlyMissing) p.apiStand = { at: Date.now(), src: 'api' };
+    p.apiBemerkung = j.bemerkung || '';
     if (/^[A-Za-z]{3}$/.test(String(j.landeswaehrung || ''))) p.landesWaehrung = String(j.landeswaehrung).toUpperCase();
     R.updatedAt = Date.now(); changed(); renderRates(); writeForm(); render();
     stat(`Sätze für ${p.name} ermittelt und im Länderprofil gespeichert`);
@@ -2863,6 +2936,13 @@ document.querySelector('section[data-tab="settings"]').addEventListener('change'
 $('btnSync').addEventListener('click', () => syncNow(true));
 $('syncBtn').addEventListener('click', () => syncNow(true));
 $('btnTestApi').addEventListener('click', testApi);
+$('offerPrev').addEventListener('change', onOfferEdit);
+$('offerPrev').addEventListener('keydown', ev => { if (ev.key === 'Enter' && ev.target.dataset.oe) ev.target.blur(); });
+$('offerPrev').addEventListener('pointerdown', ev => { // pointerdown: greift auch, wenn ein Feld-Blur gleichzeitig neu zeichnet
+  if (ev.button !== 0) return;
+  const b = ev.target.closest('[data-oreset]'); if (b) { delete E.ofEdit[b.dataset.oreset]; render(); return; }
+  if (ev.target.closest('#ofResetAll') && confirm('Alle Anpassungen im Richtpreis verwerfen und wieder die Kalkulation verwenden?')) { E.ofEdit = {}; render(); }
+});
 document.querySelectorAll('.card').forEach(c => {
   const h = c.querySelector(':scope > h2'); if (!h) return;
   const body = document.createElement('div'); body.className = 'cbody';
