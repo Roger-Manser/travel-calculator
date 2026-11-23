@@ -2543,14 +2543,14 @@
   {
    "id": "mwt9jjt153r8q",
    "name": "Achim Storch",
-   "nationalitaet": "",
+   "nationalitaet": "Deutscher",
    "wohnort": "",
    "flughafen": "ZRH",
    "gepaeck": false,
    "gepaeckKg": 30,
    "arten": [],
    "anreiseModus": "auto",
-   "updatedAt": 1795438199102
+   "updatedAt": 1795438201612
   }
  ],
  "kunden": [
@@ -2789,5 +2789,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795438199102
+ "updatedAt": 1795438201612
 }
