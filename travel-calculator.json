@@ -2012,7 +2012,7 @@
   },
   {
    "id": "mwt1d57to15mh",
-   "name": "RCS430638",
+   "name": "Installation + Training RCS430638",
    "gep": {},
    "visa": {
     "deutschland": {
@@ -2314,11 +2314,12 @@
      "ppu": 240
     }
    },
+   "useApi": false,
    "flugLog": [],
    "ovSrc": {},
    "createdAt": 1795424456872,
-   "updatedAt": 1795424517740,
-   "total": null,
+   "updatedAt": 1795428518723,
+   "total": 46946.36567,
    "ofTotal": 56098,
    "ofCur": "EUR",
    "ofEdited": true,
@@ -2628,5 +2629,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795428310803
+ "updatedAt": 1795428518724
 }
