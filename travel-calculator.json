@@ -654,10 +654,21 @@
     "Installationstechniker"
    ],
    "anreiseModus": "oev",
-   "updatedAt": 1795418868745,
+   "updatedAt": 1795423121146,
    "maschinen": [
     "m-konv"
-   ]
+   ],
+   "anreiseKm": 40,
+   "autoH": 0.7,
+   "oevH": 1.25,
+   "oevRetourChf": 44,
+   "parkenTagChf": 13.4,
+   "taxiEinfachChf": 160,
+   "anreiseBemerkung": "Distanz, Fahrzeit, ÖV-Dauer, Billettpreis (ZVV, ca. 2 x 22 CHF) und Taxipreis sind Schätzungen, nicht verifiziert. Parkieren: Online-Buchung P60/P65 ab 94 CHF pro Woche (ca. 13.40 CHF/Tag); vor Ort im P6 19 CHF pro Tag ab dem 8. Tag. Dorf ZH hat keinen Bahnhof; Anreise per Postauto nach Andelfingen oder Henggart, dann Bahn via Winterthur zum Flughafen. Fahrplanzeiten nicht ermittelbar, bitte auf sbb.ch prüfen.",
+   "anreiseStand": {
+    "at": 1795423121146,
+    "src": "api"
+   }
   }
  ],
  "kunden": [
@@ -735,10 +746,21 @@
    "tout": 4,
    "srch": 0,
    "updatedAt": 1795423056535
+  },
+  {
+   "id": "api-mwt0kik73ahgx",
+   "typ": "use",
+   "at": 1795423121143,
+   "usd": 0.1567,
+   "text": "Anreise Lars Baunack",
+   "tin": 53618,
+   "tout": 1949,
+   "srch": 3,
+   "updatedAt": 1795423121143
   }
  ],
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795423056535
+ "updatedAt": 1795423121146
 }
