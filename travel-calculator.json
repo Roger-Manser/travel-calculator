@@ -2560,7 +2560,7 @@
   },
   {
    "id": "mwt96tjpoc7cu",
-   "name": "Neuer Kunde",
+   "name": "LLC Goznak",
    "adresse": "",
    "land": "",
    "ort": "",
@@ -2569,7 +2569,7 @@
    "flughafenName": "",
    "distanzKm": "",
    "fahrzeitMin": "",
-   "updatedAt": 1795437598741
+   "updatedAt": 1795437633695
   }
  ],
  "apiLog": [
@@ -2673,5 +2673,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795437598741
+ "updatedAt": 1795437633695
 }
