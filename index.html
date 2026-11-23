@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v4.8 – Bugfix: recherchierter Flug wird zuverlässig eingetragen (robuste Zuordnung, auch ohne vollständige Preise) -->
+<!-- Gallus Travel Calculator v4.9 – Spesen nach Deplacement-Liste (0.6 × Unterkunft+Verpflegung in EUR), Hotel-Mindestansatz, Erfahrungswerte pro Länderprofil -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#151617">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="4.8">
+<meta name="app-version" content="4.9">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
 :root{--bg:#151617;--card:#1e2022;--card2:#26292c;--line:#34373b;--ink:#ececec;--muted:#a3a6aa;--brand:#d07020;--brand-2:#f3a35c;--red:#ef6b6b;--amber:#e8c547;--input:#18191b;
@@ -243,6 +243,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
     <p class="muted" style="margin-top:0">Claude sucht über die Anthropic API im Web nach aktuellen Richtpreisen für die Flüge ab den Heimflughäfen der Techniker, Hotel, Mietwagen, Taxi, Spesen-Referenz und Wechselkurs. Die Werte sind ohne Gewähr und vor der Buchung zu prüfen.</p>
     <div class="row">
       <button class="btn" id="btnResearch">Richtpreise recherchieren</button>
+      <button class="btn sec" id="btnUseApi" hidden>Mit API neu kalkulieren</button>
       <label class="chk" style="margin:0"><input type="checkbox" id="autoRes">bei neuem Einsatz automatisch</label>
       <button class="btn sec" id="btnResearchStop" hidden>Abbrechen</button>
       <span class="muted" id="resStatus"></span>
@@ -306,8 +307,9 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
     <div class="row" style="margin-top:10px"><input id="maschNew" placeholder="Neuer Maschinentyp" style="max-width:240px"><button class="btn sec" id="btnAddMasch">+ Maschinentyp</button></div>
   </div>
   <div class="card" id="spesenCard"><h2>Spesensätze pro Land</h2>
-    <p class="muted" style="margin-top:0">Spesen pro Tag in der Währung des Länderprofils, je für Endkunden- und Intercompany-Preise. Länder und Währungen werden unter Firmensätze → Länderprofile verwaltet.</p>
-    <div style="overflow-x:auto"><table class="tbl-edit" id="spesenTable"><thead><tr><th>Land</th><th>Währung</th><th class="num">Spesen Endkunde/Tag</th><th class="num">Spesen Intercompany/Tag</th></tr></thead><tbody></tbody></table></div>
+    <p class="muted" style="margin-top:0">Ausserhalb der Schweiz gilt die Deplacement-Liste: Spesensatz = 0.6 × (Unterkunft + Verpflegung), mit dem Tageskurs in EUR umgerechnet und auf 1 EUR gerundet – für Endkunde und Intercompany gleich. Die Schweiz und Länder ohne Eintrag verwenden die manuellen Sätze in der Währung des Profils.</p>
+    <div class="row" style="margin-bottom:10px"><button class="btn sec" id="btnDeplImp">Deplacement-Liste importieren (.json)</button><input type="file" id="deplFile" accept=".json,application/json" hidden><span class="muted" id="deplInfo"></span></div>
+    <div style="overflow-x:auto"><table class="tbl-edit" id="spesenTable"><thead><tr><th>Land</th><th>Deplacement-Eintrag</th><th class="num">Unterkunft + Verpflegung</th><th class="num">Spesen EUR/Tag</th><th class="num">Manuell Endkunde/Tag</th><th class="num">Manuell Intercompany/Tag</th></tr></thead><tbody></tbody></table></div>
   </div>
   <div class="card"><h2>Technikerarten</h2>
     <table class="tbl-edit" id="artTable"><tbody></tbody></table>
@@ -331,6 +333,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
       <label>Zusatzgepäck Standard für<select data-g="gepaeckArt"></select></label>
       <label>Zusatzgepäck Standard (kg)<input data-g="gepaeckKg" inputmode="decimal"></label>
       <label>Premium Economy ab Flugdauer (h)<input data-g="ecoPlusAbH" inputmode="decimal"></label>
+      <label>Hotel mindestens (EUR pro Nacht)<input data-g="hotelMinEUR" inputmode="decimal" title="Gilt für alle Länder, auch für Erfahrungs- und API-Werte"></label>
       <label>Vorlauf am Flughafen (h)<input data-g="vorlaufH" inputmode="decimal"></label>
       <label>Vorlauf mit Zusatzgepäck (h)<input data-g="vorlaufGepaeckH" inputmode="decimal"></label>
       <label>Eigenes Auto / Firmenauto zum Flughafen (EUR/km)<input data-g="kmFahrzeugEUR" inputmode="decimal" title="Nutzungsentschädigung Fahrzeugnutzung gemäss Preisliste"></label>
@@ -346,6 +349,10 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
     <table class="tbl-edit" id="profTable"><thead><tr><th>Name</th><th>Währung</th><th class="num">Hotel/Nacht</th><th class="num">Mietwagen/Tag</th><th class="num">Mietwagen/km</th><th class="num">Taxi/Fahrt</th><th class="num nkcol">Nebenk./Tag</th><th>Stand</th><th></th></tr></thead><tbody></tbody></table>
     </div>
     <button class="btn sec" id="btnAddProf" style="margin-top:10px">+ Profil</button>
+  </div>
+  <div class="card"><h2>Erfahrungswerte pro Land</h2>
+    <p class="muted" style="margin-top:0">Werden vor der API verwendet und in der Kalkulation als «Erfahrungswert» ausgewiesen. Hotel, Mietwagen und Taxi in der Währung des Profils, Flug und Zusatzgepäck in CHF retour (Economy ab Schweiz). Leere Felder: es gelten die API-Werte. Pro Einsatz kann mit «Mit API neu kalkulieren» umgeschaltet werden.</p>
+    <div style="overflow-x:auto"><table class="tbl-edit" id="erfTable"><thead><tr><th>Land</th><th>Währung</th><th class="num">Hotel/Nacht</th><th class="num">Mietwagen/Tag</th><th class="num">Mietwagen/km</th><th class="num">Taxi/Fahrt</th><th class="num">Flug retour CHF</th><th class="num">Zusatzgepäck CHF</th><th class="num">Flugdauer h</th></tr></thead><tbody></tbody></table></div>
   </div>
   <div class="card"><h2>Wechselkurse</h2>
     <p class="muted" style="margin-top:0">CHF pro 1 Einheit der Fremdwährung. Die Kurse werden einmal pro Tag automatisch aktualisiert (beim ersten Öffnen des Tages); manuelle Änderungen gelten bis zur nächsten Aktualisierung.</p>
@@ -422,8 +429,14 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '4.8';
+const APP_VERSION = '4.9';
 const VERSION_HISTORY = [
+  { v: '4.9', d: '2026-11-23', items: [
+    'Spesen ausserhalb der Schweiz nach Deplacement-Liste: 0.6 × (Unterkunft + Verpflegung), in EUR umgerechnet mit Tageskurs, auf 1 EUR gerundet – Liste per Import (wird nur im privaten Daten-Repo gespeichert)',
+    'Hotel-Mindestansatz pro Nacht (Standard EUR 120, unter Firmensätze → Allgemein editierbar)',
+    'Erfahrungswerte pro Länderprofil (Hotel, Mietwagen, km, Taxi, Flug, Zusatzgepäck, Flugdauer): werden vor der API verwendet und in der Kalkulation als «Erfahrungswert» ausgewiesen',
+    'Mit Erfahrungswerten keine automatische Online-Ermittlung; Knopf «Mit API neu kalkulieren» pro Einsatz',
+  ] },
   { v: '4.8', d: '2026-11-23', items: [
     'Bugfix: recherchierter Flug wurde nicht eingetragen, wenn die API den Technikernamen oder Flughafen anders schrieb (z.B. «Johannes Strauss», «Zürich (ZRH)») – Zuordnung jetzt tolerant, notfalls nach Reihenfolge',
     'Bugfix: Flug wird auch eingetragen, wenn für die gewählte Klasse kein Preis gefunden wurde (Flugnummer und Zeiten übernommen, Preis als Hinweis fehlend)',
@@ -1105,7 +1118,7 @@ function defaultRates() {
     arten: ['Installationstechniker', 'Applikationstechniker'],
     gepaeck: 150, kmSatz: 0.25, carAbKm: 30, lokalKm: 30,
     gepaeckArt: 'Installationstechniker', gepaeckKg: 30, vorlaufH: 2, vorlaufGepaeckH: 3, kmPrivat: 0,
-    maschinen: [{ id: 'm-konv', name: 'Konventionell', satz: 171, satzEUR: 190, satzIC: 149, satzICEUR: 165 }, { id: 'm-dig', name: 'Digital', satz: 186, satzEUR: 207, satzIC: 162, satzICEUR: 180 }], ueZuschlag2: 90, kmFahrzeugEUR: 1.2, preisliste: 'FY27',
+    maschinen: [{ id: 'm-konv', name: 'Konventionell', satz: 171, satzEUR: 190, satzIC: 149, satzICEUR: 165 }, { id: 'm-dig', name: 'Digital', satz: 186, satzEUR: 207, satzIC: 162, satzICEUR: 180 }], ueZuschlag2: 90, kmFahrzeugEUR: 1.2, preisliste: 'FY27', hotelMinEUR: 120, depl: null,
     stundensaetze: {}, arbStdTag: 8, reiseStdTag: 8, reiseProz: 100, nkAktiv: false, ecoPlusAbH: 10, ueZuschlag: 45, ofRundung: 50
   };
 }
@@ -1122,8 +1135,9 @@ function defaultAufgaben() {
 function ensureRates(r, frozen) {
   const D = defaultRates(); r = r || D;
   if (frozen) (r.profiles || []).forEach(p => { if (p.km === undefined) { const f = num((r.fx || {})[p.cur]); p.km = num(r.kmSatz) >= 0 && f > 0 ? num(r.kmSatz) / f : 0; } }); // vor v4.2: globaler km-Satz in CHF
+  if (frozen && r.hotelMinEUR === undefined) r.hotelMinEUR = 0; // eingefrorene Einsätze vor v4.9 ohne Mindestansatz
   if (frozen && r.kmFahrzeugEUR === undefined) { const e = num((r.fx || {}).EUR); r.kmFahrzeugEUR = num(r.kmPrivat) > 0 && e > 0 ? num(r.kmPrivat) / e : 0; } // eingefrorene Sätze nicht verändern
-  ['arten', 'gepaeck', 'kmSatz', 'carAbKm', 'lokalKm', 'classes', 'gepaeckArt', 'gepaeckKg', 'vorlaufH', 'vorlaufGepaeckH', 'kmPrivat', 'maschinen', 'stundensaetze', 'arbStdTag', 'reiseStdTag', 'reiseProz', 'nkAktiv', 'ecoPlusAbH', 'ueZuschlag', 'ofRundung', 'ueZuschlag2', 'kmFahrzeugEUR'].forEach(k => { if (r[k] === undefined) r[k] = clone(D[k]); });
+  ['arten', 'gepaeck', 'kmSatz', 'carAbKm', 'lokalKm', 'classes', 'gepaeckArt', 'gepaeckKg', 'vorlaufH', 'vorlaufGepaeckH', 'kmPrivat', 'maschinen', 'stundensaetze', 'arbStdTag', 'reiseStdTag', 'reiseProz', 'nkAktiv', 'ecoPlusAbH', 'ueZuschlag', 'ofRundung', 'ueZuschlag2', 'kmFahrzeugEUR', 'hotelMinEUR'].forEach(k => { if (r[k] === undefined) r[k] = clone(D[k]); });
   if (!frozen && r.preisliste !== 'FY27') { // Migration v4.0: Preislisten FY27 (gültig ab 1.4.2026) einsetzen
     const FY = { konv: [171, 190, 149, 165], dig: [186, 207, 162, 180] };
     (r.maschinen || []).forEach(m => { const key = m.id === 'm-konv' || /konv|flexo|offset/i.test(m.name) ? 'konv' : m.id === 'm-dig' || /digi/i.test(m.name) ? 'dig' : null; if (key) [m.satz, m.satzEUR, m.satzIC, m.satzICEUR] = FY[key]; });
@@ -1134,6 +1148,7 @@ function ensureRates(r, frozen) {
   r.profiles.forEach(p => { const ph = PH[p.id]; if (ph && !p.apiStand && num(p.hotel) === ph[0] && num(p.car) === ph[1] && num(p.taxi) === ph[2]) { p.hotel = ''; p.car = ''; p.taxi = ''; } });
   (r.maschinen || []).forEach(m => { if (m.satz === undefined) { const o = (r.stundensaetze || {})[m.id] || {}; const v = [o['a-inst']].concat(Object.values(o)).find(x => x !== '' && x !== undefined && x !== null); m.satz = v === undefined ? '' : v; } }); // Migration v1.9
   r.profiles.forEach(p => { if (p.taxi === undefined) { const dp = D.profiles.find(x => x.id === p.id); p.taxi = dp ? dp.taxi : 0; } });
+  if (!frozen) { r.profiles.forEach(p => { const d = deplRow(p, r); if (d && d.cur !== 'CHF' && r.fx[d.cur] === undefined) r.fx[d.cur] = ''; }); if (r.depl && r.fx.EUR === undefined) r.fx.EUR = ''; } // Kurse für Deplacement-Währungen laden
   return r;
 }
 const LISTS = ['einsaetze', 'aufgaben', 'techniker', 'kunden', 'apiLog'];
@@ -1165,7 +1180,7 @@ if (!CFG.offer.v40) { CFG.offer.cur = 'auto'; CFG.offer.v40 = true; } // v4.0: W
 
 function blankE() {
   const p = DATA.rates.profiles[0], a = DATA.aufgaben[0];
-  return { id: null, name: '', gep: {}, visa: {}, aufgabeId: a ? a.id : '', kundeId: '', techs: [], profileId: p ? p.id : '', auftrag: '', bemerkung: '', maschId: (DATA.rates.maschinen[0] || {}).id || '', preis: 'ek', ab: '', rueck: '', ueInst: '', ueTrain: '', ueInst2: '', ueTrain2: '', instTage: '', training: false, handTage: '', trainTage: '', klasse: 'Economy', carMode: 'auto', regel: 'mit', man: { hotel: null, car: null, spesen: null }, ov: { hotel: '', car: '', spesen: '', nk: '', taxi: '' }, nkPausch: '', res: null, ofEdit: {} };
+  return { id: null, name: '', gep: {}, visa: {}, aufgabeId: a ? a.id : '', kundeId: '', techs: [], profileId: p ? p.id : '', auftrag: '', bemerkung: '', maschId: (DATA.rates.maschinen[0] || {}).id || '', preis: 'ek', ab: '', rueck: '', ueInst: '', ueTrain: '', ueInst2: '', ueTrain2: '', instTage: '', training: false, handTage: '', trainTage: '', klasse: 'Economy', carMode: 'auto', regel: 'mit', man: { hotel: null, car: null, spesen: null }, ov: { hotel: '', car: '', spesen: '', nk: '', taxi: '' }, nkPausch: '', res: null, ofEdit: {}, useApi: false };
 }
 function normE(o) {
   const e = Object.assign(blankE(), o || {});
@@ -1415,7 +1430,9 @@ function statusBadge(e) {
 function makeSnapshot() {
   const techs = {}; E.techs.forEach(x => { const t = techById(x.id); if (t) techs[t.id] = clone(t); });
   const k = kunde();
-  return { at: Date.now(), rates: clone(DATA.rates), techs, kunde: k ? clone(k) : null };
+  const rates = clone(DATA.rates);
+  if (rates.depl && Array.isArray(rates.depl.rows)) { const used = rates.profiles.map(p => deplRow(p, DATA.rates)).filter(Boolean).map(x => x.de); rates.depl.rows = rates.depl.rows.filter(x => used.includes(x.de)); }
+  return { at: Date.now(), rates, techs, kunde: k ? clone(k) : null };
 }
 function withData(view, fn) {
   const saved = { rates: DATA.rates, techniker: DATA.techniker, kunden: DATA.kunden };
@@ -1463,17 +1480,27 @@ function calcCore() {
   else if (E.carMode === 'nein') { car = false; carWhy = 'Mietwagen: manuell nein – Taxi'; }
   else if (isFinite(dist) && isFinite(abKm)) { car = dist >= abKm; carWhy = `Mietwagen automatisch: Distanz ${fmt0(dist)} km ${car ? '≥' : '<'} ${fmt0(abKm)} km → ${car ? 'Mietwagen' : 'Taxi'}`; }
   else { car = true; carWhy = 'Mietwagen automatisch: Distanz unbekannt → Mietwagen'; }
+  const ERF = !E.useApi && p && p.erf ? p.erf : {}, erfUsed = new Set();
+  const erfV = key => { const v = ERF[key]; return v === '' || v === undefined || v === null ? NaN : num(v); };
   const rate = key => {
     const raw = E.ov[key];
     if (raw !== '' && raw !== undefined && raw !== null) { const v = num(raw); if (!(v >= 0)) { err(`Ungültiger Satz bei ${LBL[key]}.`); return NaN; } return v; }
+    if (erfV(key) >= 0) { erfUsed.add(key); return erfV(key); }
     const pv = p ? num(p[key]) : NaN;
     if (P_API.includes(key) && !isFinite(pv)) { warn(`${LBL[key]} fehlt im Länderprofil${p ? ' «' + p.name + '»' : ''} – «Sätze per API ermitteln» oder im Länderprofil erfassen. Wird mit 0 gerechnet.`); return 0; }
     return pv;
   };
-  const src = key => E.ov[key] !== '' && E.ov[key] !== undefined ? 'für diesen Einsatz überschrieben' : (p ? `Länderprofil ${p.name}${p.apiStand && p.apiStand.at ? ' · Stand ' + fmtDate(isoOf(p.apiStand.at)) + (p.apiStand.src === 'api' ? ' (API)' : ' (manuell)') : ''}` : 'Länderprofil');
+  const src = key => E.ov[key] !== '' && E.ov[key] !== undefined ? 'für diesen Einsatz überschrieben' : erfUsed.has(key) ? `Erfahrungswert Länderprofil ${p.name}` : (p ? `Länderprofil ${p.name}${p.apiStand && p.apiStand.at ? ' · Stand ' + fmtDate(isoOf(p.apiStand.at)) + (p.apiStand.src === 'api' ? ' (API)' : ' (manuell)') : ''}` : 'Länderprofil');
   const busCmp = [];
   const nkOn = !!R.nkAktiv;
-  const h = rate('hotel'), s = p ? num(p[SK]) : NaN, nk = nkOn ? rate('nk') : 0, taxi = car ? 0 : rate('taxi'), carR = car ? rate('car') : 0;
+  let h = rate('hotel'), hMinNote = '';
+  { const hm = num(R.hotelMinEUR), fe = num(R.fx.EUR); if (hm > 0 && fe > 0 && fx > 0 && isFinite(h)) { const min = Math.round(hm * fe / fx * 100) / 100; if (h < min) { h = min; hMinNote = ` · Mindestansatz EUR ${fmt(hm)}/Nacht`; } } }
+  let s = p ? num(p[SK]) : NaN, sCur = cur, sFx = fx, sNote = '';
+  { const DS = deplSpesen(p, R), CH = isCH(k, p);
+    if (DS && isFinite(DS.eur) && !CH) { s = DS.eur; sCur = 'EUR'; sFx = num(R.fx.EUR); sNote = `Deplacement ${DS.jahr} ${DS.row.de}: 0.6 × (${DS.row.cur} ${fmt(num(DS.row.u))} + ${fmt(num(DS.row.v))}), gerundet`; }
+    else if (DS && !CH) warn(`Spesen ${p.name}: Wechselkurs ${DS.row.cur} oder EUR fehlt – Spesensatz aus der Deplacement-Liste kann nicht umgerechnet werden. Bisheriger Satz verwendet.`);
+    else if (p && !CH && DATA.rates.depl && !E.frozen) warn(`Spesen ${p.name}: kein Eintrag in der Deplacement-Liste zugeordnet (Stammdaten → Spesensätze) – bisheriger Satz verwendet.`); }
+  const nk = nkOn ? rate('nk') : 0, taxi = car ? 0 : rate('taxi'), carR = car ? rate('car') : 0;
   const dest = k && k.flughafen ? k.flughafen : '?', destL = k && k.flughafen ? apLabel(k.flughafen, k.flughafenName) : '?';
   const add = (grp, cat, ph, name, qty, unit, satz, c, chf, note, extra) => lines.push(Object.assign({ grp, cat, ph: typeof ph === 'string' ? { [ph]: 1 } : ph, name, qty, unit, satz, cur: c, chf, note }, extra || {}));
   const plan = [], missingStd = new Set(), arbH = num(R.arbStdTag) || 0;
@@ -1485,7 +1512,10 @@ function calcCore() {
     const { sel, t } = x, home = x.home, fr = x.frac;
     const g = `${t.name}${E.training ? (x.role === 'app' ? ' – Training / Handover' : ' – Installation / Handover') : ''}`;
     const nights = S.ok ? x.nights : NaN, spD = S.ok ? x.spesen : NaN, days = S.ok ? x.days : NaN;
-    const C = techCls(sel, t);
+    const erfFl = erfV('flug') >= 0 && !sel.flugInfo && !resFlight(t) && !sel.flugManuell && (sel.flug === '' || sel.flug === undefined);
+    const selC = erfFl ? Object.assign({}, sel, { flugInfo: { flugdauer_h: erfV('flugH'), preise: { eco: erfV('flug'), pe: erfV('flug') }, gepaeck: erfV('gep') >= 0 ? { eco: erfV('gep'), pe: erfV('gep'), bus: erfV('gep') } : {}, erf: true } }) : sel;
+    if (erfFl) { erfUsed.add('flug'); if (t.gepaeck && erfV('gep') >= 0) erfUsed.add('gep'); }
+    const C = techCls(selC, t);
     let fl = C.price;
     if (!isFinite(fl)) { if (C.manual) err(`Ungültiger Flugpreis bei ${t.name}.`); else warn(sel.flugInfo ? `Flugpreis ${KL[C.cls]} für ${t.name} wurde bei der Recherche nicht gefunden – wird mit 0 gerechnet. Preis von Hand eintragen, andere Klasse wählen oder neu recherchieren.` : `Flugpreis ${KL[C.cls]} für ${t.name} noch nicht online ermittelt – wird mit 0 gerechnet.`); fl = 0; }
     if (!t.flughafen) warn(`${t.name}: kein Heimflughafen erfasst.`);
@@ -1499,20 +1529,20 @@ function calcCore() {
       add(g, 'Arbeitszeit', ph, `Arbeitszeit ${an}`, d * arbH, 'h', st, stCur, isFinite(st) ? d * arbH * st * stFx : 0, `${d} Tage × ${fmt0(arbH)} h${maschName ? ' · ' + maschName : ''}`);
     });
     { const st = stdSatz(), pc = (num(R.reiseProz) || 0) / 100;
-      const TT = travelTimes(t, sel, k), est = !TT.ok;
+      const TT = travelTimes(t, selC, k), est = !TT.ok;
       const rh = est ? 2 * (num(R.reiseStdTag) || 0) : Math.round((TT.hin + TT.rueck) * 100) / 100;
       if (est) warn(`${t.name}: Reisezeit geschätzt (2 × ${fmt0(num(R.reiseStdTag))} h) – genaue Reisezeit nach der Online-Ermittlung des Flugs.`);
-      else if (TT.approx) warn(`${t.name}: Flugdauer der Rückreise nicht einzeln bekannt – wie Hinflug gerechnet. «Neu recherchieren» liefert die genaue Dauer.`);
+      else if (TT.approx && !erfFl) warn(`${t.name}: Flugdauer der Rückreise nicht einzeln bekannt – wie Hinflug gerechnet. «Neu recherchieren» liefert die genaue Dauer.`);
       const f = v => isFinite(v) ? fmtH(v) : '–';
-      const note = est ? `geschätzt: 2 × ${fmt0(num(R.reiseStdTag))} h` : `Hin ${fmtH(TT.hin)} (Anreise ${f(TT.anr)} + Flughafen ${fmtH(TT.vorl)} + Flug ${fmtH(TT.hinF)} + Fahrt ${f(TT.ziel)}) · Zurück ${fmtH(TT.rueck)} (Fahrt ${f(TT.ziel)} + Flughafen ${fmtH(TT.vorl)} + Flug ${fmtH(TT.rueckF)} + Heimreise ${f(TT.anr)})`;
+      const note = (est ? `geschätzt: 2 × ${fmt0(num(R.reiseStdTag))} h` : `Hin ${fmtH(TT.hin)} (Anreise ${f(TT.anr)} + Flughafen ${fmtH(TT.vorl)} + Flug ${fmtH(TT.hinF)} + Fahrt ${f(TT.ziel)}) · Zurück ${fmtH(TT.rueck)} (Fahrt ${f(TT.ziel)} + Flughafen ${fmtH(TT.vorl)} + Flug ${fmtH(TT.rueckF)} + Heimreise ${f(TT.anr)})`) + (erfFl && !est ? ' · Flugdauer Erfahrungswert' : '');
       if (rh > 0 && pc > 0) { if (!isFinite(st)) missingStd.add('x'); add(g, 'Reisezeit', home, 'Reisezeit Hin- und Rückreise', rh, 'h', st * pc, stCur, isFinite(st) ? rh * st * pc * stFx : 0, note + (pc !== 1 ? ` × ${fmt0(pc * 100)} %` : '')); } }
     const fiN = sel.flugInfo && sel.flugInfo.hinflug ? [sel.flugInfo.hinflug.airline, sel.flugInfo.hinflug.flugnummern].filter(Boolean).join(' ') : '';
-    add(g, 'Flug', home, `Flug ${apLabel(t.flughafen)} – ${destL} · ${KL[C.cls]}`, 1, 'retour', fl, 'CHF', fl, [C.overridden ? 'Klasse manuell' : `Klasse automatisch${isFinite(C.dur) ? ` (Flug ${fmtH(C.dur)} ${C.cls === 'pe' ? '≥' : '<'} ${fmt0(C.lim)} h)` : ''}`, fiN, C.manual ? 'Preis manuell' : (sel.flugInfo && sel.flugInfo.cache ? `aus Strecken-Speicher (${fmtDate(isoOf(sel.flugInfo.cache.at))})` : 'online ermittelt')].filter(Boolean).join(' · '));
+    add(g, 'Flug', home, `Flug ${apLabel(t.flughafen)} – ${destL} · ${KL[C.cls]}`, 1, 'retour', fl, 'CHF', fl, [C.overridden ? 'Klasse manuell' : `Klasse automatisch${isFinite(C.dur) ? ` (Flug ${fmtH(C.dur)} ${C.cls === 'pe' ? '≥' : '<'} ${fmt0(C.lim)} h)` : ''}`, fiN, C.manual ? 'Preis manuell' : erfFl ? `Erfahrungswert Länderprofil ${p.name}` : (sel.flugInfo && sel.flugInfo.cache ? `aus Strecken-Speicher (${fmtDate(isoOf(sel.flugInfo.cache.at))})` : 'online ermittelt')].filter(Boolean).join(' · '));
     let gpv = 0;
     if (t.gepaeck) {
       const kg = num(t.gepaeckKg) || num(R.gepaeckKg) || 0;
       gpv = C.gep; if (!isFinite(gpv)) { warn(`${t.name}: Zusatzgepäck ${KL[C.cls]} noch nicht online ermittelt – wird mit 0 gerechnet.`); gpv = 0; }
-      add(g, 'Zusatzgepäck', home, `Zusatzgepäck ${fmt0(kg)} kg · ${KL[C.cls]}`, 1, 'retour', gpv, 'CHF', gpv, isFinite(C.gep) ? `${sel.flugInfo && sel.flugInfo.cache ? 'aus Strecken-Speicher' : 'online ermittelt'}${fiN ? ' · ' + fiN.split(' ')[0] : ''}` : '');
+      add(g, 'Zusatzgepäck', home, `Zusatzgepäck ${fmt0(kg)} kg · ${KL[C.cls]}`, 1, 'retour', gpv, 'CHF', gpv, isFinite(C.gep) ? `${erfFl ? 'Erfahrungswert' : sel.flugInfo && sel.flugInfo.cache ? 'aus Strecken-Speicher' : 'online ermittelt'}${fiN ? ' · ' + fiN.split(' ')[0] : ''}` : '');
     }
     { const bp = num(C.pr.bus), bg = t.gepaeck ? num(C.gp.bus) : 0;
       busCmp.push({ t, cls: C.cls, cur: fl + gpv, bus: isFinite(bp) ? bp + (isFinite(bg) ? bg : 0) : NaN, bgUnknown: t.gepaeck && !isFinite(bg) }); }
@@ -1534,8 +1564,8 @@ function calcCore() {
     const vis = t.nationalitaet ? E.visa[natKey(t.nationalitaet)] : null;
     if (!t.nationalitaet) warn(`${t.name}: Nationalität fehlt – Visum kann nicht geprüft werden.`);
     if (vis && num(vis.kosten_chf) > 0) add(g, 'Visum', home, `Visum / Einreise${vis.art ? ' (' + vis.art + ')' : ''}`, 1, 'Stk.', num(vis.kosten_chf), 'CHF', num(vis.kosten_chf), 'online ermittelt');
-    add(g, 'Hotel', x.fracN, 'Hotel', nights, 'Nächte', h, cur, nights * h * fx, src('hotel'));
-    add(g, 'Spesen', x.fracS, 'Spesen', spD, 'Tage', s, cur, spD * s * fx, E.regel === 'mit' ? 'inkl. An- und Abreisetag' : 'ohne An- und Abreisetag');
+    add(g, 'Hotel', x.fracN, 'Hotel', nights, 'Nächte', h, cur, nights * h * fx, src('hotel') + hMinNote);
+    add(g, 'Spesen', x.fracS, 'Spesen', spD, 'Tage', s, sCur, spD * s * sFx, [E.regel === 'mit' ? 'inkl. An- und Abreisetag' : 'ohne An- und Abreisetag', sNote].filter(Boolean).join(' · '));
     if (nkOn) add(g, 'Nebenkosten', fr, 'Nebenkosten', days, 'Reisetage', nk, cur, days * nk * fx, '');
     if (!car) add(g, 'Transport vor Ort', home, 'Taxi Flughafen ↔ Kunde', 2, 'Fahrten', taxi, cur, 2 * taxi * fx, src('taxi'));
     if (sel.flugInfo && S.ok) {
@@ -1564,6 +1594,8 @@ function calcCore() {
   }
   const stdUsed = [[E.aufgabeId, S.P1]].concat(E.training ? [['a-hand', 'Handover'], ['a-train', 'Training']] : []);
   const stdTxt = masch ? (isFinite(stdSatz()) ? `${stCur} ${fmt(stdSatz())}/h <span class="muted">(${esc(maschName)}, ${PB} ${CH ? 'Schweiz' : 'Ausland'}${SR.legacy ? ', alter Satz' : ''})</span>` : `<span class="warnTxt">${PB} ${stCur} fehlt für ${esc(maschName)}</span>`) : '<span class="warnTxt">Maschinentyp wählen</span>';
+  if (erfUsed.size) warn(`Erfahrungswerte Länderprofil «${p.name}» verwendet: ${[...erfUsed].map(k => ({ hotel: 'Hotel', car: 'Mietwagen', km: 'Mietwagen km', taxi: 'Taxi', flug: 'Flug', gep: 'Zusatzgepäck' })[k]).join(', ')} – für aktuelle Werte «Mit API neu kalkulieren».`);
+  else if (E.useApi && p && p.erf && Object.values(p.erf).some(v => v !== '' && v !== undefined)) warn(`Erfahrungswerte Länderprofil «${p.name}» für diesen Einsatz ausgeschaltet – es gelten die API-Werte.`);
   if (missingStd.size && masch) warn(`Stundensatz ${PB} ${stCur} für «${maschName}» fehlt (Stammdaten → Maschinentypen & Stundensätze).`);
   { const st = stdSatz();
     [[E.ueInst, S.P1, 'Installation', 1], [E.ueInst2, S.P1, 'Installation', 2], [E.training ? E.ueTrain : '', 'Training', 'Schulung', 1], [E.training ? E.ueTrain2 : '', 'Training', 'Schulung', 2]].forEach(([v, ph, lbl, lv]) => {
@@ -1595,7 +1627,25 @@ function calcCore() {
       sonder = { betrag: bt, cur: sc, fx: sfx, tage, amt, chf: sfx > 0 ? amt * sfx : NaN, alle, bis: SK2.bis || '', text: SK2.text || '', per };
     }
   }
-  return { sonder, CH, stCur, stFx, stV: SR.v, pb: PB, busCmp, stdTxt, spesen: s, nkOn, srcOf: src, lines, total, msgs, cur, fx, p, S, sched: S.ok && S.per.length > 0, car, carWhy, km, valid, a, k, plan, cats, phs };
+  return { sonder, erfUsed: [...erfUsed], spesenCur: sCur, spesenChf: s * sFx, hotelChf: h * fx, carChf: (car ? carR : NaN) * fx, CH, stCur, stFx, stV: SR.v, pb: PB, busCmp, stdTxt, spesen: s, nkOn, srcOf: src, lines, total, msgs, cur, fx, p, S, sched: S.ok && S.per.length > 0, car, carWhy, km, valid, a, k, plan, cats, phs };
+}
+const DEPL_ALIAS = { mexiko: 'Mexico', 'sued korea': 'Korea Süd', suedkorea: 'Korea Süd', korea: 'Korea Süd', tschechien: 'Tschechische Republik', slowakei: 'Slowakische Republik', 'vereinigtes koenigreich': 'Grossbritannien', england: 'Grossbritannien', uk: 'Grossbritannien', 'vereinigte staaten': 'USA', 'usa': 'USA', vae: 'Vereinigte Arabische Emirate', 'dubai': 'Vereinigte Arabische Emirate', belarus: 'Weissrussland', kambodscha: 'Kambotscha', 'dominikanische republik': 'Dominikanische Rep.', 'zentralafrikanische republik': 'Zentralafrik. Republik', 'trinidad und tobago': 'Trinidad / Tobago', 'bosnien und herzegowina': 'Bosnien-Herzegowina', mazedonien: 'Nordmazedonien', eswatini: 'Königreich Eswatini', swasiland: 'Königreich Eswatini', katar: 'Qatar', 'saudiarabien': 'Saudi-Arabien', suedsudan: 'Sudan Süd', burma: 'Myanmar', 'elfenbeinkueste': 'Elfenbeinküste', 'kap verde': 'Kapverdische Inseln', fidschi: 'Fidji', surinam: 'Surinam', suriname: 'Surinam', kongo: 'Kongo (Rep. Brazaville)' };
+// Deplacement-Liste: Zeile zum Länderprofil (Auswahl im Profil oder automatisch über den Namen; Schweiz ausgenommen)
+function deplRow(p, R) {
+  const D = R && R.depl; if (!p || !D || !Array.isArray(D.rows)) return null;
+  if (p.deplKey === '-') return null;
+  if (p.deplKey) return D.rows.find(x => x.de === p.deplKey) || null;
+  if (CH_RX.test(p.name || '')) return null;
+  const strip = v => normUe(String(v || '').replace(/\(.*?\)/g, '')).replace(/[^a-z ]/g, ' ').replace(/\s+/g, ' ').trim();
+  const pn = strip(p.name), q = [pn, strip(DEPL_ALIAS[pn] || '')].filter(Boolean);
+  return D.rows.find(x => [x.de, x.en].some(n => q.includes(strip(n)))) || D.rows.find(x => x.iso && q.some(v => v === x.iso.toLowerCase())) || null;
+}
+// Spesensatz in EUR: 0.6 × (Unterkunft + Verpflegung), Tageskurs, auf 1 EUR gerundet
+function deplSpesen(p, R) {
+  const d = deplRow(p, R); if (!d) return null;
+  const fc = d.cur === 'CHF' ? 1 : num(R.fx[d.cur]), fe = num(R.fx.EUR);
+  const eur = fc > 0 && fe > 0 ? Math.round(0.6 * (num(d.u) + num(d.v)) * fc / fe) : NaN;
+  return { row: d, eur, jahr: R.depl.jahr || '' };
 }
 // Schweiz? → CHF-Sätze, sonst feste EUR-Sätze
 const CH_RX = /^\s*(schweiz|switzerland|suisse|svizzera|svizra|ch|che)\s*$/i;
@@ -1700,7 +1750,7 @@ function offerDataCalc(r, lang, cur) {
   if (r.sonder) return offerSonder(r, T, lang, cur, conv, tables);
   const st = r.stV * (r.stFx > 0 ? r.stFx : NaN), uz = (num(R.ueZuschlag) || 0) / 100, uz2 = (num(R.ueZuschlag2) || 0) / 100;
   const pfx = r.fx > 0 ? r.fx : 1, p = r.p || {};
-  const defPrice = { travel: st * (num(R.reiseProz) || 0) / 100, work: st, ot: st * (1 + uz), ot2: st * (1 + uz2), carkm: num(R.kmFahrzeugEUR) * num(R.fx.EUR), allow: num(p[E.preis === 'ic' ? 'spesenIC' : 'spesen']) * pfx, acc: num(isFinite(num(E.ov.hotel)) && E.ov.hotel !== '' ? E.ov.hotel : p.hotel) * pfx, rental: num(isFinite(num(E.ov.car)) && E.ov.car !== '' ? E.ov.car : p.car) * pfx, flight: 0, other: 0 };
+  const defPrice = { travel: st * (num(R.reiseProz) || 0) / 100, work: st, ot: st * (1 + uz), ot2: st * (1 + uz2), carkm: num(R.kmFahrzeugEUR) * num(R.fx.EUR), allow: r.spesenChf, acc: r.hotelChf, rental: isFinite(r.carChf) ? r.carChf : num(isFinite(num(E.ov.car)) && E.ov.car !== '' ? E.ov.car : p.car) * pfx, flight: 0, other: 0 };
   tables.forEach(tb => {
     const agg = {};
     r.lines.forEach(l => {
@@ -1844,7 +1894,9 @@ function render() {
   $('busTable').tBodies[0].innerHTML = r.busCmp.length ? r.busCmp.map(b => `<tr><td>${esc(b.t.name)}</td><td>${KL[b.cls]}</td><td class="num">${fmt(b.cur)}</td><td class="num">${isFinite(b.bus) ? fmt(b.bus) + (b.bgUnknown ? ' <span class="warnTxt">(Gepäck ?)</span>' : '') : '<span class="muted">nach Online-Ermittlung</span>'}</td><td class="num ${b.bus - b.cur > 0 ? 'pos' : 'neg'}">${isFinite(b.bus) ? (b.bus - b.cur > 0 ? '+' : '') + fmt(b.bus - b.cur) : ''}</td></tr>`).join('')
     + (r.busCmp.every(b => isFinite(b.bus)) && r.busCmp.length > 1 ? `<tr class="total"><td colspan="4">Mehrkosten Business total</td><td class="num">${fmt(r.busCmp.reduce((a, b) => a + b.bus - b.cur, 0))}</td></tr>` : '') : '<tr><td colspan="5" class="muted">Techniker wählen.</td></tr>';
   $('stdInfo').innerHTML = r.stdTxt;
-  $('spesenInfo').innerHTML = r.p ? `${esc(r.cur)} ${fmt(r.spesen)} <span class="muted">(${esc(r.p.name)}, ${r.pb})</span>` : '–';
+  { const b = $('btnUseApi'), has = r.p && r.p.erf && Object.values(r.p.erf).some(v => v !== '' && v !== undefined && v !== null);
+    b.hidden = !has; b.textContent = E.useApi ? 'Erfahrungswerte wieder verwenden' : 'Mit API neu kalkulieren'; }
+  $('spesenInfo').innerHTML = r.p ? `${esc(r.spesenCur)} ${fmt(r.spesen)} <span class="muted">(${esc(r.p.name)}, ${r.pb})</span>` : '–';
   document.querySelectorAll('#calcForm .nkf').forEach(el => el.hidden = !r.nkOn);
   $('plan').innerHTML = planHtml(r);
   const CORDER = CATS;
@@ -2298,12 +2350,25 @@ function renderStdTable() {
     + (ms.length ? ms.map((m, i) => `<tr><td><input data-m="${i}" value="${esc(m.name)}" style="min-width:160px"></td>${MC.map(([f, c]) => `<td class="num"><input data-mi="${i}" data-mf="${f}" inputmode="decimal" placeholder="${c}/h" value="${esc(m[f] ?? '')}"></td>`).join('')}<td><button class="btn red sm" data-delm="${i}" title="Maschinentyp löschen">✕</button></td></tr>`).join('')
       : `<tr><td colspan="6" class="muted">Noch keine Maschinentypen erfasst.</td></tr>`) + '</tbody>';
   const R = DATA.rates;
-  $('spesenTable').tBodies[0].innerHTML = R.profiles.map((p, i) => `<tr><td><b>${esc(p.name)}</b></td><td class="muted">${esc(curLabel(p.cur))}</td>
-    <td class="num"><input data-p="${i}" data-k="spesen" inputmode="decimal" value="${esc(isFinite(num(p.spesen)) ? p.spesen : '')}"></td>
-    <td class="num"><input data-p="${i}" data-k="spesenIC" inputmode="decimal" value="${esc(isFinite(num(p.spesenIC)) ? p.spesenIC : '')}"></td></tr>`).join('') || '<tr><td colspan="4" class="muted">Noch keine Länderprofile.</td></tr>';
+  const DL = R.depl && Array.isArray(R.depl.rows) ? R.depl.rows : [];
+  $('deplInfo').textContent = DL.length ? `Liste ${R.depl.jahr || ''}: ${DL.length} Länder${R.depl.quelle ? ' · ' + R.depl.quelle : ''}` : 'Noch keine Deplacement-Liste importiert.';
+  $('spesenTable').tBodies[0].innerHTML = R.profiles.map((p, i) => { const d = deplRow(p, R), ds = deplSpesen(p, R), ch = CH_RX.test(p.name || '');
+    const opts = `<option value="" ${!p.deplKey ? 'selected' : ''}>Automatisch${!p.deplKey && d ? ' (' + esc(d.de) + ')' : ''}</option><option value="-" ${p.deplKey === '-' ? 'selected' : ''}>– keiner (manueller Satz) –</option>` + DL.map(x => `<option value="${esc(x.de)}" ${p.deplKey === x.de ? 'selected' : ''}>${esc(x.de)}</option>`).join('');
+    return `<tr><td><b>${esc(p.name)}</b><div class="muted">${esc(curLabel(p.cur))}</div></td>
+    <td>${DL.length && !ch ? `<select data-dk="${i}" style="min-width:180px">${opts}</select>` : `<span class="muted">${ch ? 'Schweiz: manueller Satz' : '–'}</span>`}</td>
+    <td class="num">${d && !ch ? `${esc(d.cur)} ${fmt(num(d.u))} + ${fmt(num(d.v))}` : '–'}</td>
+    <td class="num"><b>${ds && !ch ? (isFinite(ds.eur) ? 'EUR ' + fmt0(ds.eur) : '<span class="warnTxt">Kurs fehlt</span>') : '–'}</b></td>
+    <td class="num"><input data-p="${i}" data-k="spesen" inputmode="decimal" value="${esc(isFinite(num(p.spesen)) ? p.spesen : '')}" ${ds && !ch ? 'disabled title="Deplacement-Liste gilt"' : ''}></td>
+    <td class="num"><input data-p="${i}" data-k="spesenIC" inputmode="decimal" value="${esc(isFinite(num(p.spesenIC)) ? p.spesenIC : '')}" ${ds && !ch ? 'disabled title="Deplacement-Liste gilt"' : ''}></td></tr>`; }).join('') || '<tr><td colspan="4" class="muted">Noch keine Länderprofile.</td></tr>';
+}
+const ERF_K = ['hotel', 'car', 'km', 'taxi', 'flug', 'gep', 'flugH'];
+function renderErf() {
+  const R = DATA.rates;
+  $('erfTable').tBodies[0].innerHTML = R.profiles.map((p, i) => `<tr><td><b>${esc(p.name)}</b></td><td class="muted">${esc(p.cur)}</td>${ERF_K.map(k => `<td class="num"><input data-pe="${i}" data-k="${k}" inputmode="decimal" value="${esc(p.erf && p.erf[k] !== undefined ? p.erf[k] : '')}"></td>`).join('')}</tr>`).join('') || '<tr><td colspan="9" class="muted">Noch keine Länderprofile.</td></tr>';
 }
 function renderRates() {
   const R = DATA.rates;
+  renderErf();
   $('r_stand').value = R.stand || ''; $('r_ver').value = R.verantwortlich || '';
   const ga = document.querySelector('[data-g="gepaeckArt"]');
   ga.innerHTML = '<option value="">– keine –</option>' + (R.arten || []).concat(R.gepaeckArt && !(R.arten || []).includes(R.gepaeckArt) ? [R.gepaeckArt] : []).map(a => `<option>${esc(a)}</option>`).join('');
@@ -2338,6 +2403,12 @@ function onRatesChange(ev) {
     m.name = nv;
   }
   else if (d.g !== undefined) { const v = num(t.value); if (!(v >= 0)) { toast('Bitte eine gültige Zahl ≥ 0 eingeben'); t.value = R[d.g] ?? ''; return; } R[d.g] = v; }
+  else if (d.pe !== undefined) {
+    const p = R.profiles[+d.pe]; if (!p) return;
+    const v = t.value.trim() === '' ? '' : num(t.value); if (v !== '' && !(v >= 0)) { toast('Bitte eine gültige Zahl ≥ 0 eingeben'); t.value = (p.erf || {})[d.k] ?? ''; return; }
+    p.erf = Object.assign({}, p.erf, { [d.k]: v });
+  }
+  else if (d.dk !== undefined) { const p = R.profiles[+d.dk]; if (!p) return; p.deplKey = t.value; ensureRates(R); setTimeout(() => { renderStdTable(); updateFx(false); }, 0); }
   else if (d.p !== undefined) {
     const p = R.profiles[+d.p]; if (!p) return;
     if (PNUM.includes(d.k)) {
@@ -2792,6 +2863,7 @@ function maybeAutoResearch(r) {
     const rc = applyRouteCache(r);
     if (rc.applied) { toast('Flugdaten aus dem Strecken-Speicher übernommen – keine automatische Online-Ermittlung'); setTimeout(() => { writeForm(); render(); }, 0); }
     if (rc.all) return; // alle Strecken vorhanden → Online-Ermittlung nur manuell
+    if (r.erfUsed.includes('flug')) return; // Erfahrungswerte vorhanden → Online-Ermittlung nur auf Wunsch
   }
   AUTO_T = setTimeout(() => { if (!E.id && !E.res && !RES_ABORT) runResearch(true); }, 4000);
 }
@@ -3026,6 +3098,13 @@ $('btnOfCopy').addEventListener('click', copyOffer);
 $('btnNew').addEventListener('click', newEinsatz);
 $('btnPrint').addEventListener('click', doPrint);
 $('btnResearch').addEventListener('click', () => runResearch(false));
+$('btnUseApi').addEventListener('click', async () => {
+  if (E.useApi) { E.useApi = false; render(); toast('Erfahrungswerte wieder aktiv'); return; }
+  E.useApi = true; render();
+  const p = LAST && LAST.p;
+  if (p && P_API.some(k => !isFinite(num(p[k])))) await evalProfile(p.id, false);
+  runResearch(false);
+});
 $('btnResearchStop').addEventListener('click', () => RES_ABORT && RES_ABORT.abort());
 $('btnApply').addEventListener('click', () => applyResearch(false));
 $('autoRes').addEventListener('change', e => { CFG.ai.autoRes = e.target.checked; store(LS.cfg, CFG); });
@@ -3044,6 +3123,17 @@ ratesTab.addEventListener('change', onRatesChange);
 ratesTab.addEventListener('click', onRatesClick);
 $('stdCard').addEventListener('change', onRatesChange);
 $('spesenCard').addEventListener('change', onRatesChange);
+$('btnDeplImp').addEventListener('click', () => $('deplFile').click());
+$('deplFile').addEventListener('change', async ev => {
+  const f = ev.target.files[0]; ev.target.value = ''; if (!f) return;
+  try {
+    const j = JSON.parse(await f.text());
+    if (!j || !Array.isArray(j.rows) || !j.rows.length || !j.rows.every(x => x.de && x.cur && isFinite(num(x.u)) && isFinite(num(x.v)))) throw new Error('Unbekanntes Format');
+    DATA.rates.depl = { jahr: j.jahr || '', quelle: j.quelle || '', rows: j.rows.map(x => ({ de: String(x.de), en: String(x.en || ''), iso: String(x.iso || ''), cur: String(x.cur).toUpperCase(), u: num(x.u), v: num(x.v) })), at: Date.now() };
+    ensureRates(DATA.rates); ratesChanged(); renderStdTable(); updateFx(false);
+    toast(`Deplacement-Liste ${j.jahr || ''} mit ${j.rows.length} Ländern importiert`);
+  } catch (e) { toast('Import fehlgeschlagen: ' + e.message); }
+});
 $('stdCard').addEventListener('click', onRatesClick);
 $('btnExport').addEventListener('click', exportRates);
 $('btnImport').addEventListener('click', () => $('fileImport').click());

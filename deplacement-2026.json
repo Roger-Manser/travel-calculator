@@ -1,0 +1,1455 @@
+{
+"typ": "gallus-deplacement",
+"jahr": 2026,
+"quelle": "KFM Deplacementkosten 2026 (GFRAG_Deplacement_2026)",
+"rows": [
+{
+"de": "Aegypten",
+"en": "Egypt",
+"iso": "EG",
+"cur": "CHF",
+"u": 65.0,
+"v": 50.0
+},
+{
+"de": "Aethiopien",
+"en": "Ethiopia",
+"iso": "ET",
+"cur": "USD",
+"u": 66.0,
+"v": 40.0
+},
+{
+"de": "Afghanistan",
+"en": "Afghanistan",
+"iso": "AF",
+"cur": "USD",
+"u": 60.0,
+"v": 41.0
+},
+{
+"de": "Alaska",
+"en": "Alaska",
+"iso": "US",
+"cur": "USD",
+"u": 99.0,
+"v": 50.0
+},
+{
+"de": "Albanien",
+"en": "Albania",
+"iso": "AL",
+"cur": "EUR",
+"u": 90.0,
+"v": 32.0
+},
+{
+"de": "Algerien",
+"en": "Algeria",
+"iso": "DZ",
+"cur": "EUR",
+"u": 60.0,
+"v": 45.0
+},
+{
+"de": "Andorra",
+"en": "Andorra",
+"iso": "AD",
+"cur": "EUR",
+"u": 65.0,
+"v": 45.0
+},
+{
+"de": "Angola",
+"en": "Angola",
+"iso": "AO",
+"cur": "USD",
+"u": 176.0,
+"v": 77.0
+},
+{
+"de": "Argentinien",
+"en": "Argentina",
+"iso": "AR",
+"cur": "USD",
+"u": 99.0,
+"v": 50.0
+},
+{
+"de": "Armenien",
+"en": "Armenia",
+"iso": "AM",
+"cur": "EUR",
+"u": 80.0,
+"v": 35.0
+},
+{
+"de": "Aserbaidschan",
+"en": "Azerbaijan",
+"iso": "AZ",
+"cur": "EUR",
+"u": 100.0,
+"v": 45.0
+},
+{
+"de": "Australien",
+"en": "Australia",
+"iso": "AU",
+"cur": "AUD",
+"u": 135.0,
+"v": 108.0
+},
+{
+"de": "Bahamas",
+"en": "Bahamas",
+"iso": "BS",
+"cur": "USD",
+"u": 88.0,
+"v": 55.0
+},
+{
+"de": "Bahrain",
+"en": "Bahrain",
+"iso": "BH",
+"cur": "BHD",
+"u": 55.0,
+"v": 32.0
+},
+{
+"de": "Bangladesch",
+"en": "Bangladesh",
+"iso": "BD",
+"cur": "USD",
+"u": 65.0,
+"v": 50.0
+},
+{
+"de": "Barbados",
+"en": "Barbados",
+"iso": "BB",
+"cur": "USD",
+"u": 71.0,
+"v": 45.0
+},
+{
+"de": "Belgien",
+"en": "Belgium",
+"iso": "BE",
+"cur": "EUR",
+"u": 82.0,
+"v": 62.0
+},
+{
+"de": "Belize",
+"en": "Belize",
+"iso": "BZ",
+"cur": "USD",
+"u": 60.0,
+"v": 40.0
+},
+{
+"de": "Benin",
+"en": "Benin",
+"iso": "BJ",
+"cur": "EUR",
+"u": 56.0,
+"v": 46.0
+},
+{
+"de": "Bermudas",
+"en": "Bermuda",
+"iso": "BM",
+"cur": "USD",
+"u": 71.0,
+"v": 45.0
+},
+{
+"de": "Bhutan",
+"en": "Bhutan",
+"iso": "BT",
+"cur": "USD",
+"u": 100.0,
+"v": 30.0
+},
+{
+"de": "Bolivien",
+"en": "Bolivia",
+"iso": "BO",
+"cur": "USD",
+"u": 55.0,
+"v": 45.0
+},
+{
+"de": "Bosnien-Herzegowina",
+"en": "Bosnia and Herzegovina",
+"iso": "BA",
+"cur": "EUR",
+"u": 90.0,
+"v": 39.0
+},
+{
+"de": "Botswana",
+"en": "Botswana",
+"iso": "BW",
+"cur": "BWP",
+"u": 550.0,
+"v": 350.0
+},
+{
+"de": "Brasilien",
+"en": "Brazil",
+"iso": "BR",
+"cur": "USD",
+"u": 115.0,
+"v": 60.0
+},
+{
+"de": "Brunei",
+"en": "Brunei",
+"iso": "BN",
+"cur": "BND",
+"u": 120.0,
+"v": 100.0
+},
+{
+"de": "Bulgarien",
+"en": "Bulgaria",
+"iso": "BG",
+"cur": "EUR",
+"u": 80.0,
+"v": 35.0
+},
+{
+"de": "Burkina Faso",
+"en": "Burkina Faso",
+"iso": "BF",
+"cur": "EUR",
+"u": 42.0,
+"v": 32.0
+},
+{
+"de": "Burundi",
+"en": "Burundi",
+"iso": "BI",
+"cur": "USD",
+"u": 66.0,
+"v": 40.0
+},
+{
+"de": "Chile",
+"en": "Chile",
+"iso": "CL",
+"cur": "USD",
+"u": 97.0,
+"v": 75.0
+},
+{
+"de": "China",
+"en": "China",
+"iso": "CN",
+"cur": "CNY",
+"u": 550.0,
+"v": 440.0
+},
+{
+"de": "Costa Rica",
+"en": "Costa Rica",
+"iso": "CR",
+"cur": "USD",
+"u": 82.0,
+"v": 43.0
+},
+{
+"de": "Dänemark",
+"en": "Denmark",
+"iso": "DK",
+"cur": "DKK",
+"u": 600.0,
+"v": 480.0
+},
+{
+"de": "Deutschland",
+"en": "Germany",
+"iso": "DE",
+"cur": "EUR",
+"u": 92.0,
+"v": 60.0
+},
+{
+"de": "Djibouti",
+"en": "Djibouti",
+"iso": "DJ",
+"cur": "USD",
+"u": 90.0,
+"v": 50.0
+},
+{
+"de": "Dominikanische Rep.",
+"en": "Dominican Republic",
+"iso": "DO",
+"cur": "USD",
+"u": 82.0,
+"v": 49.0
+},
+{
+"de": "Ecuador",
+"en": "Ecuador",
+"iso": "EC",
+"cur": "USD",
+"u": 88.0,
+"v": 49.0
+},
+{
+"de": "El Salvador",
+"en": "El Salvador",
+"iso": "SV",
+"cur": "USD",
+"u": 88.0,
+"v": 50.0
+},
+{
+"de": "Elfenbeinküste",
+"en": "Côte d'Ivoire",
+"iso": "CI",
+"cur": "EUR",
+"u": 60.0,
+"v": 43.0
+},
+{
+"de": "Eritrea",
+"en": "Eritrea",
+"iso": "ER",
+"cur": "USD",
+"u": 66.0,
+"v": 50.0
+},
+{
+"de": "Estland",
+"en": "Estonia",
+"iso": "EE",
+"cur": "EUR",
+"u": 85.0,
+"v": 38.0
+},
+{
+"de": "Fidji",
+"en": "Fiji",
+"iso": "FJ",
+"cur": "FJD",
+"u": 104.0,
+"v": 75.0
+},
+{
+"de": "Finnland",
+"en": "Finland",
+"iso": "FI",
+"cur": "EUR",
+"u": 100.0,
+"v": 62.0
+},
+{
+"de": "Frankreich",
+"en": "France",
+"iso": "FR",
+"cur": "EUR",
+"u": 71.0,
+"v": 55.0
+},
+{
+"de": "Franz. Guyana",
+"en": "French Guiana",
+"iso": "GF",
+"cur": "EUR",
+"u": 67.0,
+"v": 53.0
+},
+{
+"de": "Gabun",
+"en": "Gabon",
+"iso": "GA",
+"cur": "EUR",
+"u": 70.0,
+"v": 58.0
+},
+{
+"de": "Gambia",
+"en": "Gambia",
+"iso": "GM",
+"cur": "USD",
+"u": 60.0,
+"v": 45.0
+},
+{
+"de": "Georgien",
+"en": "Georgia",
+"iso": "GE",
+"cur": "EUR",
+"u": 80.0,
+"v": 36.0
+},
+{
+"de": "Ghana",
+"en": "Ghana",
+"iso": "GH",
+"cur": "USD",
+"u": 88.0,
+"v": 60.0
+},
+{
+"de": "Griechenland",
+"en": "Greece",
+"iso": "GR",
+"cur": "EUR",
+"u": 88.0,
+"v": 49.0
+},
+{
+"de": "Grönland",
+"en": "Greenland",
+"iso": "GL",
+"cur": "DKK",
+"u": 600.0,
+"v": 440.0
+},
+{
+"de": "Grossbritannien",
+"en": "United Kingdom",
+"iso": "GB",
+"cur": "GBP",
+"u": 80.0,
+"v": 50.0
+},
+{
+"de": "Guadeloupe",
+"en": "Guadeloupe",
+"iso": "GP",
+"cur": "EUR",
+"u": 71.0,
+"v": 50.0
+},
+{
+"de": "Guatemala",
+"en": "Guatemala",
+"iso": "GT",
+"cur": "USD",
+"u": 82.0,
+"v": 50.0
+},
+{
+"de": "Guinea Bissau",
+"en": "Guinea-Bissau",
+"iso": "GW",
+"cur": "EUR",
+"u": 47.0,
+"v": 32.0
+},
+{
+"de": "Guinea Republik",
+"en": "Guinea",
+"iso": "GN",
+"cur": "USD",
+"u": 66.0,
+"v": 45.0
+},
+{
+"de": "Guyana",
+"en": "Guyana",
+"iso": "GY",
+"cur": "USD",
+"u": 60.0,
+"v": 45.0
+},
+{
+"de": "Haiti",
+"en": "Haiti",
+"iso": "HT",
+"cur": "USD",
+"u": 66.0,
+"v": 50.0
+},
+{
+"de": "Honduras",
+"en": "Honduras",
+"iso": "HN",
+"cur": "USD",
+"u": 82.0,
+"v": 45.0
+},
+{
+"de": "Hongkong",
+"en": "Hong Kong",
+"iso": "HK",
+"cur": "HKD",
+"u": 900.0,
+"v": 600.0
+},
+{
+"de": "Indien",
+"en": "India",
+"iso": "IN",
+"cur": "INR",
+"u": 6500.0,
+"v": 3100.0
+},
+{
+"de": "Indonesien",
+"en": "Indonesia",
+"iso": "ID",
+"cur": "USD",
+"u": 100.0,
+"v": 60.0
+},
+{
+"de": "Irak",
+"en": "Iraq",
+"iso": "IQ",
+"cur": "USD",
+"u": 100.0,
+"v": 50.0
+},
+{
+"de": "Iran",
+"en": "Iran",
+"iso": "IR",
+"cur": "EUR",
+"u": 125.0,
+"v": 45.0
+},
+{
+"de": "Irland",
+"en": "Ireland",
+"iso": "IE",
+"cur": "EUR",
+"u": 70.0,
+"v": 55.0
+},
+{
+"de": "Island",
+"en": "Iceland",
+"iso": "IS",
+"cur": "ISK",
+"u": 15700.0,
+"v": 11500.0
+},
+{
+"de": "Israel",
+"en": "Israel",
+"iso": "IL",
+"cur": "USD",
+"u": 132.0,
+"v": 65.0
+},
+{
+"de": "Italien",
+"en": "Italy",
+"iso": "IT",
+"cur": "EUR",
+"u": 71.0,
+"v": 55.0
+},
+{
+"de": "Jamaika",
+"en": "Jamaica",
+"iso": "JM",
+"cur": "USD",
+"u": 110.0,
+"v": 60.0
+},
+{
+"de": "Japan",
+"en": "Japan",
+"iso": "JP",
+"cur": "JPY",
+"u": 15000.0,
+"v": 11000.0
+},
+{
+"de": "Jemen",
+"en": "Yemen",
+"iso": "YE",
+"cur": "USD",
+"u": 66.0,
+"v": 45.0
+},
+{
+"de": "Jordanien",
+"en": "Jordan",
+"iso": "JO",
+"cur": "USD",
+"u": 93.0,
+"v": 50.0
+},
+{
+"de": "Kambotscha",
+"en": "Cambodia",
+"iso": "KH",
+"cur": "USD",
+"u": 50.0,
+"v": 45.0
+},
+{
+"de": "Kamerun",
+"en": "Cameroon",
+"iso": "CM",
+"cur": "EUR",
+"u": 65.0,
+"v": 46.0
+},
+{
+"de": "Kanada",
+"en": "Canada",
+"iso": "CA",
+"cur": "CAD",
+"u": 130.0,
+"v": 105.0
+},
+{
+"de": "Kapverdische Inseln",
+"en": "Cape Verde",
+"iso": "CV",
+"cur": "EUR",
+"u": 73.0,
+"v": 37.0
+},
+{
+"de": "Kasachstan",
+"en": "Kazakhstan",
+"iso": "KZ",
+"cur": "EUR",
+"u": 80.0,
+"v": 52.0
+},
+{
+"de": "Kenia",
+"en": "Kenya",
+"iso": "KE",
+"cur": "USD",
+"u": 66.0,
+"v": 50.0
+},
+{
+"de": "Kirgistan",
+"en": "Kyrgyzstan",
+"iso": "KG",
+"cur": "EUR",
+"u": 80.0,
+"v": 40.0
+},
+{
+"de": "Kolumbien",
+"en": "Colombia",
+"iso": "CO",
+"cur": "USD",
+"u": 99.0,
+"v": 55.0
+},
+{
+"de": "Kongo (Rep. Brazaville)",
+"en": "Congo, Republic",
+"iso": "CG",
+"cur": "EUR",
+"u": 82.0,
+"v": 51.0
+},
+{
+"de": "Kongo Demokratische Republik",
+"en": "Congo, Democratic Republic",
+"iso": "CD",
+"cur": "USD",
+"u": 93.0,
+"v": 50.0
+},
+{
+"de": "Königreich Eswatini (früher: Swasiland)",
+"en": "Swaziland",
+"iso": "SZ",
+"cur": "SZL",
+"u": 660.0,
+"v": 450.0
+},
+{
+"de": "Korea Süd",
+"en": "South Korea",
+"iso": "KR",
+"cur": "USD",
+"u": 150.0,
+"v": 70.0
+},
+{
+"de": "Kosovo",
+"en": "Serbia",
+"iso": "XK",
+"cur": "EUR",
+"u": 60.0,
+"v": 35.0
+},
+{
+"de": "Kroatien",
+"en": "Croatia",
+"iso": "HR",
+"cur": "EUR",
+"u": 65.0,
+"v": 40.0
+},
+{
+"de": "Kuba",
+"en": "Cuba",
+"iso": "CU",
+"cur": "USD",
+"u": 60.0,
+"v": 45.0
+},
+{
+"de": "Kuwait",
+"en": "Kuwait",
+"iso": "KW",
+"cur": "KWD",
+"u": 50.0,
+"v": 20.0
+},
+{
+"de": "Laos",
+"en": "Laos",
+"iso": "LA",
+"cur": "USD",
+"u": 50.0,
+"v": 45.0
+},
+{
+"de": "Lesotho",
+"en": "Lesotho",
+"iso": "LS",
+"cur": "ZAR",
+"u": 770.0,
+"v": 300.0
+},
+{
+"de": "Lettland",
+"en": "Latvia",
+"iso": "LV",
+"cur": "EUR",
+"u": 85.0,
+"v": 40.0
+},
+{
+"de": "Libanon",
+"en": "Lebanon",
+"iso": "LB",
+"cur": "USD",
+"u": 88.0,
+"v": 55.0
+},
+{
+"de": "Liberia",
+"en": "Liberia",
+"iso": "LR",
+"cur": "USD",
+"u": 65.0,
+"v": 50.0
+},
+{
+"de": "Libyen",
+"en": "Libya",
+"iso": "LY",
+"cur": "LYD",
+"u": 400.0,
+"v": 110.0
+},
+{
+"de": "Liechtenstein",
+"en": "Liechtenstein",
+"iso": "LI",
+"cur": "CHF",
+"u": 110.0,
+"v": 65.0
+},
+{
+"de": "Litauen",
+"en": "Lithuania",
+"iso": "LT",
+"cur": "EUR",
+"u": 85.0,
+"v": 47.0
+},
+{
+"de": "Luxemburg",
+"en": "Luxembourg",
+"iso": "LU",
+"cur": "EUR",
+"u": 66.0,
+"v": 55.0
+},
+{
+"de": "Macao",
+"en": "Macao",
+"iso": "MO",
+"cur": "MOP",
+"u": 880.0,
+"v": 480.0
+},
+{
+"de": "Madagaskar",
+"en": "Madagascar",
+"iso": "MG",
+"cur": "USD",
+"u": 55.0,
+"v": 35.0
+},
+{
+"de": "Malawi",
+"en": "Malawi",
+"iso": "MW",
+"cur": "USD",
+"u": 66.0,
+"v": 40.0
+},
+{
+"de": "Malaysia",
+"en": "Malaysia",
+"iso": "MY",
+"cur": "MYR",
+"u": 200.0,
+"v": 180.0
+},
+{
+"de": "Mali",
+"en": "Mali",
+"iso": "ML",
+"cur": "EUR",
+"u": 80.0,
+"v": 40.0
+},
+{
+"de": "Malta",
+"en": "Malta",
+"iso": "MT",
+"cur": "EUR",
+"u": 60.0,
+"v": 43.0
+},
+{
+"de": "Marokko",
+"en": "Morocco",
+"iso": "MA",
+"cur": "MAD",
+"u": 990.0,
+"v": 550.0
+},
+{
+"de": "Mauretanien",
+"en": "Mauritania",
+"iso": "MR",
+"cur": "USD",
+"u": 77.0,
+"v": 50.0
+},
+{
+"de": "Mauritius",
+"en": "Mauritius",
+"iso": "MU",
+"cur": "USD",
+"u": 120.0,
+"v": 48.0
+},
+{
+"de": "Mexico",
+"en": "Mexico",
+"iso": "MX",
+"cur": "USD",
+"u": 99.0,
+"v": 55.0
+},
+{
+"de": "Moldavien",
+"en": "Moldova",
+"iso": "MD",
+"cur": "EUR",
+"u": 80.0,
+"v": 32.0
+},
+{
+"de": "Monaco",
+"en": "Monaco",
+"iso": "MC",
+"cur": "EUR",
+"u": 71.0,
+"v": 55.0
+},
+{
+"de": "Mongolei",
+"en": "Mongolia",
+"iso": "MN",
+"cur": "USD",
+"u": 75.0,
+"v": 65.0
+},
+{
+"de": "Montenegro",
+"en": "Montenegro",
+"iso": "ME",
+"cur": "EUR",
+"u": 60.0,
+"v": 35.0
+},
+{
+"de": "Mosambik",
+"en": "Mozambique",
+"iso": "MZ",
+"cur": "USD",
+"u": 77.0,
+"v": 53.0
+},
+{
+"de": "Myanmar (Burma)",
+"en": "Myanmar (Burma)",
+"iso": "BU",
+"cur": "USD",
+"u": 80.0,
+"v": 50.0
+},
+{
+"de": "Namibia",
+"en": "Namibia",
+"iso": "NA",
+"cur": "NAD",
+"u": 770.0,
+"v": 430.0
+},
+{
+"de": "Nepal",
+"en": "Nepal",
+"iso": "NP",
+"cur": "USD",
+"u": 40.0,
+"v": 30.0
+},
+{
+"de": "Neuseeland",
+"en": "New Zealand",
+"iso": "NZ",
+"cur": "NZD",
+"u": 130.0,
+"v": 80.0
+},
+{
+"de": "Nicaragua",
+"en": "Nicaragua",
+"iso": "NI",
+"cur": "USD",
+"u": 77.0,
+"v": 40.0
+},
+{
+"de": "Niederl. Antillen",
+"en": "Netherlands Antilles",
+"iso": "AN",
+"cur": "USD",
+"u": 82.0,
+"v": 50.0
+},
+{
+"de": "Niederlande",
+"en": "Netherlands",
+"iso": "NL",
+"cur": "EUR",
+"u": 82.0,
+"v": 58.0
+},
+{
+"de": "Niger",
+"en": "Niger",
+"iso": "NE",
+"cur": "EUR",
+"u": 60.0,
+"v": 42.0
+},
+{
+"de": "Nigeria",
+"en": "Nigeria",
+"iso": "NG",
+"cur": "USD",
+"u": 120.0,
+"v": 75.0
+},
+{
+"de": "Nordmazedonien",
+"en": "Macedonia",
+"iso": "MK",
+"cur": "EUR",
+"u": 60.0,
+"v": 35.0
+},
+{
+"de": "Norwegen",
+"en": "Norway",
+"iso": "NO",
+"cur": "NOK",
+"u": 1200.0,
+"v": 810.0
+},
+{
+"de": "Oesterreich",
+"en": "Austria",
+"iso": "AT",
+"cur": "EUR",
+"u": 75.0,
+"v": 55.0
+},
+{
+"de": "Oman",
+"en": "Oman",
+"iso": "OM",
+"cur": "OMR",
+"u": 50.0,
+"v": 33.0
+},
+{
+"de": "Pakistan",
+"en": "Pakistan",
+"iso": "PK",
+"cur": "USD",
+"u": 90.0,
+"v": 55.0
+},
+{
+"de": "Panama",
+"en": "Panama",
+"iso": "PA",
+"cur": "USD",
+"u": 77.0,
+"v": 55.0
+},
+{
+"de": "Papua-Neuguinea",
+"en": "Papua New Guinea",
+"iso": "PG",
+"cur": "USD",
+"u": 93.0,
+"v": 45.0
+},
+{
+"de": "Paraguay",
+"en": "Paraguay",
+"iso": "PY",
+"cur": "USD",
+"u": 77.0,
+"v": 40.0
+},
+{
+"de": "Peru",
+"en": "Peru",
+"iso": "PE",
+"cur": "USD",
+"u": 93.0,
+"v": 62.0
+},
+{
+"de": "Philippinen",
+"en": "Philippines",
+"iso": "PH",
+"cur": "USD",
+"u": 90.0,
+"v": 55.0
+},
+{
+"de": "Polen",
+"en": "Poland",
+"iso": "PL",
+"cur": "EUR",
+"u": 88.0,
+"v": 41.0
+},
+{
+"de": "Portugal",
+"en": "Portugal",
+"iso": "PT",
+"cur": "EUR",
+"u": 66.0,
+"v": 45.0
+},
+{
+"de": "Puerto Rico",
+"en": "Puerto Rico",
+"iso": "PR",
+"cur": "USD",
+"u": 88.0,
+"v": 44.0
+},
+{
+"de": "Qatar",
+"en": "Qatar",
+"iso": "QA",
+"cur": "QAR",
+"u": 550.0,
+"v": 250.0
+},
+{
+"de": "Reunion",
+"en": "Reunion",
+"iso": "RE",
+"cur": "EUR",
+"u": 66.0,
+"v": 48.0
+},
+{
+"de": "Ruanda",
+"en": "Rwanda",
+"iso": "RW",
+"cur": "USD",
+"u": 60.0,
+"v": 45.0
+},
+{
+"de": "Rumänien",
+"en": "Romania",
+"iso": "RO",
+"cur": "EUR",
+"u": 80.0,
+"v": 40.0
+},
+{
+"de": "Russland",
+"en": "Russia",
+"iso": "RU",
+"cur": "CHF",
+"u": 130.0,
+"v": 75.0
+},
+{
+"de": "Sambia",
+"en": "Zambia",
+"iso": "ZM",
+"cur": "USD",
+"u": 77.0,
+"v": 55.0
+},
+{
+"de": "Saudi-Arabien",
+"en": "Saudi Arabia",
+"iso": "SA",
+"cur": "SAR",
+"u": 500.0,
+"v": 240.0
+},
+{
+"de": "Schweden",
+"en": "Sweden",
+"iso": "SE",
+"cur": "SEK",
+"u": 1100.0,
+"v": 660.0
+},
+{
+"de": "Schweiz",
+"en": "Switzerland",
+"iso": "CH",
+"cur": "CHF",
+"u": 110.0,
+"v": 65.0
+},
+{
+"de": "Senegal",
+"en": "Senegal",
+"iso": "SN",
+"cur": "EUR",
+"u": 67.0,
+"v": 35.0
+},
+{
+"de": "Serbien",
+"en": "Serbia",
+"iso": "RS",
+"cur": "EUR",
+"u": 65.0,
+"v": 38.0
+},
+{
+"de": "Sierra Leone",
+"en": "Sierra Leone",
+"iso": "SL",
+"cur": "USD",
+"u": 71.0,
+"v": 40.0
+},
+{
+"de": "Simbabwe",
+"en": "Zimbabwe",
+"iso": "ZW",
+"cur": "USD",
+"u": 82.0,
+"v": 60.0
+},
+{
+"de": "Singapur",
+"en": "Singapore",
+"iso": "SG",
+"cur": "SGD",
+"u": 220.0,
+"v": 110.0
+},
+{
+"de": "Slowakische Republik",
+"en": "Slovakia",
+"iso": "SK",
+"cur": "EUR",
+"u": 80.0,
+"v": 35.0
+},
+{
+"de": "Slowenien",
+"en": "Slovenia",
+"iso": "SI",
+"cur": "EUR",
+"u": 60.0,
+"v": 35.0
+},
+{
+"de": "Somalia",
+"en": "Somalia",
+"iso": "SO",
+"cur": "USD",
+"u": 66.0,
+"v": 40.0
+},
+{
+"de": "Spanien",
+"en": "Spain",
+"iso": "ES",
+"cur": "EUR",
+"u": 71.0,
+"v": 53.0
+},
+{
+"de": "Sri Lanka",
+"en": "Sri Lanka",
+"iso": "LK",
+"cur": "USD",
+"u": 75.0,
+"v": 45.0
+},
+{
+"de": "Südafrika",
+"en": "South Africa",
+"iso": "ZA",
+"cur": "ZAR",
+"u": 660.0,
+"v": 670.0
+},
+{
+"de": "Sudan",
+"en": "Sudan",
+"iso": "SD",
+"cur": "USD",
+"u": 66.0,
+"v": 40.0
+},
+{
+"de": "Sudan Süd",
+"en": "South Sudan",
+"iso": "SS",
+"cur": "USD",
+"u": 66.0,
+"v": 40.0
+},
+{
+"de": "Surinam",
+"en": "Suriname",
+"iso": "SR",
+"cur": "USD",
+"u": 60.0,
+"v": 45.0
+},
+{
+"de": "Syrien",
+"en": "Syria",
+"iso": "SY",
+"cur": "USD",
+"u": 90.0,
+"v": 50.0
+},
+{
+"de": "Tadschikistan",
+"en": "Tajikistan",
+"iso": "TJ",
+"cur": "EUR",
+"u": 80.0,
+"v": 50.0
+},
+{
+"de": "Taiwan",
+"en": "Taiwan",
+"iso": "TW",
+"cur": "TWD",
+"u": 2750.0,
+"v": 2000.0
+},
+{
+"de": "Tansania",
+"en": "Tanzania",
+"iso": "TZ",
+"cur": "USD",
+"u": 66.0,
+"v": 45.0
+},
+{
+"de": "Thailand",
+"en": "Thailand",
+"iso": "TH",
+"cur": "USD",
+"u": 68.0,
+"v": 45.0
+},
+{
+"de": "Togo",
+"en": "Togo",
+"iso": "TG",
+"cur": "EUR",
+"u": 55.0,
+"v": 37.0
+},
+{
+"de": "Trinidad / Tobago",
+"en": "Trinidad & Tobago",
+"iso": "TT",
+"cur": "USD",
+"u": 77.0,
+"v": 55.0
+},
+{
+"de": "Tschad",
+"en": "Chad",
+"iso": "TD",
+"cur": "EUR",
+"u": 55.0,
+"v": 37.0
+},
+{
+"de": "Tschechische Republik",
+"en": "Czech Republic",
+"iso": "CZ",
+"cur": "EUR",
+"u": 80.0,
+"v": 35.0
+},
+{
+"de": "Tunesien",
+"en": "Tunisia",
+"iso": "TN",
+"cur": "EUR",
+"u": 46.0,
+"v": 38.0
+},
+{
+"de": "Türkei",
+"en": "Turkey",
+"iso": "TR",
+"cur": "EUR",
+"u": 80.0,
+"v": 45.0
+},
+{
+"de": "Turkmenistan",
+"en": "Turkmenistan",
+"iso": "TM",
+"cur": "EUR",
+"u": 90.0,
+"v": 50.0
+},
+{
+"de": "Uganda",
+"en": "Uganda",
+"iso": "UG",
+"cur": "USD",
+"u": 82.0,
+"v": 48.0
+},
+{
+"de": "Ukraine",
+"en": "Ukraine",
+"iso": "UA",
+"cur": "EUR",
+"u": 80.0,
+"v": 50.0
+},
+{
+"de": "Ungarn",
+"en": "Hungary",
+"iso": "HU",
+"cur": "EUR",
+"u": 80.0,
+"v": 45.0
+},
+{
+"de": "Uruguay",
+"en": "Uruguay",
+"iso": "UY",
+"cur": "USD",
+"u": 71.0,
+"v": 55.0
+},
+{
+"de": "USA",
+"en": "United States of America",
+"iso": "US",
+"cur": "USD",
+"u": 110.0,
+"v": 85.0
+},
+{
+"de": "Usbekistan",
+"en": "Uzbekistan",
+"iso": "UZ",
+"cur": "EUR",
+"u": 80.0,
+"v": 50.0
+},
+{
+"de": "Venezuela",
+"en": "Venezuela",
+"iso": "VE",
+"cur": "USD",
+"u": 120.0,
+"v": 80.0
+},
+{
+"de": "Vereinigte Arabische Emirate",
+"en": "United Arab Emirates",
+"iso": "AE",
+"cur": "AED",
+"u": 430.0,
+"v": 300.0
+},
+{
+"de": "Vietnam",
+"en": "Vietnam",
+"iso": "VN",
+"cur": "USD",
+"u": 65.0,
+"v": 45.0
+},
+{
+"de": "Weissrussland (Belarus)",
+"en": "Belarus",
+"iso": "BY",
+"cur": "EUR",
+"u": 80.0,
+"v": 50.0
+},
+{
+"de": "Zentralafrik. Republik",
+"en": "Central African Republic",
+"iso": "CF",
+"cur": "EUR",
+"u": 55.0,
+"v": 40.0
+},
+{
+"de": "Zypern",
+"en": "Cyprus",
+"iso": "CY",
+"cur": "EUR",
+"u": 60.0,
+"v": 40.0
+}
+]
+}
