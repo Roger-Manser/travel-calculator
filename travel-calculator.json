@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-23",
   "verantwortlich": "",
-  "updatedAt": 1795416079952,
+  "updatedAt": 1795422951159,
   "profiles": [
    {
     "id": "ch",
@@ -27,7 +27,7 @@
    {
     "id": "us",
     "name": "USA",
-    "cur": "EUR",
+    "cur": "USD",
     "hotel": "",
     "car": "",
     "spesen": 70,
@@ -85,6 +85,9 @@
     "satzICEUR": 180
    }
   ],
+  "ueZuschlag2": 90,
+  "kmFahrzeugEUR": 1.2,
+  "preisliste": "FY27",
   "stundensaetze": {},
   "arbStdTag": 8,
   "reiseStdTag": 8,
@@ -99,10 +102,7 @@
   },
   "daily": {
    "fx": "2026-11-23"
-  },
-  "ueZuschlag2": 90,
-  "kmFahrzeugEUR": 1.2,
-  "preisliste": "FY27"
+  }
  },
  "einsaetze": [
   {
@@ -729,5 +729,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795419513487
+ "updatedAt": 1795422951159
 }
