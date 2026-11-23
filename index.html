@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v4.5 – ÖV-Fahrplan (erste/letzte Verbindung) per API, fliesst ins Flug-Zeitfenster ein -->
+<!-- Gallus Travel Calculator v4.6 – Strecken-Speicher: Flugdaten derselben Strecke (jünger als 3 Monate) übernehmen statt automatischer API-Abfrage -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#151617">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="4.5">
+<meta name="app-version" content="4.6">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
 :root{--bg:#151617;--card:#1e2022;--card2:#26292c;--line:#34373b;--ink:#ececec;--muted:#a3a6aa;--brand:#d07020;--brand-2:#f3a35c;--red:#ef6b6b;--amber:#e8c547;--input:#18191b;
@@ -422,8 +422,12 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '4.5';
+const APP_VERSION = '4.6';
 const VERSION_HISTORY = [
+  { v: '4.6', d: '2026-11-23', items: [
+    'Strecken-Speicher: Wurde dieselbe Strecke (z.B. ZRH–CPH) in den letzten 3 Monaten online ermittelt, übernimmt ein neuer Einsatz diese Flugdaten (Preise, Zusatzgepäck, Flugdauer, Visum)',
+    'In diesem Fall keine automatische Online-Ermittlung – Warnung mit Herkunft und Datum, aktuelle Preise nur per «Online recherchieren» (manuell)',
+  ] },
   { v: '4.5', d: '2026-11-23', items: [
     '«Anreise auswerten (API)» ermittelt zusätzlich den ÖV-Fahrplan: erste Verbindung Wohnort → Flughafen und letzte Verbindung Flughafen → Wohnort (Werktag)',
     'Bei Anreise mit ÖV fliesst der Fahrplan ins Flug-Zeitfenster ein: frühester Abflug frühestens Ankunft erster Zug + Vorlauf, späteste Landung so, dass die letzte Verbindung erreicht wird',
@@ -1489,12 +1493,12 @@ function calcCore() {
       const note = est ? `geschätzt: 2 × ${fmt0(num(R.reiseStdTag))} h` : `Hin ${fmtH(TT.hin)} (Anreise ${f(TT.anr)} + Flughafen ${fmtH(TT.vorl)} + Flug ${fmtH(TT.hinF)} + Fahrt ${f(TT.ziel)}) · Zurück ${fmtH(TT.rueck)} (Fahrt ${f(TT.ziel)} + Flughafen ${fmtH(TT.vorl)} + Flug ${fmtH(TT.rueckF)} + Heimreise ${f(TT.anr)})`;
       if (rh > 0 && pc > 0) { if (!isFinite(st)) missingStd.add('x'); add(g, 'Reisezeit', home, 'Reisezeit Hin- und Rückreise', rh, 'h', st * pc, stCur, isFinite(st) ? rh * st * pc * stFx : 0, note + (pc !== 1 ? ` × ${fmt0(pc * 100)} %` : '')); } }
     const fiN = sel.flugInfo && sel.flugInfo.hinflug ? [sel.flugInfo.hinflug.airline, sel.flugInfo.hinflug.flugnummern].filter(Boolean).join(' ') : '';
-    add(g, 'Flug', home, `Flug ${apLabel(t.flughafen)} – ${destL} · ${KL[C.cls]}`, 1, 'retour', fl, 'CHF', fl, [C.overridden ? 'Klasse manuell' : `Klasse automatisch${isFinite(C.dur) ? ` (Flug ${fmtH(C.dur)} ${C.cls === 'pe' ? '≥' : '<'} ${fmt0(C.lim)} h)` : ''}`, fiN, C.manual ? 'Preis manuell' : 'online ermittelt'].filter(Boolean).join(' · '));
+    add(g, 'Flug', home, `Flug ${apLabel(t.flughafen)} – ${destL} · ${KL[C.cls]}`, 1, 'retour', fl, 'CHF', fl, [C.overridden ? 'Klasse manuell' : `Klasse automatisch${isFinite(C.dur) ? ` (Flug ${fmtH(C.dur)} ${C.cls === 'pe' ? '≥' : '<'} ${fmt0(C.lim)} h)` : ''}`, fiN, C.manual ? 'Preis manuell' : (sel.flugInfo && sel.flugInfo.cache ? `aus Strecken-Speicher (${fmtDate(isoOf(sel.flugInfo.cache.at))})` : 'online ermittelt')].filter(Boolean).join(' · '));
     let gpv = 0;
     if (t.gepaeck) {
       const kg = num(t.gepaeckKg) || num(R.gepaeckKg) || 0;
       gpv = C.gep; if (!isFinite(gpv)) { warn(`${t.name}: Zusatzgepäck ${KL[C.cls]} noch nicht online ermittelt – wird mit 0 gerechnet.`); gpv = 0; }
-      add(g, 'Zusatzgepäck', home, `Zusatzgepäck ${fmt0(kg)} kg · ${KL[C.cls]}`, 1, 'retour', gpv, 'CHF', gpv, isFinite(C.gep) ? `online ermittelt${fiN ? ' · ' + fiN.split(' ')[0] : ''}` : '');
+      add(g, 'Zusatzgepäck', home, `Zusatzgepäck ${fmt0(kg)} kg · ${KL[C.cls]}`, 1, 'retour', gpv, 'CHF', gpv, isFinite(C.gep) ? `${sel.flugInfo && sel.flugInfo.cache ? 'aus Strecken-Speicher' : 'online ermittelt'}${fiN ? ' · ' + fiN.split(' ')[0] : ''}` : '');
     }
     { const bp = num(C.pr.bus), bg = t.gepaeck ? num(C.gp.bus) : 0;
       busCmp.push({ t, cls: C.cls, cur: fl + gpv, bus: isFinite(bp) ? bp + (isFinite(bg) ? bg : 0) : NaN, bgUnknown: t.gepaeck && !isFinite(bg) }); }
@@ -1529,6 +1533,7 @@ function calcCore() {
     const anr = num(t.anreiseModus === 'oev' ? t.oevH : t.autoH);
     const rf = resFlight(t);
     fensterCheck(t, sel.flugInfo || rf).forEach(warn);
+    if (sel.flugInfo && sel.flugInfo.cache) warn(`${t.name}: Flugdaten ${apLabel(t.flughafen)} – ${destL} aus Einsatz «${sel.flugInfo.cache.name}» vom ${fmtDate(isoOf(sel.flugInfo.cache.at))} übernommen (jünger als 3 Monate) – keine automatische Online-Ermittlung. Für aktuelle Preise und Flüge «Online recherchieren» manuell starten.`);
     plan.push({ t, x, vorlauf, anr, rf, fd: rf ? num(rf.flugdauer_h) : NaN, ziel: k ? num(k.fahrzeitMin) / 60 : NaN, visRes: t.nationalitaet ? resVisa(t.nationalitaet) : null });
   });
   let km = NaN;
@@ -2728,10 +2733,52 @@ function convCur(v, from, to) {
 function origins(r) { return [...new Set(r.valid.map(x => x.t.flughafen).filter(Boolean))]; }
 function resKey() { return JSON.stringify({ k: E.kundeId, ab: E.ab, i: E.instTage, tr: !!E.training, h: E.training ? E.handTage : '', d: E.training ? E.trainTage : '', t: E.techs.map(x => x.id + ':' + (E.training ? x.role || 'inst' : '')).sort() }); }
 let AUTO_T = null;
+const ROUTE_MS = 91 * 864e5; // Strecken-Speicher: 3 Monate
+// Jüngste online ermittelte Flugdaten derselben Strecke aus anderen gespeicherten Einsätzen
+function routeCache(von, nach) {
+  if (!von || !nach) return null;
+  let best = null;
+  DATA.einsaetze.forEach(e => {
+    if (e.id === E.id) return;
+    const k = DATA.kunden.find(x => x.id === e.kundeId);
+    (e.techs || []).forEach(s => {
+      const fi = s.flugInfo; if (!fi || !fi.at || fi.cache || Date.now() - fi.at > ROUTE_MS) return;
+      const t = techById(s.id);
+      const v = String((fi.hinflug && fi.hinflug.von) || (t && t.flughafen) || '').toUpperCase(), n = String((fi.hinflug && fi.hinflug.nach) || (k && k.flughafen) || '').toUpperCase();
+      if (v !== von || n !== nach) return;
+      if (!best || fi.at > best.fi.at) best = { fi, e };
+    });
+  });
+  return best;
+}
+// Neuer Einsatz: Flüge aus dem Strecken-Speicher übernehmen; true = alle Techniker abgedeckt (keine automatische API-Abfrage)
+function applyRouteCache(r) {
+  let applied = false, all = true;
+  r.valid.forEach(({ sel, t }) => {
+    if (sel.flugInfo) return;
+    if (sel.flugManuell) return;
+    const hit = routeCache(String(t.flughafen || '').toUpperCase(), String(r.k.flughafen || '').toUpperCase());
+    if (!hit) { all = false; return; }
+    const fi = clone(hit.fi);
+    ['hinflug', 'rueckflug'].forEach(l => { if (fi[l]) fi[l].datum = ''; });
+    fi.cache = { id: hit.e.id, name: hit.e.name || 'Einsatz', at: hit.fi.at };
+    sel.flugInfo = fi; sel.flugSrc = 'speicher'; sel.flug = ''; sel.flugManuell = false;
+    const nk = t.nationalitaet ? natKey(t.nationalitaet) : null;
+    if (nk && !E.visa[nk] && hit.e.visa && hit.e.visa[nk]) E.visa[nk] = clone(hit.e.visa[nk]);
+    E.flugLog.push({ at: Date.now(), techId: sel.id, tech: t.name, klasse: '', hinflug: fi.hinflug || null, rueckflug: fi.rueckflug || null, preis: NaN, gepaeck: null, preise: fi.preise, quelle: `Strecken-Speicher: «${fi.cache.name}» vom ${fmtDate(isoOf(fi.cache.at))}`, auto: true });
+    applied = true;
+  });
+  return { applied, all };
+}
 function maybeAutoResearch(r) {
   clearTimeout(AUTO_T);
   if (E.id || E.res || RES_ABORT || !CFG.ai.autoRes || !CFG.ai.key.trim()) return;  // nur bei neuem, noch nicht recherchiertem Einsatz
   if (!(r.k && r.k.flughafen && r.sched)) return;
+  if (r.valid.length) {
+    const rc = applyRouteCache(r);
+    if (rc.applied) { toast('Flugdaten aus dem Strecken-Speicher übernommen – keine automatische Online-Ermittlung'); setTimeout(() => { writeForm(); render(); }, 0); }
+    if (rc.all) return; // alle Strecken vorhanden → Online-Ermittlung nur manuell
+  }
   AUTO_T = setTimeout(() => { if (!E.id && !E.res && !RES_ABORT) runResearch(true); }, 4000);
 }
 function buildPrompt(r) {
