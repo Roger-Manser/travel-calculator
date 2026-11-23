@@ -550,6 +550,320 @@
    "updatedAt": 1795273300719,
    "total": 38081.29,
    "ziel": "Schweden"
+  },
+  {
+   "id": "mwt1d57to15mh",
+   "name": "RCS430638",
+   "gep": {},
+   "visa": {
+    "deutschland": {
+     "nationalitaet": "Deutschland",
+     "benoetigt": "nein",
+     "art": "Visumfreie Einreise als Geschäftsreisender (max. 180 Tage, digitale/bei Einreise ausgestellte FMM)",
+     "kosten_chf": 0,
+     "vorlauf_tage": 0,
+     "hinweis": "Gilt nur ohne Vergütung aus Mexiko. Bei bezahlter Tätigkeit vor Ort ist vorab ein Visum mit Arbeitserlaubnis bei der mexikanischen Botschaft oder einem Generalkonsulat nötig. Kosten und Vorlaufzeit dafür nicht ermittelt. Pass mindestens 6 Monate gültig; Montageeinsatz vorab mit Konsulat und Kunde klären."
+    },
+    "schweiz": {
+     "nationalitaet": "Schweiz",
+     "benoetigt": "nein",
+     "art": "Visumfreie Einreise als Geschäftsreisender (max. 180 Tage, digitale/bei Einreise ausgestellte FMM)",
+     "kosten_chf": 0,
+     "vorlauf_tage": 0,
+     "hinweis": "Gilt nur ohne Vergütung aus Mexiko. Bei bezahlter Tätigkeit vor Ort ist vorab ein Visum mit Arbeitserlaubnis bei der mexikanischen Botschaft oder dem Generalkonsulat nötig. Kosten und Vorlaufzeit dafür nicht ermittelt. Pass mindestens 6 Monate gültig; Montageeinsatz vorab mit Konsulat und Kunde klären."
+    }
+   },
+   "aufgabeId": "a-inst",
+   "kundeId": "mwt0mu19wpm2l",
+   "techs": [
+    {
+     "id": "mwsy0ezl0pttb",
+     "flug": "",
+     "role": "inst",
+     "klasse": ""
+    },
+    {
+     "id": "mwqbu6xr7rrcr",
+     "flug": "",
+     "role": "app"
+    }
+   ],
+   "profileId": "mwt0osfudivhy",
+   "auftrag": "RCS430638",
+   "bemerkung": "",
+   "maschId": "m-konv",
+   "preis": "ic",
+   "ab": "2026-11-30",
+   "rueck": "2026-12-21",
+   "ueInst": "10",
+   "ueTrain": "",
+   "ueInst2": "",
+   "ueTrain2": "",
+   "instTage": "12",
+   "training": true,
+   "handTage": "3",
+   "trainTage": "5",
+   "klasse": "Economy",
+   "carMode": "auto",
+   "regel": "mit",
+   "man": {
+    "hotel": null,
+    "car": null,
+    "spesen": null
+   },
+   "ov": {
+    "hotel": "",
+    "car": "",
+    "spesen": "",
+    "nk": "",
+    "taxi": ""
+   },
+   "nkPausch": "",
+   "res": {
+    "at": 1795424096277,
+    "key": "{\"k\":\"mwt0mu19wpm2l\",\"ab\":\"2026-11-30\",\"i\":\"12\",\"tr\":true,\"h\":\"3\",\"d\":\"5\",\"t\":[\"mwqbu6xr7rrcr:app\",\"mwsy0ezl0pttb:inst\"]}",
+    "auto": false,
+    "model": "claude-sonnet-5-5",
+    "searches": 5,
+    "cur": "MXN",
+    "trip": "ZRH–MEX · 30.11.2026–21.12.2026",
+    "data": {
+     "fluege": [
+      {
+       "techniker": "Lars Baunack",
+       "von": "ZRH",
+       "nach": "MEX",
+       "flugdauer_h": 14.75,
+       "umstiege": 1,
+       "preise_chf": {
+        "economy": 1010,
+        "premium_economy": null,
+        "business": null
+       },
+       "zusatzgepaeck_chf": {
+        "economy": null,
+        "premium_economy": null,
+        "business": null
+       },
+       "hinflug": {
+        "datum": "2026-11-30",
+        "airline": "KLM",
+        "flugnummern": "KL (Zubringer ZRH-AMS, Nr. nicht verifiziert) + KL 685",
+        "von": "ZRH",
+        "ab": "11:55",
+        "nach": "MEX",
+        "an": "19:40",
+        "umsteigeort": "Amsterdam (AMS)",
+        "dauer_h": 14.75
+       },
+       "rueckflug": {
+        "datum": "2026-12-16",
+        "airline": "KLM",
+        "flugnummern": "KL 686 + KL-Anschluss AMS-ZRH (Nr. nicht verifiziert)",
+        "von": "MEX",
+        "ab": "21:50",
+        "nach": "ZRH",
+        "an": null,
+        "umsteigeort": "Amsterdam (AMS)",
+        "dauer_h": null
+       },
+       "quelle": "https://flights.idealo.com/route/Zurich-ZRH/Mexico-City-MEX/",
+       "bemerkung": "Hinflug 11:55 liegt nach der frühestmöglichen Abflugzeit 09:15. Economy-Preis ist ein Richtwert (KLM ab CHF 1'010 für 30.11.–07.12.), nicht für die exakten Reisedaten. Premium Economy, Business und Zusatzgepäck (30 kg) nicht ermittelbar. Rückflug: KL 686 landet am Folgetag um ca. 14:38 in AMS; ZRH-Ankunft vor 21:15 ist wahrscheinlich, aber nicht verifiziert. Gesamtreisezeit Rückflug ca. 16–17 h (Schätzung)."
+      },
+      {
+       "techniker": "Andrej Cica",
+       "von": "ZRH",
+       "nach": "MEX",
+       "flugdauer_h": 14.75,
+       "umstiege": 1,
+       "preise_chf": {
+        "economy": 1020,
+        "premium_economy": null,
+        "business": null
+       },
+       "zusatzgepaeck_chf": {
+        "economy": 0,
+        "premium_economy": 0,
+        "business": 0
+       },
+       "hinflug": {
+        "datum": "2026-12-12",
+        "airline": "KLM",
+        "flugnummern": "KL (Zubringer ZRH-AMS, Nr. nicht verifiziert) + KL 685",
+        "von": "ZRH",
+        "ab": "11:55",
+        "nach": "MEX",
+        "an": "19:40",
+        "umsteigeort": "Amsterdam (AMS)",
+        "dauer_h": 14.75
+       },
+       "rueckflug": {
+        "datum": "2026-12-21",
+        "airline": "KLM",
+        "flugnummern": "KL 686 + KL-Anschluss AMS-ZRH (Nr. nicht verifiziert)",
+        "von": "MEX",
+        "ab": "21:50",
+        "nach": "ZRH",
+        "an": null,
+        "umsteigeort": "Amsterdam (AMS)",
+        "dauer_h": null
+       },
+       "quelle": "https://flights.idealo.com/route/Zurich-ZRH/Mexico-City-MEX/",
+       "bemerkung": "Der 12.12.2026 ist ein Samstag. Der KLM-Zubringer 11:55 war im Fahrplan nur Sonntag bis Freitag aufgeführt, daher Samstagsflug und -zeit vor Buchung prüfen (KL 685 selbst fliegt täglich). Economy-Preis ist ein Richtwert (KLM ab CHF 1'020 für 11.–25.12.). Premium Economy und Business nicht ermittelbar. Kein Zusatzgepäck, daher 0. Rückflug: ZRH-Ankunft vor 21:18 wahrscheinlich, aber nicht verifiziert."
+      }
+     ],
+     "wechselkurs": {
+      "chf_pro_einheit": 0.0439,
+      "waehrung": "MXN"
+     },
+     "visa": [
+      {
+       "nationalitaet": "Schweiz",
+       "benoetigt": "nein",
+       "art": "Visumfreie Einreise als Geschäftsreisender (max. 180 Tage, digitale/bei Einreise ausgestellte FMM)",
+       "kosten_chf": 0,
+       "vorlauf_tage": 0,
+       "hinweis": "Gilt nur ohne Vergütung aus Mexiko. Bei bezahlter Tätigkeit vor Ort ist vorab ein Visum mit Arbeitserlaubnis bei der mexikanischen Botschaft oder dem Generalkonsulat nötig. Kosten und Vorlaufzeit dafür nicht ermittelt. Pass mindestens 6 Monate gültig; Montageeinsatz vorab mit Konsulat und Kunde klären."
+      },
+      {
+       "nationalitaet": "Deutschland",
+       "benoetigt": "nein",
+       "art": "Visumfreie Einreise als Geschäftsreisender (max. 180 Tage, digitale/bei Einreise ausgestellte FMM)",
+       "kosten_chf": 0,
+       "vorlauf_tage": 0,
+       "hinweis": "Gilt nur ohne Vergütung aus Mexiko. Bei bezahlter Tätigkeit vor Ort ist vorab ein Visum mit Arbeitserlaubnis bei der mexikanischen Botschaft oder einem Generalkonsulat nötig. Kosten und Vorlaufzeit dafür nicht ermittelt. Pass mindestens 6 Monate gültig; Montageeinsatz vorab mit Konsulat und Kunde klären."
+      }
+     ],
+     "zusammenfassung": "Es gibt keinen Direktflug ZRH–MEX; gewählt wurde KLM via Amsterdam (Hinflug ZRH 11:55 – MEX 19:40, Rückflug KL 686 ab MEX 21:50). Die Economy-Preise (ca. CHF 1'010 bzw. 1'020) sind Richtwerte aus KLM-Angebotslisten für ähnliche Daten; Premium Economy, Business und Zusatzgepäck für Lars Baunack konnten nicht ermittelt werden. Deutsche und Schweizer reisen für Geschäftsaufenthalte bis 180 Tage visumfrei ein; bei bezahlter Montagearbeit in Mexiko ist vorab ein Visum nötig, das vorab mit Konsulat und Kunde zu klären ist.",
+     "quellen": [
+      {
+       "titel": "KLM – Flüge Zürich–Mexiko-Stadt (Preise)",
+       "url": "https://www.klm.ch/en-ch/flights-from-zurich-to-mexico-city"
+      },
+      {
+       "titel": "Idealo – Flugplan ZRH–MEX",
+       "url": "https://flights.idealo.com/route/Zurich-ZRH/Mexico-City-MEX/"
+      },
+      {
+       "titel": "KL685 Flugstatus/Fahrplan",
+       "url": "https://www.airnavradar.com/data/flights/KL685/2966732318"
+      },
+      {
+       "titel": "KL686 Flugstatus Trip.com",
+       "url": "https://www.trip.com/flights/status-kl686/"
+      },
+      {
+       "titel": "FlightConnections – keine Direktflüge ZRH–MEX",
+       "url": "https://www.flightconnections.com/flights-from-zrh-to-mex"
+      },
+      {
+       "titel": "Einreisebestimmungen Mexiko 2026",
+       "url": "https://www.mexiko-mexico.org/einreisebestimmungen-fuer-mexiko/"
+      },
+      {
+       "titel": "Tourlane – Visum/Einreisegenehmigung Mexiko",
+       "url": "https://support.tourlane.de/question/benoetige-ich-ein-visum-oder-eine-einreisegenehmigung-1/tf6cffjrguldi11h0dtzddy2"
+      },
+      {
+       "titel": "XE – MXN/CHF",
+       "url": "https://www.xe.com/en-us/currencyconverter/convert/?Amount=1&From=MXN&To=CHF"
+      }
+     ]
+    },
+    "sources": [
+     {
+      "url": "https://flights.idealo.com/route/Zurich-ZRH/Mexico-City-MEX/",
+      "title": "Flights Zurich - Mexico City"
+     },
+     {
+      "url": "https://www.airnavradar.com/data/flights/KL685/2966732318&gsessionid=CDS3rafxMR7DiGRSCU-pCWXACsRTARpwTyVdFS2zyayMmKjuQg8MUQ",
+      "title": "KL685 Flight Status"
+     },
+     {
+      "url": "https://www.trip.com/flights/status-kl686/",
+      "title": "KLM KL686 Flight Status Today: Live Tracker, Arrivals & Departures"
+     },
+     {
+      "url": "https://www.klm.ch/en-ch/flights-from-zurich-to-mexico-city",
+      "title": "Flight deals from Zurich to Mexico City"
+     },
+     {
+      "url": "https://www.xe.com/en-us/currencyconverter/convert/?Amount=1&From=MXN&To=CHF",
+      "title": "1 MXN to CHF - Mexican Pesos to Swiss Francs Exchange Rate"
+     },
+     {
+      "url": "https://www.mexiko-mexico.org/einreisebestimmungen-fuer-mexiko/",
+      "title": "Einreisebestimmungen Mexiko 2026"
+     },
+     {
+      "url": "https://support.tourlane.de/question/benoetige-ich-ein-visum-oder-eine-einreisegenehmigung-1/tf6cffjrguldi11h0dtzddy2",
+      "title": "Benötige ich ein Visum oder eine Einreisegenehmigung?"
+     },
+     {
+      "url": "https://www.airnavradar.com/data/flights/KL685/2966732318",
+      "title": "KL685 Flugstatus/Fahrplan"
+     },
+     {
+      "url": "https://www.flightconnections.com/flights-from-zrh-to-mex",
+      "title": "FlightConnections – keine Direktflüge ZRH–MEX"
+     },
+     {
+      "url": "https://www.turkishairlines.com/en/flights-from-zurich-to-mexico-city",
+      "title": "Flug von Zürich nach Mexiko-Stadt"
+     }
+    ]
+   },
+   "ofEdit": {
+    "inst|allow": {
+     "cur": "EUR",
+     "ppu": 84
+    },
+    "inst|acc": {
+     "cur": "EUR",
+     "ppu": 120
+    },
+    "train|flight": {
+     "cur": "EUR",
+     "ppu": 2600
+    },
+    "inst|flight": {
+     "cur": "EUR",
+     "ppu": 2600
+    },
+    "train|acc": {
+     "cur": "EUR",
+     "ppu": 120
+    },
+    "train|allow": {
+     "cur": "EUR",
+     "ppu": 84
+    },
+    "inst|ot": {
+     "cur": "EUR",
+     "ppu": 240
+    },
+    "inst|rental": {
+     "cur": "EUR",
+     "ppu": 0
+    },
+    "train|rental": {
+     "cur": "EUR",
+     "ppu": 0
+    },
+    "train|ot": {
+     "cur": "EUR",
+     "ppu": 240
+    }
+   },
+   "flugLog": [],
+   "ovSrc": {},
+   "createdAt": 1795424456872,
+   "updatedAt": 1795424456872,
+   "total": null,
+   "ofTotal": 56098,
+   "ofCur": "EUR",
+   "ofEdited": true,
+   "ziel": "Mexiko"
   }
  ],
  "aufgaben": [
@@ -855,5 +1169,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795424096270
+ "updatedAt": 1795424456873
 }
