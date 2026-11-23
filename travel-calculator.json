@@ -2562,14 +2562,14 @@
    "id": "mwt96tjpoc7cu",
    "name": "LLC Goznak",
    "adresse": "St. Intergelpostreet 1",
-   "land": "",
+   "land": "KG",
    "ort": "Bischkek",
    "profileId": "",
    "flughafen": "",
    "flughafenName": "",
    "distanzKm": "",
    "fahrzeitMin": "",
-   "updatedAt": 1795437664454
+   "updatedAt": 1795437671976
   }
  ],
  "apiLog": [
@@ -2673,5 +2673,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795437664454
+ "updatedAt": 1795437671976
 }
