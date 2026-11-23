@@ -668,7 +668,19 @@
    }
   }
  ],
- "apiLog": [],
+ "apiLog": [
+  {
+   "id": "api-mwst09z5u0u7k",
+   "typ": "use",
+   "at": 1795410419585,
+   "usd": 0.0001,
+   "text": "API-Test",
+   "tin": 19,
+   "tout": 4,
+   "srch": 0,
+   "updatedAt": 1795410419585
+  }
+ ],
  "deleted": {},
- "updatedAt": 1795410259961
+ "updatedAt": 1795410419585
 }
