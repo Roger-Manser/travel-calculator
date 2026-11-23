@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v4.3 – Richtpreis editierbar (Menge, Preis pro Einheit, Betrag), Anpassungen mit dem Einsatz gespeichert -->
+<!-- Gallus Travel Calculator v4.5 – ÖV-Fahrplan (erste/letzte Verbindung) per API, fliesst ins Flug-Zeitfenster ein -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#151617">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="4.3">
+<meta name="app-version" content="4.5">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
 :root{--bg:#151617;--card:#1e2022;--card2:#26292c;--line:#34373b;--ink:#ececec;--muted:#a3a6aa;--brand:#d07020;--brand-2:#f3a35c;--red:#ef6b6b;--amber:#e8c547;--input:#18191b;
@@ -422,8 +422,18 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '4.3';
+const APP_VERSION = '4.5';
 const VERSION_HISTORY = [
+  { v: '4.5', d: '2026-11-23', items: [
+    '«Anreise auswerten (API)» ermittelt zusätzlich den ÖV-Fahrplan: erste Verbindung Wohnort → Flughafen und letzte Verbindung Flughafen → Wohnort (Werktag)',
+    'Bei Anreise mit ÖV fliesst der Fahrplan ins Flug-Zeitfenster ein: frühester Abflug frühestens Ankunft erster Zug + Vorlauf, späteste Landung so, dass die letzte Verbindung erreicht wird',
+    'Fahrplanzeiten beim Techniker sichtbar und von Hand anpassbar – nur bei Anreise mit ÖV; bei Auto und Taxi gilt nur der früheste Aufbruch bzw. die späteste Heimkehr',
+  ] },
+  { v: '4.4', d: '2026-11-23', items: [
+    'Pro Techniker einstellbar: frühester Aufbruch zu Hause und späteste Ankunft zu Hause (Standard 05:00 / 23:00)',
+    'Online-Recherche wählt Flüge im erreichbaren Zeitfenster: frühester Abflug = Aufbruch + Anreise + Vorlauf, späteste Landung = Heimkehr − Gepäckausgabe − Heimreise',
+    'Reiseplan zeigt das Zeitfenster; Warnung, wenn ein gewählter Flug nicht erreichbar ist',
+  ] },
   { v: '4.3', d: '2026-11-23', items: [
     'Richtpreis editierbar: Menge, Preis pro Einheit oder Betrag pro Position anpassen – Endpreis wird neu summiert',
     'Angepasste Werte orange markiert mit dem Kalkulationswert darunter, pro Position und gesamt zurücksetzbar',
@@ -1337,6 +1347,33 @@ function schedule(valid, msgs) {
   return { ok, per, phases, P1, inst, hand, train, first, last, ranges };
 }
 // Reisezeit Tür–Kunde (hin) und Kunde–Tür (zurück) aus dem gewählten Flug
+// Zeitfenster für die Flugwahl: frühester Abflug und späteste Landung am Heimflughafen
+const T_AB = '05:00', T_HEIM = '23:00', GEP_AUSGABE_H = 0.5;
+const hm2h = v => { const m = /^(\d{1,2}):(\d{2})/.exec(String(v || '')); return m ? (+m[1]) + (+m[2]) / 60 : NaN; };
+const h2hm = h => { if (!isFinite(h)) return '?'; let m = Math.round(h * 60); const day = m >= 1440 ? ' (+1 Tag)' : m < 0 ? ' (Vortag)' : ''; m = ((m % 1440) + 1440) % 1440; return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}${day}`; };
+function flugFenster(t) {
+  const R = DATA.rates, vorl = num(t.gepaeck ? R.vorlaufGepaeckH : R.vorlaufH) || 0;
+  const anrRaw = num(t.anreiseModus === 'oev' ? t.oevH : t.autoH), anr = isFinite(anrRaw) ? anrRaw : 0;
+  const ab = hm2h(t.fruehAb) >= 0 ? hm2h(t.fruehAb) : hm2h(T_AB), heim = hm2h(t.spaetHeim) >= 0 ? hm2h(t.spaetHeim) : hm2h(T_HEIM);
+  let minAbflug = ab + anr + vorl, maxLandung = heim - GEP_AUSGABE_H - anr, oevHin = '', oevRueck = '';
+  if (t.anreiseModus === 'oev') {
+    const ea = hm2h(t.oevErsteAn), la0 = hm2h(t.oevLetzteAb), la = la0 < 4 ? la0 + 24 : la0;
+    if (isFinite(ea) && ea + vorl > minAbflug) { minAbflug = ea + vorl; oevHin = `erste ÖV-Verbindung ${t.oevErsteAb ? 'ab ' + t.oevErsteAb + ' ' : ''}an Flughafen ${t.oevErsteAn}`; }
+    if (isFinite(la) && la - GEP_AUSGABE_H < maxLandung) { maxLandung = la - GEP_AUSGABE_H; oevRueck = `letzte ÖV-Verbindung ab Flughafen ${t.oevLetzteAb}${t.oevLetzteAn ? ', zu Hause ' + t.oevLetzteAn : ''}`; }
+  }
+  return { ab, heim, vorl, anr, anrKnown: isFinite(anrRaw), minAbflug, maxLandung, oevHin, oevRueck,
+    oevFehlt: t.anreiseModus === 'oev' && !t.oevErsteAn && !t.oevLetzteAb,
+    abTxt: h2hm(ab), heimTxt: h2hm(heim), minTxt: h2hm(minAbflug), maxTxt: h2hm(maxLandung) };
+}
+// Prüft den gewählten Flug gegen das Zeitfenster; liefert Warntexte
+function fensterCheck(t, fi) {
+  const F = flugFenster(t), out = [];
+  if (!fi) return out;
+  const ab = hm2h(fi.hinflug && fi.hinflug.ab), an = hm2h(fi.rueckflug && fi.rueckflug.an);
+  if (isFinite(ab) && ab + 1e-9 < F.minAbflug) out.push(F.oevHin && ab + 1e-9 >= F.ab + F.anr + F.vorl ? `${t.name}: Hinflug ab ${fi.hinflug.ab} mit ÖV nicht erreichbar – ${F.oevHin}, plus ${fmtH(F.vorl)} Vorlauf. Frühester sinnvoller Abflug ${F.minTxt} – bitte «Neu recherchieren», anderen Flug oder Anreise mit Auto/Taxi wählen.` : `${t.name}: Hinflug ab ${fi.hinflug.ab} ist kaum erreichbar – Aufbruch zu Hause wäre um ${h2hm(ab - F.anr - F.vorl)} (frühester Aufbruch ${F.abTxt}). Frühester sinnvoller Abflug ${F.minTxt} – bitte «Neu recherchieren» oder anderen Flug wählen.`);
+  if (isFinite(an)) { const a2 = an < 4 ? an + 24 : an; if (a2 - 1e-9 > F.maxLandung) out.push(F.oevRueck && a2 - 1e-9 <= F.heim - GEP_AUSGABE_H - F.anr ? `${t.name}: Rückflug landet um ${fi.rueckflug.an} – ${F.oevRueck} wird nicht mehr erreicht. Späteste sinnvolle Landung ${F.maxTxt}.` : `${t.name}: Rückflug landet um ${fi.rueckflug.an} – Ankunft zu Hause erst um ${h2hm(a2 + GEP_AUSGABE_H + F.anr)} (späteste Heimkehr ${F.heimTxt}). Späteste sinnvolle Landung ${F.maxTxt}.`); }
+  return out;
+}
 function travelTimes(t, sel, k) {
   const R = DATA.rates, fi = sel.flugInfo || null, rf = resFlight(t);
   const vorl = num(t.gepaeck ? R.vorlaufGepaeckH : R.vorlaufH) || 0;
@@ -1491,6 +1528,7 @@ function calcCore() {
     const vorlauf = num(t.gepaeck ? R.vorlaufGepaeckH : R.vorlaufH);
     const anr = num(t.anreiseModus === 'oev' ? t.oevH : t.autoH);
     const rf = resFlight(t);
+    fensterCheck(t, sel.flugInfo || rf).forEach(warn);
     plan.push({ t, x, vorlauf, anr, rf, fd: rf ? num(rf.flugdauer_h) : NaN, ziel: k ? num(k.fahrzeitMin) / 60 : NaN, visRes: t.nationalitaet ? resVisa(t.nationalitaet) : null });
   });
   let km = NaN;
@@ -1571,6 +1609,8 @@ function planHtml(r) {
     const fi = x.x.sel.flugInfo, abfl = fi && fi.hinflug && fi.hinflug.ab ? String(fi.hinflug.ab) : (x.rf && x.rf.hinflug && x.rf.hinflug.ab ? String(x.rf.hinflug.ab) : (x.rf && x.rf.abflug_beispiel ? String(x.rf.abflug_beispiel) : ''));
     const TT = travelTimes(t, x.x.sel, r.k);
     const l0 = r.S.ok ? `Anreise ${dShort(s.arr)} · ${s.W} Arbeitstage vor Ort · Rückreise ${dShort(s.ret)}${E.training ? ` · Rolle ${s.role === 'app' ? 'Training' : 'Installation'} (inkl. Handover)` : ''}` : '';
+    const FF = flugFenster(t);
+    const lw = `Zeitfenster Flug: Hinflug frühestens ab <b>${FF.minTxt}</b> (Aufbruch ab ${FF.abTxt} + Anreise ${fmtH(FF.anr)} + Vorlauf ${fmtH(FF.vorl)}) · Rückflug Landung spätestens <b>${FF.maxTxt}</b> (zu Hause bis ${FF.heimTxt})${FF.oevHin ? ' · Hinweg begrenzt durch ' + esc(FF.oevHin) : ''}${FF.oevRueck ? ' · Rückweg begrenzt durch ' + esc(FF.oevRueck) : ''}${FF.anrKnown ? '' : ' <span class="warnTxt">– Anreisezeit fehlt, mit 0 gerechnet</span>'}${FF.oevFehlt ? ' <span class="warnTxt">– ÖV-Fahrplan noch nicht ermittelt (Stammdaten → Techniker → «Anreise auswerten»)</span>' : ''}`;
     const l1 = `Anreise ${modus} ${isFinite(x.anr) ? fmtH(x.anr) : '<span class="warnTxt">Zeit fehlt</span>'} + ${fmtH(x.vorlauf)} vor Abflug am Flughafen${t.gepaeck ? ' (Zusatzgepäck)' : ''} → zu Hause <b>${fmtH(vor)}</b> vor Abflug losfahren${abfl ? ` · z.B. Abflug ${esc(abfl)} → Abfahrt ${hhmmMinus(abfl, vor)}` : ''}`;
     const lf = fi ? `<div class="muted">✈ Hinflug: ${esc(legTxt(fi.hinflug))}<br>✈ Rückflug: ${esc(legTxt(fi.rueckflug))}</div>` : '';
     const l2 = (x.rf || x.x.sel.flugInfo) ? `Flug ${esc(apLabel(t.flughafen))} – ${esc(r.k ? apLabel(r.k.flughafen, r.k.flughafenName) : '?')}: hin ${fmtH(TT.hinF)}, zurück ${fmtH(TT.rueckF)}${x.rf && isFinite(num(x.rf.umstiege)) ? `, ${num(x.rf.umstiege) === 0 ? 'direkt' : num(x.rf.umstiege) + ' Umstieg(e)'}` : ''}${TT.ok ? ` · Reisezeit Tür–Kunde <b>${fmtH(TT.hin)}</b>, Kunde–Tür <b>${fmtH(TT.rueck)}</b>` : ''}` : '<span class="muted">Flugdauer folgt aus der Online-Recherche.</span>';
@@ -1578,7 +1618,7 @@ function planHtml(r) {
     const l3 = !t.nationalitaet ? '<span class="warnTxt">Nationalität fehlt – Visum nicht geprüft</span>'
       : v ? `Einreise ${esc(land)} mit ${esc(t.nationalitaet)}: <b>${esc(v.benoetigt || '?')}</b>${v.art ? ' – ' + esc(v.art) : ''}${isFinite(num(v.kosten_chf)) ? ` · CHF ${fmt(num(v.kosten_chf))}` : ''}${isFinite(num(v.vorlauf_tage)) ? ` · mind. ${fmt0(num(v.vorlauf_tage))} Tage vorher beantragen` : ''}${v.hinweis ? ` · ${esc(v.hinweis)}` : ''}`
       : `Einreise ${esc(land)} mit ${esc(t.nationalitaet)}: <span class="muted">wird mit der Online-Recherche geprüft</span>`;
-    return `<div class="trow" style="display:block"><b>${esc(t.name)}</b>${l0 ? `<div class="muted">${l0}</div>` : ''}<div class="muted">${l1}</div>${lf}<div class="muted">${l2}</div><div class="muted">${l3}</div></div>`;
+    return `<div class="trow" style="display:block"><b>${esc(t.name)}</b>${l0 ? `<div class="muted">${l0}</div>` : ''}<div class="muted">${l1}</div><div class="muted">${lw}</div>${lf}<div class="muted">${l2}</div><div class="muted">${l3}</div></div>`;
   }).join('');
 }
 const CATS = ['Arbeitszeit', 'Überstunden', 'Reisezeit', 'Flug', 'Zusatzgepäck', 'Anreise Flughafen', 'Visum', 'Hotel', 'Transport vor Ort', 'Spesen', 'Nebenkosten'];
@@ -1953,7 +1993,7 @@ function standTxt(s) {
   if (s.src === 'api') return `<span class="muted">Kalkulationsstand ${fmtDate(iso)} (per API) · nächste automatische Aktualisierung ${fmtDate(new Date(s.at + YEAR_MS).toISOString().slice(0, 10))}</span>${stale}`;
   return `<span class="muted">Kalkulationsstand ${fmtDate(iso)} (manuell erfasst) · keine automatische Aktualisierung</span>${stale}`;
 }
-const T_CALC = ['autoH', 'oevH', 'anreiseKm', 'oevRetourChf', 'parkenTagChf', 'taxiEinfachChf'], T_BASE = ['wohnort', 'flughafen'];
+const T_CALC = ['autoH', 'oevH', 'anreiseKm', 'oevRetourChf', 'parkenTagChf', 'taxiEinfachChf', 'oevErsteAb', 'oevErsteAn', 'oevLetzteAb', 'oevLetzteAn'], T_BASE = ['wohnort', 'flughafen'];
 const K_CALC = ['flughafen', 'flughafenName', 'distanzKm', 'fahrzeitMin'], K_BASE = ['adresse'];
 function markStand(obj, key, field, calcF, baseF) {
   if (calcF.includes(field)) obj[key] = { at: Date.now(), src: 'manuell' };
@@ -1982,6 +2022,12 @@ function techHtml(t) {
       <label>Anreise zum Flughafen<select data-k="anreiseModus"><option value="auto" ${t.anreiseModus !== 'oev' ? 'selected' : ''}>Auto (Parkieren)</option><option value="oev" ${t.anreiseModus === 'oev' ? 'selected' : ''}>ÖV</option><option value="taxi" ${t.anreiseModus === 'taxi' ? 'selected' : ''}>Taxi</option></select></label>
       <label>Fahrzeit Auto (h)<input data-k="autoH" inputmode="decimal" value="${iv('autoH')}"></label>
       <label>Reisezeit ÖV (h)<input data-k="oevH" inputmode="decimal" value="${iv('oevH')}"></label>
+      <label>Frühester Aufbruch zu Hause<input type="time" data-k="fruehAb" value="${esc(t.fruehAb || T_AB)}"></label>
+      <label>Späteste Ankunft zu Hause<input type="time" data-k="spaetHeim" value="${esc(t.spaetHeim || T_HEIM)}"></label>
+      <label class="oevf" ${t.anreiseModus === 'oev' ? '' : 'hidden'}>ÖV erste Verbindung: ab Wohnort<input type="time" data-k="oevErsteAb" value="${iv('oevErsteAb')}"></label>
+      <label class="oevf" ${t.anreiseModus === 'oev' ? '' : 'hidden'}>ÖV erste Verbindung: an Flughafen<input type="time" data-k="oevErsteAn" value="${iv('oevErsteAn')}"></label>
+      <label class="oevf" ${t.anreiseModus === 'oev' ? '' : 'hidden'}>ÖV letzte Verbindung: ab Flughafen<input type="time" data-k="oevLetzteAb" value="${iv('oevLetzteAb')}"></label>
+      <label class="oevf" ${t.anreiseModus === 'oev' ? '' : 'hidden'}>ÖV letzte Verbindung: an Wohnort<input type="time" data-k="oevLetzteAn" value="${iv('oevLetzteAn')}"></label>
       <label>Distanz Wohnort–Flughafen (km)<input data-k="anreiseKm" inputmode="decimal" value="${iv('anreiseKm')}"></label>
       <label>ÖV-Billett retour (CHF)<input data-k="oevRetourChf" inputmode="decimal" value="${iv('oevRetourChf')}"></label>
       <label>Parkieren Flughafen (CHF/Tag)<input data-k="parkenTagChf" inputmode="decimal" value="${iv('parkenTagChf')}"></label>
@@ -2017,15 +2063,18 @@ Ermittle:
 - Preis eines ÖV-Billetts Wohnort–Flughafen retour, 2. Klasse, Normalpreis, umgerechnet in CHF
 - Preis fürs Langzeitparkieren am Flughafen pro Tag in CHF (günstigste offizielle Variante, umgerechnet in CHF)
 - Preis einer Taxifahrt Wohnort–Flughafen, einfache Fahrt, in CHF
+- ÖV-Fahrplan an einem normalen Werktag (Mo–Fr): erste Verbindung des Tages vom Wohnort zum Flughafen (Abfahrt am Wohnort, Ankunft am Flughafen) und letzte Verbindung des Tages vom Flughafen zum Wohnort (Abfahrt am Flughafen, Ankunft am Wohnort), Uhrzeiten als HH:MM
 
 Fasse vor dem Ergebnis höchstens in 2–3 Sätzen zusammen. Antworte am Schluss mit genau einem JSON-Objekt in einem \`\`\`json-Block, ohne Text danach. Unbekannte Werte als null:
-{ "distanz_km": Zahl, "fahrzeit_auto_h": Zahl, "oev_dauer_h": Zahl, "oev_retour_chf": Zahl, "parkieren_pro_tag_chf": Zahl, "taxi_einfach_chf": Zahl, "bemerkung": "kurz, Deutsch (Schweiz), ss statt ß" }`;
+{ "distanz_km": Zahl, "fahrzeit_auto_h": Zahl, "oev_dauer_h": Zahl, "oev_retour_chf": Zahl, "parkieren_pro_tag_chf": Zahl, "taxi_einfach_chf": Zahl, "oev_erste_ab": "HH:MM", "oev_erste_an": "HH:MM", "oev_letzte_ab": "HH:MM", "oev_letzte_an": "HH:MM", "bemerkung": "kurz, Deutsch (Schweiz), ss statt ß" }`;
   try {
     const r = await callClaude(prompt, 3, undefined, `Anreise ${t.name}`);
     const j = extractJSON(r.text); if (!j) throw new Error('Die Antwort enthielt kein auswertbares Ergebnis');
     const setN = (k, v, d) => { v = num(v); if (isFinite(v)) t[k] = Math.round(v * (d || 1)) / (d || 1); };
     setN('anreiseKm', j.distanz_km); setN('autoH', j.fahrzeit_auto_h, 100); setN('oevH', j.oev_dauer_h, 100);
     setN('oevRetourChf', j.oev_retour_chf, 100); setN('parkenTagChf', j.parkieren_pro_tag_chf, 100); setN('taxiEinfachChf', j.taxi_einfach_chf, 100);
+    const setT = (k, v) => { const m = /(\d{1,2}):(\d{2})/.exec(String(v || '')); if (m) t[k] = `${m[1].padStart(2, '0')}:${m[2]}`; };
+    setT('oevErsteAb', j.oev_erste_ab); setT('oevErsteAn', j.oev_erste_an); setT('oevLetzteAb', j.oev_letzte_ab); setT('oevLetzteAn', j.oev_letzte_an);
     t.anreiseBemerkung = j.bemerkung || ''; t.anreiseStand = { at: Date.now(), src: 'api' };
     if (!quiet) OPEN_T.add(t.id);
     touch(t); renderTechs();
@@ -2061,6 +2110,7 @@ function onStammChange(ev) {
     else if (k === 'name') { if (!t.value.trim()) { toast('Name fehlt'); t.value = x.name; return; } x.name = t.value.trim(); }
     else if (TNUM.includes(k)) { const v = t.value.trim() === '' ? '' : num(t.value); if (v !== '' && !(v >= 0)) { toast('Bitte eine gültige Zahl eingeben'); t.value = x[k] ?? ''; return; } x[k] = v; }
     else if (k) x[k] = t.value.trim();
+    if (k === 'anreiseModus') td.querySelectorAll('.oevf').forEach(el => el.hidden = x.anreiseModus !== 'oev');
     if (k) { markStand(x, 'anreiseStand', k, T_CALC, T_BASE); const st = td.querySelector('[data-tstand]'); if (st) st.innerHTML = standTxt(x.anreiseStand); }
     td.querySelector('summary').innerHTML = tSummary(x);
     touch(x); return;
@@ -2699,10 +2749,11 @@ Abflughäfen der Techniker: ${og.join(', ') || '?'} (je Hin- und Rückflug, Econ
 Zusatzgepäck pro Techniker (zusätzliches Aufgabegepäck, Hin- und Rückflug): ${r.valid.map(x => `${x.t.name}: ${x.t.gepaeck ? fmt0(num(x.t.gepaeckKg) || num(DATA.rates.gepaeckKg)) + ' kg' : 'keines'}`).join('; ')}
 Nationalitäten der Techniker: ${nats.join(', ') || 'unbekannt'}
 Reisedaten pro Techniker: ${S.per.map(x => `${x.t.name} ab ${x.t.flughafen || '?'}: Hinflug ${isoOf(x.arr)}, Rückflug ${isoOf(x.ret)}, ${x.nights} Hotelnächte`).join('; ')}
+Erreichbarkeit (zwingend, Ortszeit am Heimflughafen): ${S.per.map(x => { const F = flugFenster(x.t); return `${x.t.name}: Hinflug Abflug frühestens ${F.minTxt}, Rückflug Landung in ${x.t.flughafen || '?'} spätestens ${F.maxTxt}`; }).join('; ')}
 Ablauf: ${phaseTxt(S)}
 Lokale Währung: ${cur}
 
-Suche im Web nach aktuellen Preisen. Flüge: Wähle für jeden Techniker einen konkreten, real existierenden Hin- und Rückflug an seinen Reisedaten – bevorzugt Direktflug bzw. kurze Gesamtreisezeit, Abflug nicht vor 07:00 – und gib Airline, Flugnummer(n), Datum, Abflug- und Ankunftszeit (Ortszeit), Umsteigeort sowie pro Strecke die Reisedauer vom Abflug bis zur Ankunft inkl. Umsteigezeit in Stunden (Zeitverschiebung berücksichtigt) an. Gib für diesen Flug die Retourpreise in Economy, Premium Economy und Business an. Zusatzgepäck: Gebühr dieser Airline für das angegebene Zusatzgepäck des Technikers, Hin- und Rückflug zusammen, in CHF, je Klasse (0, wenn im Tarif enthalten).
+Suche im Web nach aktuellen Preisen. Flüge: Wähle für jeden Techniker einen konkreten, real existierenden Hin- und Rückflug an seinen Reisedaten – bevorzugt Direktflug bzw. kurze Gesamtreisezeit, zwingend innerhalb der oben genannten Erreichbarkeit (der Techniker muss den Hinflug mit Anreise und Vorlauf am Flughafen erreichen und nach dem Rückflug noch nach Hause kommen); passt am Reisetag kein Flug ins Fenster, wähle den am besten passenden und vermerke das in «bemerkung» – und gib Airline, Flugnummer(n), Datum, Abflug- und Ankunftszeit (Ortszeit), Umsteigeort sowie pro Strecke die Reisedauer vom Abflug bis zur Ankunft inkl. Umsteigezeit in Stunden (Zeitverschiebung berücksichtigt) an. Gib für diesen Flug die Retourpreise in Economy, Premium Economy und Business an. Zusatzgepäck: Gebühr dieser Airline für das angegebene Zusatzgepäck des Technikers, Hin- und Rückflug zusammen, in CHF, je Klasse (0, wenn im Tarif enthalten).
 Visum: Prüfe für jede Nationalität, ob für diese Geschäftsreise mit Montagearbeit im Zielland ein Visum oder eine elektronische Einreisegenehmigung nötig ist, mit Kosten in CHF und Vorlaufzeit.
 Fasse vor dem Ergebnis höchstens in 2–3 Sätzen zusammen. Antworte am Schluss mit genau einem JSON-Objekt in einem \`\`\`json-Block, ohne Text danach. Unbekannte Werte als null:
 {
