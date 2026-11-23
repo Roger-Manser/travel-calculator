@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v4.6 – Strecken-Speicher: Flugdaten derselben Strecke (jünger als 3 Monate) übernehmen statt automatischer API-Abfrage -->
+<!-- Gallus Travel Calculator v4.8 – Bugfix: recherchierter Flug wird zuverlässig eingetragen (robuste Zuordnung, auch ohne vollständige Preise) -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#151617">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="4.6">
+<meta name="app-version" content="4.8">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
 :root{--bg:#151617;--card:#1e2022;--card2:#26292c;--line:#34373b;--ink:#ececec;--muted:#a3a6aa;--brand:#d07020;--brand-2:#f3a35c;--red:#ef6b6b;--amber:#e8c547;--input:#18191b;
@@ -422,8 +422,16 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '4.6';
+const APP_VERSION = '4.8';
 const VERSION_HISTORY = [
+  { v: '4.8', d: '2026-11-23', items: [
+    'Bugfix: recherchierter Flug wurde nicht eingetragen, wenn die API den Technikernamen oder Flughafen anders schrieb (z.B. «Johannes Strauss», «Zürich (ZRH)») – Zuordnung jetzt tolerant, notfalls nach Reihenfolge',
+    'Bugfix: Flug wird auch eingetragen, wenn für die gewählte Klasse kein Preis gefunden wurde (Flugnummer und Zeiten übernommen, Preis als Hinweis fehlend)',
+    'Meldung nach der Recherche nennt Flüge, die nicht zugeordnet werden konnten, mit Link zur Rohantwort',
+  ] },
+  { v: '4.7', d: '2026-11-23', items: [
+    'Bugfix: Einsatzliste und Reiter «Einsätze» stürzten ab, wenn ein gespeicherter Einsatz kein Total hatte (leerer Wert statt Zahl) – Zahlenformat robust gemacht',
+  ] },
   { v: '4.6', d: '2026-11-23', items: [
     'Strecken-Speicher: Wurde dieselbe Strecke (z.B. ZRH–CPH) in den letzten 3 Monaten online ermittelt, übernimmt ein neuer Einsatz diese Flugdaten (Preise, Zusatzgepäck, Flugdauer, Visum)',
     'In diesem Fall keine automatische Online-Ermittlung – Warnung mit Herkunft und Datum, aktuelle Preise nur per «Online recherchieren» (manuell)',
@@ -660,8 +668,8 @@ function num(v) {
   const s = String(v).replace(/['’\s]/g, '').replace(',', '.');
   return s === '' ? NaN : Number(s);
 }
-const fmt = n => isFinite(n) ? n.toLocaleString('de-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '–';
-const fmt0 = n => isFinite(n) ? n.toLocaleString('de-CH', { maximumFractionDigits: 2 }) : '–';
+const fmt = n => (n = typeof n === 'string' ? num(n) : n, typeof n === 'number' && isFinite(n)) ? n.toLocaleString('de-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '–';
+const fmt0 = n => (n = typeof n === 'string' ? num(n) : n, typeof n === 'number' && isFinite(n)) ? n.toLocaleString('de-CH', { maximumFractionDigits: 2 }) : '–';
 function todayISO() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 const fmtDate = iso => iso ? iso.split('-').reverse().join('.') : '–';
 function isoUTC(s) { if (!/^\d{4}-\d{2}-\d{2}$/.test(s || '')) return NaN; const [y, m, d] = s.split('-').map(Number); return Date.UTC(y, m - 1, d); }
@@ -1300,9 +1308,15 @@ function onForm(ev) {
 /* ---------- Kalkulation ---------- */
 function natKey(s) { return String(s || '').trim().toLowerCase(); }
 function resFlight(t) {
-  const d = E.res && E.res.data; const fl = d && Array.isArray(d.fluege) ? d.fluege : []; if (!t) return null;
-  const n = String(t.name || '').trim().toLowerCase();
-  return fl.find(x => String(x.techniker || '').trim().toLowerCase() === n) || fl.find(x => String(x.von || '').toUpperCase() === t.flughafen) || null;
+  const d = E.res && E.res.data; const fl = d && Array.isArray(d.fluege) ? d.fluege.filter(x => x && typeof x === 'object') : []; if (!t || !fl.length) return null;
+  const nn = v => normTxt(String(v || '')).replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+  const n = nn(t.name), first = n.split(' ')[0];
+  const iata = v => { const m = String(v || '').toUpperCase().match(/\b[A-Z]{3}\b/g); return m ? m[m.length - 1] : ''; };
+  const ap = String(t.flughafen || '').toUpperCase();
+  return fl.find(x => nn(x.techniker) === n)
+    || fl.find(x => { const m = nn(x.techniker); return m && (m.includes(n) || n.includes(m) || m.split(' ')[0] === first); })
+    || fl.find(x => iata(x.von) === ap || iata(x.hinflug && x.hinflug.von) === ap)
+    || (() => { const i = E.techs.findIndex(s => s.id === t.id); return fl.length === E.techs.length && i >= 0 ? fl[i] : (fl.length === 1 ? fl[0] : null); })();
 }
 function legTxt(l) {
   if (!l || typeof l !== 'object') return '';
@@ -1473,7 +1487,7 @@ function calcCore() {
     const nights = S.ok ? x.nights : NaN, spD = S.ok ? x.spesen : NaN, days = S.ok ? x.days : NaN;
     const C = techCls(sel, t);
     let fl = C.price;
-    if (!isFinite(fl)) { if (C.manual) err(`Ungültiger Flugpreis bei ${t.name}.`); else warn(`Flugpreis ${KL[C.cls]} für ${t.name} noch nicht online ermittelt – wird mit 0 gerechnet.`); fl = 0; }
+    if (!isFinite(fl)) { if (C.manual) err(`Ungültiger Flugpreis bei ${t.name}.`); else warn(sel.flugInfo ? `Flugpreis ${KL[C.cls]} für ${t.name} wurde bei der Recherche nicht gefunden – wird mit 0 gerechnet. Preis von Hand eintragen, andere Klasse wählen oder neu recherchieren.` : `Flugpreis ${KL[C.cls]} für ${t.name} noch nicht online ermittelt – wird mit 0 gerechnet.`); fl = 0; }
     if (!t.flughafen) warn(`${t.name}: kein Heimflughafen erfasst.`);
     // Arbeitszeit und Reisezeit
     const parts = x.role === 'app' ? [['a-hand', S.hand, 'Handover'], ['a-train', S.train, 'Training']]
@@ -2839,7 +2853,7 @@ async function runResearch(isAuto) {
     $('resStatus').textContent = budCostTxt(res.usd);
     LAST = calc();
     applyResearch(true);
-    toast(isAuto ? 'Online-Werte ermittelt und übernommen' : 'Recherche abgeschlossen und übernommen');
+    toast($('resApplied').querySelector('.warnTxt') ? 'Recherche abgeschlossen – bitte Hinweise prüfen' : (isAuto ? 'Online-Werte ermittelt und übernommen' : 'Recherche abgeschlossen und übernommen'));
   } catch (e) {
     $('resStatus').innerHTML = e.name === 'AbortError' ? 'Abgebrochen.' : 'Fehler: ' + esc(e.message) + (LAST_USD > 0 ? ' · ' + esc(budCostTxt(LAST_USD)) : '') + (LAST_RAW ? ' · <a href="#" id="lnkRaw" style="color:var(--brand-2)">Rohantwort anzeigen</a>' : '');
   } finally { RES_ABORT = null; setResBusy(false); }
@@ -2908,7 +2922,7 @@ function renderFlugLog() {
 }
 function applyResearch(isAuto) {
   const done = []; const cur = LAST.cur; const rows = researchRows();
-  const pick = isAuto ? rows.filter(x => x.def && isFinite(x.res)) : rows.filter(x => { const cb = document.querySelector(`#resTable input[data-k="${CSS.escape(x.k)}"]`); return cb && cb.checked && isFinite(x.res); });
+  const pick = isAuto ? rows.filter(x => x.def && (isFinite(x.res) || x.k.startsWith('flugT:'))) : rows.filter(x => { const cb = document.querySelector(`#resTable input[data-k="${CSS.escape(x.k)}"]`); return cb && cb.checked && (isFinite(x.res) || x.k.startsWith('flugT:')); });
   E.ovSrc = E.ovSrc || {};
   pick.forEach(x => {
     const k = x.k, v = x.res;
@@ -2928,7 +2942,12 @@ function applyResearch(isAuto) {
     else { E.ov[k] = String(Math.round(v * 100) / 100); E.ovSrc[k] = 'online'; done.push(LBL[k]); }
   });
   writeForm(); render();
-  $('resApplied').textContent = done.length ? 'Übernommen: ' + done.join(', ') : 'Nichts ausgewählt.';
+  const miss = (LAST ? LAST.valid : []).filter(v => !rows.some(x => x.k === 'flugT:' + v.t.id)).map(v => v.t.name);
+  const noPr = pick.filter(x => x.k.startsWith('flugT:') && !isFinite(x.res)).map(x => x.tech.name);
+  $('resApplied').innerHTML = (done.length ? 'Übernommen: ' + esc(done.join(', ')) : 'Nichts ausgewählt.')
+    + (miss.length ? ` · <span class="warnTxt">Kein Flug zugeordnet für ${esc(miss.join(', '))} – Rohantwort prüfen oder neu recherchieren</span>` : '')
+    + (noPr.length ? ` · <span class="warnTxt">Flug übernommen, aber Preis für die gewählte Klasse fehlt: ${esc(noPr.join(', '))}</span>` : '')
+    + ((miss.length || noPr.length) && LAST_RAW ? ' · <a href="#" id="lnkRaw2" style="color:var(--brand-2)">Rohantwort anzeigen</a>' : '');
 }
 async function testApi() {
   if (!CFG.ai.key.trim()) { $('aiStatus').textContent = 'Kein API-Key erfasst.'; return; }
@@ -3069,7 +3088,7 @@ $('ver').addEventListener('click', () => { $('vhList').innerHTML = vhHtml(); $('
 $('vhClose').addEventListener('click', () => $('vhDialog').close());
 $('rawClose').addEventListener('click', () => $('rawDialog').close());
 $('rawCopy').addEventListener('click', () => { navigator.clipboard && navigator.clipboard.writeText($('rawText').value).then(() => toast('Kopiert'), () => { $('rawText').select(); document.execCommand('copy'); toast('Kopiert'); }); });
-document.addEventListener('click', ev => { const a = ev.target.closest('#lnkRaw, [data-raw]'); if (a) { ev.preventDefault(); showRaw(); } });
+document.addEventListener('click', ev => { const a = ev.target.closest('#lnkRaw, #lnkRaw2, [data-raw]'); if (a) { ev.preventDefault(); showRaw(); } });
 
 /* ---------- Design: Hell / Dunkel / Automatisch ---------- */
 const THEMES = { auto: '◐ Automatisch', light: '☀ Hell', dark: '☾ Dunkel' };
