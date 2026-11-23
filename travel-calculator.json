@@ -629,16 +629,16 @@
     "Applikationstechniker"
    ],
    "anreiseModus": "oev",
-   "updatedAt": 1795262116879,
+   "updatedAt": 1795419513487,
    "anreiseKm": 80,
    "autoH": 1,
-   "oevH": 1.5,
-   "oevRetourChf": 80,
-   "parkenTagChf": 19,
-   "taxiEinfachChf": 300,
-   "anreiseBemerkung": "Distanz und Fahrzeit gerundet (Quellen: 75 bis 81 km, 56 Min. bis 1 h 37 mit Rushhour-Puffer). OeV-Dauer Tuer bis Flughafen ist geschaetzt (Zug rund 55 Min.). OeV-Retourpreis ist eine Schaetzung (ca. 2 x 40 CHF Normalpreis), nicht ueber die SBB verifiziert. Parkieren: Flughafen Zuerich P6, CHF 19 pro Tag ab dem 8. Tag (7 Tage CHF 195, 14 Tage CHF 328). Taxi: Festpreise der Anbieter streuen von 200 bis 370 CHF, Mittelwert ca. 300 CHF.",
+   "oevH": 1.2,
+   "oevRetourChf": 62,
+   "parkenTagChf": 13.4,
+   "taxiEinfachChf": 210,
+   "anreiseBemerkung": "Distanz je nach Quelle 75–81 km. ÖV-Retour ist eine Schätzung (2 x ca. 31 CHF, abgeleitet vom Halbtax-Preis), der aktuelle SBB-Preis ist nicht bestätigt. Parkieren: Online-Wochenangebot ab 94 CHF umgerechnet, vor Ort im P6 ab dem 2. Tag 19 CHF pro Tag. Taxi: günstigster gefundener Festpreis, andere Anbieter bis ca. 370 CHF. Erste und letzte ÖV-Verbindung konnte nicht verlässlich ermittelt werden, bitte auf sbb.ch prüfen.",
    "anreiseStand": {
-    "at": 1795260703385,
+    "at": 1795419513487,
     "src": "api"
    }
   },
@@ -713,10 +713,21 @@
    "usd": 25.05,
    "text": "",
    "updatedAt": 1795413768925
+  },
+  {
+   "id": "api-mwsyf6vi62do0",
+   "typ": "use",
+   "at": 1795419513486,
+   "usd": 0.1321,
+   "text": "Anreise Andrej Cica",
+   "tin": 36479,
+   "tout": 2915,
+   "srch": 3,
+   "updatedAt": 1795419513486
   }
  ],
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795418868745
+ "updatedAt": 1795419513487
 }
