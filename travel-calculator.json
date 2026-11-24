@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-23",
   "verantwortlich": "",
-  "updatedAt": 1795439597937,
+  "updatedAt": 1795500203400,
   "profiles": [
    {
     "id": "ch",
@@ -139,9 +139,9 @@
   ],
   "fx": {
    "CHF": 1,
-   "EUR": 0.9223,
-   "USD": 0.8392,
-   "MXN": 0.044
+   "EUR": 0.9186,
+   "USD": 0.8398,
+   "MXN": 0.0436
   },
   "classes": [
    {
@@ -200,11 +200,12 @@
   "ueZuschlag": 45,
   "ofRundung": 50,
   "fxStand": {
-   "date": "2026-11-20",
+   "date": "2026-11-23",
    "src": "EZB via Frankfurter"
   },
   "daily": {
-   "fx": "2026-11-23"
+   "fx": "2026-11-24",
+   "jahr": "2026-11-24"
   },
   "hotelMinEUR": 120,
   "depl": {
@@ -3071,5 +3072,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795440443792
+ "updatedAt": 1795500203400
 }
