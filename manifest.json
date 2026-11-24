@@ -2,7 +2,7 @@
   "name": "Gallus Travel Calculator",
   "short_name": "Travel Calc",
   "description": "Kalkulation von Technikereinsätzen (Reisekosten)",
-  "version": "6.0",
+  "version": "6.1",
   "lang": "de-CH",
   "start_url": "./",
   "scope": "./",
