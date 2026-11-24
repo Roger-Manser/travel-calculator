@@ -3229,6 +3229,19 @@
     "at": 1795502976724,
     "src": "api"
    }
+  },
+  {
+   "id": "mwus1znv0ems2",
+   "name": "Continuos Levante (Conlesa)",
+   "adresse": "",
+   "land": "",
+   "ort": "",
+   "profileId": "",
+   "flughafen": "",
+   "flughafenName": "",
+   "distanzKm": "",
+   "fahrzeitMin": "",
+   "updatedAt": 1795529754067
   }
  ],
  "apiLog": [
@@ -3464,5 +3477,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795509115874
+ "updatedAt": 1795529754067
 }
