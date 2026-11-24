@@ -3235,13 +3235,13 @@
    "name": "Continuos Levante (Conlesa)",
    "adresse": "c/ de las Metalurgicas 8",
    "land": "ES",
-   "ort": "3008",
+   "ort": "3008 Alicante",
    "profileId": "",
    "flughafen": "",
    "flughafenName": "",
    "distanzKm": "",
    "fahrzeitMin": "",
-   "updatedAt": 1795529781540
+   "updatedAt": 1795529796644
   }
  ],
  "apiLog": [
@@ -3477,5 +3477,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795529781540
+ "updatedAt": 1795529796644
 }
