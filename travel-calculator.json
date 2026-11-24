@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-23",
   "verantwortlich": "",
-  "updatedAt": 1795530009412,
+  "updatedAt": 1795530085950,
   "profiles": [
    {
     "id": "ch",
@@ -166,11 +166,36 @@
     "cur": "EUR",
     "erfV2": true,
     "merged": true,
-    "hotel": "",
-    "car": "",
+    "hotel": 110,
+    "car": 35,
     "spesen": 0,
     "nk": 0,
-    "taxi": ""
+    "taxi": 45,
+    "vsrc": {
+     "hotel": {
+      "src": "api",
+      "at": 1795530085950
+     },
+     "car": {
+      "src": "api",
+      "at": 1795530085950
+     },
+     "km": {
+      "src": "api",
+      "at": 1795530085950
+     },
+     "taxi": {
+      "src": "api",
+      "at": 1795530085950
+     }
+    },
+    "km": 0.1,
+    "apiStand": {
+     "at": 1795530085950,
+     "src": "api"
+    },
+    "apiBemerkung": "Spanien nutzt den Euro, daher keine Umrechnung. Hotel auf Basis INE-Durchschnitt Oktober 2026 (3 bis 4 Sterne, 100 bis 131 EUR). Mietwagen aus Portalen (Kompaktklasse ca. 26 bis 34 EUR/Tag, Wochenmiete). Treibstoff: Benzin 1,63 und Diesel 1,83 EUR/l (Nov. 2026), km-Gebuehr meist keine. Taxipreis ist eine Schaetzung (keine Quelle gefunden), je nach Stadt 35 bis 55 EUR.",
+    "landesWaehrung": "EUR"
    }
   ],
   "fx": {
@@ -3513,10 +3538,21 @@
    "tout": 882,
    "srch": 1,
    "updatedAt": 1795529804718
+  },
+  {
+   "id": "api-mwus954r31ahk",
+   "typ": "use",
+   "at": 1795530085947,
+   "usd": 0.1171,
+   "text": "Länderprofil Spanien",
+   "tin": 35217,
+   "tout": 1667,
+   "srch": 3,
+   "updatedAt": 1795530085947
   }
  ],
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795530009412
+ "updatedAt": 1795530085950
 }
