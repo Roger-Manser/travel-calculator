@@ -2715,26 +2715,26 @@
    "arten": [
     "Installationstechniker"
    ],
-   "updatedAt": 1795500798896,
+   "updatedAt": 1795500804806,
    "gepaeckKg": 30,
    "anreiseModus": "auto",
-   "autoH": 0.8,
+   "autoH": 0.4,
    "nationalitaet": "Österreich",
    "wohnort": "2362 Biedermannsdorf",
-   "anreiseKm": 54,
-   "oevH": 1.25,
+   "anreiseKm": 21,
+   "oevH": 0.8,
    "oevRetourChf": 29.5,
-   "parkenTagChf": 29,
-   "anreiseBemerkung": "ÖV-Retourpreis geschätzt (ca. 16 EUR pro Weg, Normalpreis nicht direkt bei ÖBB verifiziert). Parkpreis: offizieller Parkplatz C, 31,50 EUR/Tag laut älterer Quelle, heute evtl. leicht höher. Kurs 1 EUR = 0.9213 CHF. Private Parkplätze ab ca. 6 EUR/Tag, aber nicht offiziell.",
+   "parkenTagChf": 31.5,
+   "anreiseBemerkung": "Wechselkurs ca. 0.93 CHF/EUR angenommen. Distanz aus 13,3 Meilen (Rome2rio) umgerechnet. OeV: Zug ab Laxenburg-Biedermannsdorf via Wien Hbf, ca. 44-48 Min. Parkieren: Parkplatz C, 33,90 EUR fuer 1 Tag (Preisliste Januar 2026), bei Mehrtagesparkieren guenstiger pro Tag. Taxi: 45 EUR Fixpreis plus 2,90 EUR Zufahrtsgebuehr, andere Anbieter 45-50 EUR. OeV-Billettpreis und Fahrplan (erste/letzte Verbindung) nicht verlaessllich gefunden, bitte bei OeBB/VOR pruefen.",
    "anreiseAusgewertet": 1795258958747,
    "anreiseStand": {
-    "at": 1795258958747,
-    "src": "api",
-    "stale": true
+    "at": 1795500804806,
+    "src": "api"
    },
    "maschinen": [
     "m-konv"
-   ]
+   ],
+   "taxiEinfachChf": 44.5
   },
   {
    "id": "mwqbu6xr7rrcr",
@@ -3071,10 +3071,21 @@
    "tout": 6662,
    "srch": 5,
    "updatedAt": 1795439597934
+  },
+  {
+   "id": "api-mwuatjnnfta3e",
+   "typ": "use",
+   "at": 1795500804803,
+   "usd": 0.1229,
+   "text": "Anreise Johannes Strauss",
+   "tin": 34011,
+   "tout": 2492,
+   "srch": 3,
+   "updatedAt": 1795500804803
   }
  ],
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795500798896
+ "updatedAt": 1795500804806
 }
