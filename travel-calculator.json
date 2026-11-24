@@ -2824,11 +2824,16 @@
    "nationalitaet": "Deutschland",
    "wohnort": "",
    "flughafen": "FRA",
-   "gepaeck": false,
+   "gepaeck": true,
    "gepaeckKg": 30,
-   "arten": [],
+   "arten": [
+    "Installationstechniker"
+   ],
    "anreiseModus": "auto",
-   "updatedAt": 1795503139741
+   "updatedAt": 1795503191089,
+   "maschinen": [
+    "m-konv"
+   ]
   }
  ],
  "kunden": [
@@ -3142,5 +3147,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795503139741
+ "updatedAt": 1795503191089
 }
