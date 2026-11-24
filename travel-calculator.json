@@ -2907,6 +2907,19 @@
     "at": 1795437686707,
     "src": "api"
    }
+  },
+  {
+   "id": "mwuc2cqbtrhnp",
+   "name": "Neuer Kunde",
+   "adresse": "",
+   "land": "",
+   "ort": "",
+   "profileId": "",
+   "flughafen": "",
+   "flughafenName": "",
+   "distanzKm": "",
+   "fahrzeitMin": "",
+   "updatedAt": 1795502895347
   }
  ],
  "apiLog": [
@@ -3087,5 +3100,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795500910105
+ "updatedAt": 1795502895347
 }
