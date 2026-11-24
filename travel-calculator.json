@@ -2913,13 +2913,31 @@
    "name": "UAB \"Satoris\"",
    "adresse": "Vetrungiu g. 69",
    "land": "Litauen",
-   "ort": "06304 Vilnius",
+   "ort": "Vilnius",
    "profileId": "",
-   "flughafen": "",
-   "flughafenName": "",
-   "distanzKm": "",
-   "fahrzeitMin": "",
-   "updatedAt": 1795502963765
+   "flughafen": "VNO",
+   "flughafenName": "Flughafen Vilnius",
+   "distanzKm": 11,
+   "fahrzeitMin": 20,
+   "updatedAt": 1795502976724,
+   "waehrung": "EUR",
+   "alternativen": [
+    {
+     "iata": "KUN",
+     "name": "Flughafen Kaunas",
+     "distanz_km": 105
+    },
+    {
+     "iata": "RIX",
+     "name": "Flughafen Riga",
+     "distanz_km": 290
+    }
+   ],
+   "bemerkung": "Adresse: Vėtrungių g. 69, LT-06304 Vilnius. Distanz und Fahrzeit sind Schätzwerte (ohne Stau) und nicht per Routenplaner verifiziert. Kaunas ist die nächste Alternative, Riga nur bei Flugproblemen in Vilnius sinnvoll.",
+   "calcStand": {
+    "at": 1795502976724,
+    "src": "api"
+   }
   }
  ],
  "apiLog": [
@@ -3095,10 +3113,21 @@
    "tout": 2492,
    "srch": 3,
    "updatedAt": 1795500804803
+  },
+  {
+   "id": "api-mwuc43ipsasum",
+   "typ": "use",
+   "at": 1795502976721,
+   "usd": 0.0467,
+   "text": "Kunde UAB \"Satoris\"",
+   "tin": 13715,
+   "tout": 924,
+   "srch": 1,
+   "updatedAt": 1795502976721
   }
  ],
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795502963765
+ "updatedAt": 1795502976724
 }
