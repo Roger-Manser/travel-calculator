@@ -2821,14 +2821,14 @@
   {
    "id": "mwuc6up7ezdwv",
    "name": "Torsten Friebe",
-   "nationalitaet": "",
+   "nationalitaet": "Deutschland",
    "wohnort": "",
    "flughafen": "ZRH",
    "gepaeck": false,
    "gepaeckKg": 30,
    "arten": [],
    "anreiseModus": "auto",
-   "updatedAt": 1795503111693
+   "updatedAt": 1795503115571
   }
  ],
  "kunden": [
@@ -3142,5 +3142,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795503111693
+ "updatedAt": 1795503115571
 }
