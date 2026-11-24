@@ -2822,7 +2822,7 @@
    "id": "mwuc6up7ezdwv",
    "name": "Torsten Friebe",
    "nationalitaet": "Deutschland",
-   "wohnort": "",
+   "wohnort": "Langgöns",
    "flughafen": "FRA",
    "gepaeck": true,
    "gepaeckKg": 30,
@@ -2830,7 +2830,7 @@
     "Installationstechniker"
    ],
    "anreiseModus": "auto",
-   "updatedAt": 1795503191089,
+   "updatedAt": 1795503199246,
    "maschinen": [
     "m-konv"
    ]
@@ -3147,5 +3147,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795503191089
+ "updatedAt": 1795503199246
 }
