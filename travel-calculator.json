@@ -2959,7 +2959,7 @@
    "useApi": true,
    "ovSrc": {},
    "createdAt": 1795503475479,
-   "updatedAt": 1795530122325,
+   "updatedAt": 1795530158219,
    "total": 5138.7055199999995,
    "ofTotal": 6276,
    "ofCur": "EUR",
@@ -3645,5 +3645,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795530122325
+ "updatedAt": 1795530158220
 }
