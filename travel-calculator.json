@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-23",
   "verantwortlich": "",
-  "updatedAt": 1795529991233,
+  "updatedAt": 1795530000106,
   "profiles": [
    {
     "id": "ch",
@@ -162,7 +162,7 @@
    },
    {
     "id": "mwus741mrgykf",
-    "name": "Neues Profil",
+    "name": "Spanien",
     "cur": "EUR",
     "erfV2": true,
     "merged": true,
@@ -3518,5 +3518,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795529991233
+ "updatedAt": 1795530000106
 }
