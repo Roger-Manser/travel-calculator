@@ -2675,7 +2675,7 @@
   },
   {
    "id": "mwucesd37tqm1",
-   "name": "Screenunite Issue",
+   "name": "Screenunit Issue",
    "gep": {},
    "visa": {},
    "aufgabeId": "a-trbl",
@@ -2914,12 +2914,13 @@
    "useApi": true,
    "ovSrc": {},
    "createdAt": 1795503475479,
-   "updatedAt": 1795503619525,
+   "updatedAt": 1795509115874,
    "total": 5614.362999999999,
    "ofTotal": 6455,
    "ofCur": "EUR",
    "ofEdited": true,
-   "ziel": "Schweiz"
+   "ziel": "Schweiz",
+   "flugLog": []
   }
  ],
  "aufgaben": [
@@ -3463,5 +3464,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795504245764
+ "updatedAt": 1795509115874
 }
