@@ -3234,14 +3234,32 @@
    "id": "mwus1znv0ems2",
    "name": "Continuos Levante (Conlesa)",
    "adresse": "c/ de las Metalurgicas 8",
-   "land": "ES",
-   "ort": "3008 Alicante",
+   "land": "Spanien",
+   "ort": "Alicante",
    "profileId": "",
-   "flughafen": "",
-   "flughafenName": "",
-   "distanzKm": "",
-   "fahrzeitMin": "",
-   "updatedAt": 1795529796644
+   "flughafen": "ALC",
+   "flughafenName": "Alicante-Elche Miguel Hernández",
+   "distanzKm": 14,
+   "fahrzeitMin": 18,
+   "updatedAt": 1795529804720,
+   "waehrung": "EUR",
+   "alternativen": [
+    {
+     "iata": "RMU",
+     "name": "Región de Murcia International Airport (Corvera)",
+     "distanz_km": 90
+    },
+    {
+     "iata": "VLC",
+     "name": "Valencia Airport",
+     "distanz_km": 175
+    }
+   ],
+   "bemerkung": "Adresse im Industriegebiet Polígono Babel, Alicante (PLZ 03008). Distanzen und Fahrzeit sind Schaetzwerte. Alicante-Elche bietet viele Direktverbindungen aus der Schweiz und Europa.",
+   "calcStand": {
+    "at": 1795529804720,
+    "src": "api"
+   }
   }
  ],
  "apiLog": [
@@ -3472,10 +3490,21 @@
    "tout": 4601,
    "srch": 5,
    "updatedAt": 1795503412953
+  },
+  {
+   "id": "api-mwus344ue0zb7",
+   "typ": "use",
+   "at": 1795529804718,
+   "usd": 0.0444,
+   "text": "Kunde Continuos Levante (Conlesa)",
+   "tin": 12792,
+   "tout": 882,
+   "srch": 1,
+   "updatedAt": 1795529804718
   }
  ],
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795529796644
+ "updatedAt": 1795529804720
 }
