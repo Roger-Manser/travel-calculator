@@ -2911,7 +2911,7 @@
   {
    "id": "mwuc2cqbtrhnp",
    "name": "UAB \"Satoris\"",
-   "adresse": "",
+   "adresse": "Vetrungiu g. 69",
    "land": "Litauen",
    "ort": "06304 Vilnius",
    "profileId": "",
@@ -2919,7 +2919,7 @@
    "flughafenName": "",
    "distanzKm": "",
    "fahrzeitMin": "",
-   "updatedAt": 1795502937982
+   "updatedAt": 1795502963765
   }
  ],
  "apiLog": [
@@ -3100,5 +3100,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795502937982
+ "updatedAt": 1795502963765
 }
