@@ -2712,11 +2712,20 @@
   },
   {
    "id": "mwucesd37tqm1",
-   "name": "Screenunit Issue",
+   "name": "Priuntunit Issue",
    "gep": {},
-   "visa": {},
+   "visa": {
+    "deutschland": {
+     "nationalitaet": "Deutschland",
+     "benoetigt": "nein",
+     "art": "Kein Visum und keine ETIAS-Genehmigung (EU-Bürger, Schengen-Raum); gültiger Pass oder Personalausweis genügt",
+     "kosten_chf": 0,
+     "vorlauf_tage": 0,
+     "hinweis": "Arbeit bis 90 Tage ohne Arbeitserlaubnis möglich. Für Montage-/Servicearbeiten empfohlen: A1-Bescheinigung (Entsendung) und spanische Entsendemeldung prüfen."
+    }
+   },
    "aufgabeId": "a-trbl",
-   "kundeId": "mwuc2cqbtrhnp",
+   "kundeId": "mwus1znv0ems2",
    "techs": [
     {
      "id": "mwuc6up7ezdwv",
@@ -2726,44 +2735,43 @@
       "hinflug": {
        "datum": "2026-12-07",
        "airline": "Lufthansa",
-       "flugnummern": "LH 894",
+       "flugnummern": "LH 1120",
        "von": "FRA",
-       "ab": "12:15",
-       "nach": "VNO",
-       "an": "15:20",
+       "ab": "14:35",
+       "nach": "ALC",
+       "an": "17:05",
        "umsteigeort": "",
-       "dauer_h": 2.08
+       "dauer_h": 2.5
       },
       "rueckflug": {
        "datum": "2026-12-10",
        "airline": "Lufthansa",
-       "flugnummern": "LH 895",
-       "von": "VNO",
-       "ab": "16:00",
+       "flugnummern": "LH 1121",
+       "von": "ALC",
+       "ab": "17:55",
        "nach": "FRA",
-       "an": "17:15",
+       "an": "20:30",
        "umsteigeort": "",
-       "dauer_h": 2.25
+       "dauer_h": 2.58
       },
-      "flugdauer_h": 2.1,
+      "flugdauer_h": 2.5,
       "umstiege": 0,
       "preise": {
-       "eco": 295,
-       "bus": 780
+       "eco": 166
       },
       "gepaeck": {
        "eco": 92,
        "bus": 0
       },
-      "quelle": "https://www.lufthansa.com/xx/en/flights/flight-frankfurt-vilnius",
-      "at": 1795503412957
+      "quelle": "https://www.lufthansa.com/lhg/de/de/o-d/cy-cy/frankfurt-alicante",
+      "at": 1795530122292
      },
      "flugManuell": false,
      "flugSrc": "online"
     }
    ],
-   "profileId": "ch",
-   "auftrag": "LM440138",
+   "profileId": "mwus741mrgykf",
+   "auftrag": "EM410275",
    "bemerkung": "",
    "maschId": "m-konv",
    "preis": "ic",
@@ -2794,25 +2802,25 @@
    },
    "nkPausch": "",
    "res": {
-    "at": 1795503412956,
-    "key": "{\"k\":\"mwuc2cqbtrhnp\",\"ab\":\"2026-12-07\",\"i\":\"2\",\"tr\":false,\"h\":\"\",\"d\":\"\",\"t\":[\"mwuc6up7ezdwv:\"]}",
+    "at": 1795530122291,
+    "key": "{\"k\":\"mwus1znv0ems2\",\"ab\":\"2026-12-07\",\"i\":\"2\",\"tr\":false,\"h\":\"\",\"d\":\"\",\"t\":[\"mwuc6up7ezdwv:\"]}",
     "auto": false,
     "model": "claude-sonnet-5-5",
     "searches": 5,
-    "cur": "CHF",
-    "trip": "FRA–VNO · 07.12.2026–10.12.2026",
+    "cur": "EUR",
+    "trip": "FRA–ALC · 07.12.2026–10.12.2026",
     "data": {
      "fluege": [
       {
        "techniker": "Torsten Friebe",
        "von": "FRA",
-       "nach": "VNO",
-       "flugdauer_h": 2.1,
+       "nach": "ALC",
+       "flugdauer_h": 2.5,
        "umstiege": 0,
        "preise_chf": {
-        "economy": 295,
+        "economy": 166,
         "premium_economy": null,
-        "business": 780
+        "business": null
        },
        "zusatzgepaeck_chf": {
         "economy": 92,
@@ -2822,126 +2830,126 @@
        "hinflug": {
         "datum": "2026-12-07",
         "airline": "Lufthansa",
-        "flugnummern": "LH 894",
+        "flugnummern": "LH 1120",
         "von": "FRA",
-        "ab": "12:15",
-        "nach": "VNO",
-        "an": "15:20",
+        "ab": "14:35",
+        "nach": "ALC",
+        "an": "17:05",
         "umsteigeort": "",
-        "dauer_h": 2.08
+        "dauer_h": 2.5
        },
        "rueckflug": {
         "datum": "2026-12-10",
         "airline": "Lufthansa",
-        "flugnummern": "LH 895",
-        "von": "VNO",
-        "ab": "16:00",
+        "flugnummern": "LH 1121",
+        "von": "ALC",
+        "ab": "17:55",
         "nach": "FRA",
-        "an": "17:15",
+        "an": "20:30",
         "umsteigeort": "",
-        "dauer_h": 2.25
+        "dauer_h": 2.58
        },
-       "quelle": "https://www.lufthansa.com/xx/en/flights/flight-frankfurt-vilnius",
-       "bemerkung": "Direktflug, Zeiten (Ortszeit) laut Lufthansa-Flugplan. Preise sind Richtwerte (Economy ca. 320 EUR retour, abgeleitet aus Vergleichsangeboten FRA–VNO im Dezember 2026: Google Flights ab ca. 265 EUR, lastminute.de 392–445 EUR); für 07.–10.12. wurde kein tagesgenauer Tarif gefunden. Business-Preis (ca. 850 EUR) ist eine reine Schätzung. Premium Economy wird auf dieser Europastrecke nicht angeboten (null). Zusatzgepäck: Annahme ca. 50 EUR pro Strecke für ein zusätzliches Stück in Economy, nicht verifiziert; in Business wahrscheinlich im Tarif enthalten (2 Stück à 32 kg). Gepäckgebühren vor der Buchung auf lufthansa.com prüfen. Alternative Rückflug: LH 899 um 06:20 ab VNO (an 07:35), da bleibt aber weniger Arbeitszeit am Einsatzort."
+       "quelle": "https://www.lufthansa.com/lhg/de/de/o-d/cy-cy/frankfurt-alicante",
+       "bemerkung": "Direktflug, beide Zeitfenster eingehalten (Abflug nach 08:00, Landung in FRA 20:30, vor 22:30). Economy-Preis ist Richtwert (EUR 181 für 06.–11.12., Lufthansa-Angebot; Mindestpreis Dezember EUR 161), kein exakt gebuchter Preis für 07.–10.12. Betriebstage von LH 1120/1121 am 07.12. und 10.12. nicht verifiziert (LH fliegt ca. 4x/Woche); abweichende Quelle nennt 13:35/16:05 bzw. 16:55/19:30. Premium Economy gibt es auf Lufthansa-Europastrecken nicht; Business-Preis nicht gefunden. Zusatzgepäck: Übergewichts-Pauschale Europa EUR 50 pro Strecke, d.h. EUR 100 retour (ca. CHF 92); falls als zweites Stück gerechnet, höher (ca. EUR 80–130 pro Strecke). Business: 2 x 32 kg inklusive."
       }
      ],
      "wechselkurs": {
-      "chf_pro_einheit": 0.919,
-      "waehrung": "CHF"
+      "chf_pro_einheit": 0.9188,
+      "waehrung": "EUR"
      },
      "visa": [
       {
        "nationalitaet": "Deutschland",
        "benoetigt": "nein",
-       "art": "Kein Visum und keine ETIAS-Genehmigung (EU-Bürger, Schengen-Raum)",
+       "art": "Kein Visum und keine ETIAS-Genehmigung (EU-Bürger, Schengen-Raum); gültiger Pass oder Personalausweis genügt",
        "kosten_chf": 0,
        "vorlauf_tage": 0,
-       "hinweis": "Einreise mit gültigem Reisepass oder Personalausweis. Für die kurze Montage- bzw. Servicearbeit ist keine Arbeitsgenehmigung nötig. Ob die Firma den Einsatz in Litauen anmelden muss (Entsendemeldung) und ob eine A1-Bescheinigung nötig ist, wurde nicht geprüft und sollte intern abgeklärt werden."
+       "hinweis": "Arbeit bis 90 Tage ohne Arbeitserlaubnis möglich. Für Montage-/Servicearbeiten empfohlen: A1-Bescheinigung (Entsendung) und spanische Entsendemeldung prüfen."
       }
      ],
-     "zusammenfassung": "Torsten Friebe fliegt direkt mit Lufthansa (LH 894 am 07.12. um 12:15 ab FRA, LH 895 am 10.12. um 16:00 ab VNO, Landung 17:15) und erfüllt damit die Erreichbarkeitsvorgaben. Die Retourpreise sind Richtwerte: Economy ca. CHF 295, Business ca. CHF 780 (geschätzt), Premium Economy gibt es auf der Strecke nicht. Als deutscher Staatsbürger braucht er weder Visum noch ETIAS für Litauen.",
+     "zusammenfassung": "Für Torsten Friebe wurde der Lufthansa-Direktflug LH 1120 (FRA 14:35 – ALC 17:05) und LH 1121 (ALC 17:55 – FRA 20:30) gewählt, der beide Zeitfenster einhält. Der Economy-Richtpreis liegt bei ca. CHF 166 (EUR 181), das Zusatzgepäck von 30 kg kostet ca. CHF 92 retour; Premium Economy und Business sind nicht belastbar bepreist. Als Deutscher benötigt er für Spanien weder Visum noch ETIAS.",
      "quellen": [
       {
-       "titel": "Lufthansa – Flug Frankfurt–Vilnius (Flugplan, Preise)",
-       "url": "https://www.lufthansa.com/xx/en/flights/flight-frankfurt-vilnius"
+       "titel": "Lufthansa – Direktflug Frankfurt–Alicante",
+       "url": "https://www.lufthansa.com/lhg/de/de/o-d/cy-cy/frankfurt-alicante"
       },
       {
-       "titel": "Lufthansa – Flug Vilnius–Frankfurt",
-       "url": "https://www.lufthansa.com/xx/en/flights/flight-vilnius-frankfurt"
+       "titel": "airline-direct.de – Flüge Frankfurt–Alicante",
+       "url": "https://www.airline-direct.de/fluege/von/Frankfurt-FRA/nach/Alicante-ALC"
       },
       {
-       "titel": "lastminute.de – Flüge Frankfurt–Vilnius",
-       "url": "https://www.lastminute.de/flug/r_frankfurt-am-main--vilnius"
+       "titel": "Lufthansa – Excess baggage",
+       "url": "https://www.lufthansa.com/us/en/uebergepaeck.html"
       },
       {
-       "titel": "Google Flüge – Vilnius–Frankfurt",
-       "url": "https://www.google.com/travel/flights/flights-from-vilnius-to-frankfurt-am-main.html?gl=DE&hl=de"
+       "titel": "Lufthansa Gepäck: Gebühren, Regelungen & Preise (Urlaubstracker)",
+       "url": "https://www.urlaubstracker.de/lufthansa-gepaeck/"
       },
       {
-       "titel": "Wise – EUR/CHF Kurs",
-       "url": "https://wise.com/us/currency-converter/eur-to-chf-rate/history"
+       "titel": "XE – EUR to CHF",
+       "url": "https://www.xe.com/en-us/currencyconverter/convert/?Amount=1&From=EUR&To=CHF"
       },
       {
-       "titel": "Visadir – Germany to Lithuania Visa 2026",
-       "url": "https://visadir.com/requirements/lithuania/germany"
+       "titel": "ADAC – Spanien: Einreisebestimmungen",
+       "url": "https://www.adac.de/reise-freizeit/reiseplanung/reiseziele/spanien/einreise-zoll/"
       },
       {
-       "titel": "etias.com – Lithuania ETIAS (EU-Bürger befreit)",
-       "url": "https://etias.com/etias-countries/lithuania-etias"
+       "titel": "Spanien Einreise, Visum und Aufenthalt",
+       "url": "https://www.wohnsitzausland.com/guides/einreise-visa-aufenthalt/europa/spanien/"
       }
      ]
     },
     "sources": [
      {
-      "url": "https://www.lufthansa.com/xx/en/flights/flight-frankfurt-vilnius",
-      "title": "Lufthansa – Flug Frankfurt–Vilnius (Flugplan, Preise)"
+      "url": "https://www.lufthansa.com/lhg/de/de/o-d/cy-cy/frankfurt-alicante",
+      "title": "Direktflug von Frankfurt nach Alicante (FRA-ALC) buchen"
      },
      {
-      "url": "https://www.lufthansa.com/xx/en/flights/flight-vilnius-frankfurt",
-      "title": "Lufthansa – Flug Vilnius–Frankfurt"
+      "url": "https://www.airline-direct.de/fluege/von/Frankfurt-FRA/nach/Alicante-ALC",
+      "title": "Flug Frankfurt (FRA) nach Alicante (ALC) - billige Flüge online buchen"
      },
      {
-      "url": "https://www.lastminute.de/flug/r_frankfurt-am-main--vilnius",
-      "title": "lastminute.de – Flüge Frankfurt–Vilnius"
+      "url": "https://www.ad-hoc-news.de/wirtschaft/produkte/lufthansa-economy-light-flugticket-handgepaeck-bis-8-kg-und-guenstiger/70052635",
+      "title": "Lufthansa Economy Light Flugticket - Handgepäck bis 8 kg und günstiger Einstiegstarif"
      },
      {
-      "url": "https://www.google.com/travel/flights/flights-from-vilnius-to-frankfurt-am-main.html?gl=DE&hl=de",
-      "title": "Google Flüge – Vilnius–Frankfurt"
+      "url": "https://www.lufthansa.com/us/en/uebergepaeck.html",
+      "title": "Excess baggage"
      },
      {
-      "url": "https://wise.com/us/currency-converter/eur-to-chf-rate/history",
-      "title": "Wise – EUR/CHF Kurs"
+      "url": "https://www.sellpage.de/reiseinformationen/flug-lufthansa.html",
+      "title": "Infos (Buchungsgebühren, Gepäckbestimmungen etc.) über die Linienfluggesellschaft \"Lufthansa\""
      },
      {
-      "url": "https://visadir.com/requirements/lithuania/germany",
-      "title": "Visadir – Germany to Lithuania Visa 2026"
+      "url": "https://www.xe.com/en-us/currencyconverter/convert/?Amount=1&From=EUR&To=CHF",
+      "title": "1 EUR to CHF - Euros to Swiss Francs Exchange Rate"
      },
      {
-      "url": "https://etias.com/etias-countries/lithuania-etias",
-      "title": "etias.com – Lithuania ETIAS (EU-Bürger befreit)"
+      "url": "https://www.adac.de/reise-freizeit/reiseplanung/reiseziele/spanien/einreise-zoll/",
+      "title": "Spanien: Aktuelle Einreisebestimmungen"
      },
      {
-      "url": "https://www.skyscanner.com/routes/fra/vno/frankfurt-am-main-to-vilnius.html",
-      "title": "Billige Flüge Frankfurt am Main (FRA) - Vilnius (VNO)"
+      "url": "https://koch-umzugslogistik.de/einreise-und-aufenthaltsbestimmungen-fuer-spanien-umzug-leicht-gemacht-koch-umzugslogistik/",
+      "title": "Einreise- und Aufenthaltsbestimmungen für Spanien: Umzug leicht gemacht"
      },
      {
-      "url": "https://www.lufthansa.com/lhg/de/de/o-d/cy-cy/frankfurt-vilnius",
-      "title": "Direktflug von Frankfurt nach Vilnius (FRA-VNO) buchen"
+      "url": "https://www.wohnsitzausland.com/guides/einreise-visa-aufenthalt/europa/spanien/",
+      "title": "Spanien Einreise, Visum und Aufenthalt: alle Regeln im Überblick"
      },
      {
-      "url": "https://www.airbaltic.com/en/flight-deals/flights-from-vilnius-to-frankfurt",
-      "title": "Flights from Vilnius to Frankfurt"
+      "url": "https://www.urlaubstracker.de/lufthansa-gepaeck/",
+      "title": "Lufthansa Gepäck: Gebühren, Regelungen & Preise (Urlaubstracker)"
      }
     ]
    },
    "ofEdit": {
     "all|allow": {
      "cur": "EUR",
-     "ppu": 115
+     "ppu": 74
     },
     "all|acc": {
      "cur": "EUR",
-     "ppu": 180
+     "ppu": 120
     },
     "all|flight": {
      "cur": "EUR",
@@ -2951,13 +2959,85 @@
    "useApi": true,
    "ovSrc": {},
    "createdAt": 1795503475479,
-   "updatedAt": 1795509115874,
-   "total": 5614.362999999999,
-   "ofTotal": 6455,
+   "updatedAt": 1795530122325,
+   "total": 5138.7055199999995,
+   "ofTotal": 6276,
    "ofCur": "EUR",
    "ofEdited": true,
-   "ziel": "Schweiz",
-   "flugLog": []
+   "ziel": "Spanien",
+   "flugLog": [
+    {
+     "at": 1795530041459,
+     "techId": "mwuc6up7ezdwv",
+     "tech": "Torsten Friebe",
+     "klasse": "Economy",
+     "hinflug": {
+      "datum": "2026-12-07",
+      "airline": "Lufthansa",
+      "flugnummern": "LH 894",
+      "von": "FRA",
+      "ab": "12:15",
+      "nach": "VNO",
+      "an": "15:20",
+      "umsteigeort": "",
+      "dauer_h": 2.08
+     },
+     "rueckflug": {
+      "datum": "2026-12-10",
+      "airline": "Lufthansa",
+      "flugnummern": "LH 895",
+      "von": "VNO",
+      "ab": "16:00",
+      "nach": "FRA",
+      "an": "17:15",
+      "umsteigeort": "",
+      "dauer_h": 2.25
+     },
+     "preis": 295,
+     "gepaeck": 92,
+     "preise": {
+      "eco": 295,
+      "bus": 780
+     },
+     "quelle": "https://www.lufthansa.com/xx/en/flights/flight-frankfurt-vilnius",
+     "auto": false
+    },
+    {
+     "at": 1795530122292,
+     "techId": "mwuc6up7ezdwv",
+     "tech": "Torsten Friebe",
+     "klasse": "Economy",
+     "hinflug": {
+      "datum": "2026-12-07",
+      "airline": "Lufthansa",
+      "flugnummern": "LH 1120",
+      "von": "FRA",
+      "ab": "14:35",
+      "nach": "ALC",
+      "an": "17:05",
+      "umsteigeort": "",
+      "dauer_h": 2.5
+     },
+     "rueckflug": {
+      "datum": "2026-12-10",
+      "airline": "Lufthansa",
+      "flugnummern": "LH 1121",
+      "von": "ALC",
+      "ab": "17:55",
+      "nach": "FRA",
+      "an": "20:30",
+      "umsteigeort": "",
+      "dauer_h": 2.58
+     },
+     "preis": 166,
+     "gepaeck": 92,
+     "preise": {
+      "eco": 166
+     },
+     "quelle": "https://www.lufthansa.com/lhg/de/de/o-d/cy-cy/frankfurt-alicante",
+     "auto": true
+    }
+   ]
   }
  ],
  "aufgaben": [
@@ -3549,10 +3629,21 @@
    "tout": 1667,
    "srch": 3,
    "updatedAt": 1795530085947
+  },
+  {
+   "id": "api-mwus9x68134ig",
+   "typ": "use",
+   "at": 1795530122288,
+   "usd": 0.2912,
+   "text": "Flüge Priuntunit Issue",
+   "tin": 94441,
+   "tout": 5227,
+   "srch": 5,
+   "updatedAt": 1795530122288
   }
  ],
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795530085950
+ "updatedAt": 1795530122325
 }
