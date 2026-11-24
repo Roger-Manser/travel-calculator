@@ -2715,12 +2715,12 @@
    "arten": [
     "Installationstechniker"
    ],
-   "updatedAt": 1795500781383,
+   "updatedAt": 1795500798896,
    "gepaeckKg": 30,
    "anreiseModus": "auto",
    "autoH": 0.8,
    "nationalitaet": "Österreich",
-   "wohnort": "Biedermannsdorf",
+   "wohnort": "2362 Biedermannsdorf",
    "anreiseKm": 54,
    "oevH": 1.25,
    "oevRetourChf": 29.5,
@@ -3076,5 +3076,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795500781383
+ "updatedAt": 1795500798896
 }
