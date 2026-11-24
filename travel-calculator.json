@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-23",
   "verantwortlich": "",
-  "updatedAt": 1795530000106,
+  "updatedAt": 1795530009412,
   "profiles": [
    {
     "id": "ch",
@@ -1697,7 +1697,7 @@
      "v": 40
     }
    ],
-   "at": 1795437894861
+   "at": 1795530009411
   },
   "mietTransferH": 1.5
  },
@@ -3518,5 +3518,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795530000106
+ "updatedAt": 1795530009412
 }
