@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v5.9 – Word-Bugfix: Weisse Schrift auf blauem Hintergrund -->
+<!-- Gallus Travel Calculator v6.0 – Doppelklick auf Summary schliesst alle Details -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#151617">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="5.9">
+<meta name="app-version" content="6.0">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
 :root{--bg:#151617;--card:#1e2022;--card2:#26292c;--line:#34373b;--ink:#ececec;--muted:#a3a6aa;--brand:#d07020;--brand-2:#f3a35c;--red:#ef6b6b;--amber:#e8c547;--input:#18191b;
@@ -278,7 +278,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 <section class="tab" data-tab="stamm" hidden>
   <div class="card"><h2>Kunden</h2>
     <p class="muted" style="margin-top:0">Adresse erfassen und «Adresse auswerten» klicken: Claude ermittelt per API Land, Ort, den nächsten geeigneten Flughafen, die Distanz und die Fahrzeit. Alle Werte bleiben änderbar.</p>
-    <div class="row" style="margin-bottom:10px"><input id="kSearch" placeholder="Kunden suchen …" style="max-width:340px"><button class="btn sec" id="btnAddKunde">+ Kunde</button><button class="btn sec" id="btnAlleSchliessen" style="margin-left:auto" title="Alle Kunden- und Techniker-Details schliessen">Alle schliessen</button></div>
+    <div class="row" style="margin-bottom:10px"><input id="kSearch" placeholder="Kunden suchen …" style="max-width:340px"><button class="btn sec" id="btnAddKunde">+ Kunde</button></div>
     <div id="kundenList"></div>
   </div>
   <div class="card"><h2>Techniker</h2>
@@ -422,8 +422,11 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '5.9';
+const APP_VERSION = '6.0';
 const VERSION_HISTORY = [
+  { v: '6.0', d: '2026-11-24', items: [
+    'Doppelklick auf einen beliebigen Kunden- oder Techniker-Summary schliesst alle geöffneten Details auf einmal',
+  ] },
   { v: '5.9', d: '2026-11-24', items: [
     'Bugfix: Richtpreis für Word kopieren – weisse Schrift auf blauem Hintergrund nun zuverlässig (Legacy-Font-Tag ergänzt)',
   ] },
@@ -3222,7 +3225,10 @@ stammTab.addEventListener('focusout', ev => {
     delete t.dataset._apOrig;
   }
 });
-$('btnAlleSchliessen').addEventListener('click', () => {
+// Doppelklick auf Summary → alle Details schliessen
+stammTab.addEventListener('dblclick', ev => {
+  if (!ev.target.closest('details[data-kid] > summary, details[data-tid] > summary')) return;
+  ev.preventDefault();
   stammTab.querySelectorAll('details[data-kid], details[data-tid]').forEach(d => {
     d.open = false;
     const id = d.dataset.kid || d.dataset.tid;
