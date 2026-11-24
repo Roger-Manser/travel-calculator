@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v5.5 – Richtpreis für Word: weisse Schrift auf blauem Hintergrund wie in der App -->
+<!-- Gallus Travel Calculator v5.6 – Mietwagen-Transfer am Zielflughafen (90 Min.) in Reisezeit -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#151617">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="5.5">
+<meta name="app-version" content="5.6">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
 :root{--bg:#151617;--card:#1e2022;--card2:#26292c;--line:#34373b;--ink:#ececec;--muted:#a3a6aa;--brand:#d07020;--brand-2:#f3a35c;--red:#ef6b6b;--amber:#e8c547;--input:#18191b;
@@ -331,6 +331,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
       <label>Hotel mindestens (EUR pro Nacht)<input data-g="hotelMinEUR" inputmode="decimal" title="Gilt für alle Länder, auch für Erfahrungs- und API-Werte"></label>
       <label>Vorlauf am Flughafen (h)<input data-g="vorlaufH" inputmode="decimal"></label>
       <label>Vorlauf mit Zusatzgepäck (h)<input data-g="vorlaufGepaeckH" inputmode="decimal"></label>
+      <label>Mietwagen-Abholung am Zielflughafen (h)<input data-g="mietTransferH" inputmode="decimal" title="Zeit vom Landen bis zur Abfahrt mit dem Mietwagen (Gepäckausgabe, Autoschalter, Abfahrt) – gilt für Hin- und Rückreise"></label>
       <label>Eigenes Auto / Firmenauto zum Flughafen (EUR/km)<input data-g="kmFahrzeugEUR" inputmode="decimal" title="Nutzungsentschädigung Fahrzeugnutzung gemäss Preisliste"></label>
       <label class="chk" style="align-self:end;padding-bottom:8px"><input type="checkbox" data-gb="nkAktiv">Nebenkosten rechnen</label>
       <label>Mietwagen ab Distanz (km)<input data-g="carAbKm" inputmode="decimal"></label>
@@ -377,7 +378,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
     <div class="row" style="margin-top:12px"><button class="btn sec" id="btnTestApi">API testen</button><span class="muted" id="aiStatus"></span></div>
   </div>
   <div class="card" id="budCard"><h2>API-Guthaben (Schätzung)</h2>
-    <p class="muted" style="margin-top:0">Anthropic bietet keine Abfrage des Restguthabens an. Die App rechnet deshalb selbst mit: Jede Abfrage wird mit ihren Tokens und Websuchen erfasst und abgezogen. Gleiche den Wert ab und zu mit der <a href="https://platform.claude.com/settings/billing" target="_blank" rel="noopener">Abrechnungsseite</a> ab.</p>
+    <p class="muted" style="margin-top:0">Anthropic bietet keine Abfrage des Restguthabens an. Die App rechnet deshalb selbst mit: Jede Abfrage wird mit ihren Tokens und Websuchen erfasst und abgezogen. Gleiche den Wert ab und zu mit der <a href="https://console.anthropic.com/settings/billing" target="_blank" rel="noopener">Abrechnungsseite (Billing)</a> oder dem <a href="https://console.anthropic.com/settings/usage" target="_blank" rel="noopener">Verbrauch (Usage)</a> ab.</p>
     <div class="budBig" id="budBig">–</div>
     <div class="grid" style="margin-top:10px">
       <label>Betrag in USD<input id="budAmt" inputmode="decimal" placeholder="z.B. 20"></label>
@@ -421,8 +422,12 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '5.5';
+const APP_VERSION = '5.6';
 const VERSION_HISTORY = [
+  { v: '5.6', d: '2026-11-24', items: [
+    'Mietwagen-Transfer am Zielflughafen: 90 Min. (standardmässig) für Gepäckausgabe, Autoschalter und Abfahrt in die Reisezeit eingerechnet – gilt für Hin- und Rückreise',
+    'Einstellbar in Firmensätze unter «Vorlaufzeiten» (Mietwagen-Abholung am Zielflughafen)',
+  ] },
   { v: '5.5', d: '2026-11-23', items: [
     'Richtpreis «Für Word kopieren»: Kopfzeilen und Endpreis wieder weisse Schrift auf blauem Hintergrund wie in der App (Word ignorierte die Kurzschreibweise der Farbe)',
   ] },
@@ -1142,7 +1147,7 @@ function defaultRates() {
     fx: { CHF: 1, EUR: 0.93, USD: 0.82 },
     classes: [{ name: 'Economy', f: 1 }, { name: 'Premium Economy', f: 1.8 }, { name: 'Business', f: 3 }],
     arten: ['Installationstechniker', 'Applikationstechniker'],
-    gepaeck: 150, kmSatz: 0.25, carAbKm: 30, lokalKm: 30,
+    gepaeck: 150, kmSatz: 0.25, carAbKm: 30, lokalKm: 30, mietTransferH: 1.5,
     gepaeckArt: 'Installationstechniker', gepaeckKg: 30, vorlaufH: 2, vorlaufGepaeckH: 3, kmPrivat: 0,
     maschinen: [{ id: 'm-konv', name: 'Konventionell', satz: 171, satzEUR: 190, satzIC: 149, satzICEUR: 165 }, { id: 'm-dig', name: 'Digital', satz: 186, satzEUR: 207, satzIC: 162, satzICEUR: 180 }], ueZuschlag2: 90, kmFahrzeugEUR: 1.2, preisliste: 'FY27', hotelMinEUR: 120, depl: null,
     stundensaetze: {}, arbStdTag: 8, reiseStdTag: 8, reiseProz: 100, nkAktiv: false, ecoPlusAbH: 10, ueZuschlag: 45, ofRundung: 50
@@ -1163,7 +1168,7 @@ function ensureRates(r, frozen) {
   if (frozen) (r.profiles || []).forEach(p => { if (p.km === undefined) { const f = num((r.fx || {})[p.cur]); p.km = num(r.kmSatz) >= 0 && f > 0 ? num(r.kmSatz) / f : 0; } }); // vor v4.2: globaler km-Satz in CHF
   if (frozen && r.hotelMinEUR === undefined) r.hotelMinEUR = 0; // eingefrorene Einsätze vor v4.9 ohne Mindestansatz
   if (frozen && r.kmFahrzeugEUR === undefined) { const e = num((r.fx || {}).EUR); r.kmFahrzeugEUR = num(r.kmPrivat) > 0 && e > 0 ? num(r.kmPrivat) / e : 0; } // eingefrorene Sätze nicht verändern
-  ['arten', 'gepaeck', 'kmSatz', 'carAbKm', 'lokalKm', 'classes', 'gepaeckArt', 'gepaeckKg', 'vorlaufH', 'vorlaufGepaeckH', 'kmPrivat', 'maschinen', 'stundensaetze', 'arbStdTag', 'reiseStdTag', 'reiseProz', 'nkAktiv', 'ecoPlusAbH', 'ueZuschlag', 'ofRundung', 'ueZuschlag2', 'kmFahrzeugEUR', 'hotelMinEUR'].forEach(k => { if (r[k] === undefined) r[k] = clone(D[k]); });
+  ['arten', 'gepaeck', 'kmSatz', 'carAbKm', 'lokalKm', 'classes', 'gepaeckArt', 'gepaeckKg', 'vorlaufH', 'vorlaufGepaeckH', 'kmPrivat', 'maschinen', 'stundensaetze', 'arbStdTag', 'reiseStdTag', 'reiseProz', 'nkAktiv', 'ecoPlusAbH', 'ueZuschlag', 'ofRundung', 'ueZuschlag2', 'kmFahrzeugEUR', 'hotelMinEUR', 'mietTransferH'].forEach(k => { if (r[k] === undefined) r[k] = clone(D[k]); });
   if (!frozen && r.preisliste !== 'FY27') { // Migration v4.0: Preislisten FY27 (gültig ab 1.4.2026) einsetzen
     const FY = { konv: [171, 190, 149, 165], dig: [186, 207, 162, 180] };
     (r.maschinen || []).forEach(m => { const key = m.id === 'm-konv' || /konv|flexo|offset/i.test(m.name) ? 'konv' : m.id === 'm-dig' || /digi/i.test(m.name) ? 'dig' : null; if (key) [m.satz, m.satzEUR, m.satzIC, m.satzICEUR] = FY[key]; });
@@ -1434,10 +1439,12 @@ function fensterCheck(t, fi) {
   if (isFinite(an)) { const a2 = an < 4 ? an + 24 : an; if (a2 - 1e-9 > F.maxLandung) out.push(F.oevRueck && a2 - 1e-9 <= F.heim - GEP_AUSGABE_H - F.anr ? `${t.name}: Rückflug landet um ${fi.rueckflug.an} – ${F.oevRueck} wird nicht mehr erreicht. Späteste sinnvolle Landung ${F.maxTxt}.` : `${t.name}: Rückflug landet um ${fi.rueckflug.an} – Ankunft zu Hause erst um ${h2hm(a2 + GEP_AUSGABE_H + F.anr)} (späteste Heimkehr ${F.heimTxt}). Späteste sinnvolle Landung ${F.maxTxt}.`); }
   return out;
 }
-function travelTimes(t, sel, k) {
+function travelTimes(t, sel, k, car) {
   const R = DATA.rates, fi = sel.flugInfo || null, rf = resFlight(t);
   const vorl = num(t.gepaeck ? R.vorlaufGepaeckH : R.vorlaufH) || 0;
   const anr = num(t.anreiseModus === 'oev' ? t.oevH : t.autoH), ziel = k ? num(k.fahrzeitMin) / 60 : NaN;
+  // Mietwagen-Transfer am Zielflughafen (Gepäck + Autoschalter + Abfahrt)
+  const mietTr = car !== false ? (num(R.mietTransferH) || 0) : 0;
   const src = fi || rf || {};
   const leg = l => l && isFinite(num(l.dauer_h)) ? num(l.dauer_h) : NaN;
   let hinF = leg(src.hinflug), rueckF = leg(src.rueckflug);
@@ -1445,8 +1452,9 @@ function travelTimes(t, sel, k) {
   const fromDur = !isFinite(hinF) && isFinite(fd); if (!isFinite(hinF)) hinF = fd;
   const rueckFromHin = !isFinite(rueckF) && isFinite(hinF); if (!isFinite(rueckF)) rueckF = hinF;
   const a = isFinite(anr) ? anr : 0, z = isFinite(ziel) ? ziel : 0;
-  const hin = isFinite(hinF) ? a + vorl + hinF + z : NaN, rueck = isFinite(rueckF) ? z + vorl + rueckF + a : NaN;
-  return { vorl, anr, ziel, hinF, rueckF, hin, rueck, approx: fromDur || rueckFromHin, ok: isFinite(hin) && isFinite(rueck) };
+  const hin = isFinite(hinF) ? a + vorl + hinF + mietTr + z : NaN;
+  const rueck = isFinite(rueckF) ? z + mietTr + vorl + rueckF + a : NaN;
+  return { vorl, anr, ziel, hinF, rueckF, hin, rueck, mietTr, approx: fromDur || rueckFromHin, ok: isFinite(hin) && isFinite(rueck) };
 }
 // ---------- Eingefrorene Sätze ----------
 const STATUS = { entwurf: 'Entwurf', offeriert: 'Offeriert', abgeschlossen: 'Abgeschlossen' };
@@ -1554,12 +1562,13 @@ function calcCore() {
       add(g, 'Arbeitszeit', ph, `Arbeitszeit ${an}`, d * arbH, 'h', st, stCur, isFinite(st) ? d * arbH * st * stFx : 0, `${d} Tage × ${fmt0(arbH)} h${maschName ? ' · ' + maschName : ''}`);
     });
     { const st = stdSatz(), pc = (num(R.reiseProz) || 0) / 100;
-      const TT = travelTimes(t, selC, k), est = !TT.ok;
+      const TT = travelTimes(t, selC, k, car), est = !TT.ok;
       const rh = est ? 2 * (num(R.reiseStdTag) || 0) : Math.round((TT.hin + TT.rueck) * 100) / 100;
       if (est) warn(`${t.name}: Reisezeit geschätzt (2 × ${fmt0(num(R.reiseStdTag))} h) – genaue Reisezeit nach der Online-Ermittlung des Flugs.`);
       else if (TT.approx && !erfFl) warn(`${t.name}: Flugdauer der Rückreise nicht einzeln bekannt – wie Hinflug gerechnet. «Neu recherchieren» liefert die genaue Dauer.`);
       const f = v => isFinite(v) ? fmtH(v) : '–';
-      const note = (est ? `geschätzt: 2 × ${fmt0(num(R.reiseStdTag))} h` : `Hin ${fmtH(TT.hin)} (Anreise ${f(TT.anr)} + Flughafen ${fmtH(TT.vorl)} + Flug ${fmtH(TT.hinF)} + Fahrt ${f(TT.ziel)}) · Zurück ${fmtH(TT.rueck)} (Fahrt ${f(TT.ziel)} + Flughafen ${fmtH(TT.vorl)} + Flug ${fmtH(TT.rueckF)} + Heimreise ${f(TT.anr)})`) + (erfFl && !est ? ' · Flugdauer Erfahrungswert' : '');
+      const mietNote = TT.mietTr > 0 ? ` + Mietwagen ${fmtH(TT.mietTr)}` : '';
+      const note = (est ? `geschätzt: 2 × ${fmt0(num(R.reiseStdTag))} h` : `Hin ${fmtH(TT.hin)} (Anreise ${f(TT.anr)} + Flughafen ${fmtH(TT.vorl)} + Flug ${fmtH(TT.hinF)}${mietNote} + Fahrt ${f(TT.ziel)}) · Zurück ${fmtH(TT.rueck)} (Fahrt ${f(TT.ziel)}${mietNote} + Flughafen ${fmtH(TT.vorl)} + Flug ${fmtH(TT.rueckF)} + Heimreise ${f(TT.anr)})`) + (erfFl && !est ? ' · Flugdauer Erfahrungswert' : '');
       if (rh > 0 && pc > 0) { if (!isFinite(st)) missingStd.add('x'); add(g, 'Reisezeit', home, 'Reisezeit Hin- und Rückreise', rh, 'h', st * pc, stCur, isFinite(st) ? rh * st * pc * stFx : 0, note + (pc !== 1 ? ` × ${fmt0(pc * 100)} %` : '')); } }
     const fiN = sel.flugInfo && sel.flugInfo.hinflug ? [sel.flugInfo.hinflug.airline, sel.flugInfo.hinflug.flugnummern].filter(Boolean).join(' ') : '';
     add(g, 'Flug', home, `Flug ${apLabel(t.flughafen)} – ${destL} · ${KL[C.cls]}`, 1, 'retour', fl, 'CHF', fl, [C.overridden ? 'Klasse manuell' : `Klasse automatisch${isFinite(C.dur) ? ` (Flug ${fmtH(C.dur)} ${C.cls === 'pe' ? '≥' : '<'} ${fmt0(C.lim)} h)` : ''}`, fiN, C.manual ? 'Preis manuell' : erfFl ? `Länderprofil ${p.name} (${cur} ${fmt(erfV('flug'))}${erfSrcTxt(p, 'flug') ? ', ' + erfSrcTxt(p, 'flug') : ''})` : (sel.flugInfo && sel.flugInfo.cache ? `aus Strecken-Speicher (${fmtDate(isoOf(sel.flugInfo.cache.at))})` : 'online ermittelt')].filter(Boolean).join(' · '));
@@ -1739,7 +1748,7 @@ function planHtml(r) {
     const t = x.t, modus = MODUS[t.anreiseModus] || 'Auto', s = x.x;
     const vor = (isFinite(x.anr) ? x.anr : 0) + x.vorlauf;
     const fi = x.x.sel.flugInfo, abfl = fi && fi.hinflug && fi.hinflug.ab ? String(fi.hinflug.ab) : (x.rf && x.rf.hinflug && x.rf.hinflug.ab ? String(x.rf.hinflug.ab) : (x.rf && x.rf.abflug_beispiel ? String(x.rf.abflug_beispiel) : ''));
-    const TT = travelTimes(t, x.x.sel, r.k);
+    const TT = travelTimes(t, x.x.sel, r.k, r.car);
     const l0 = r.S.ok ? `Anreise ${dShort(s.arr)} · ${s.W} Arbeitstage vor Ort · Rückreise ${dShort(s.ret)}${E.training ? ` · Rolle ${s.role === 'app' ? 'Training' : 'Installation'} (inkl. Handover)` : ''}` : '';
     const FF = flugFenster(t);
     const lw = `Zeitfenster Flug: Hinflug frühestens ab <b>${FF.minTxt}</b> (Aufbruch ab ${FF.abTxt} + Anreise ${fmtH(FF.anr)} + Vorlauf ${fmtH(FF.vorl)}) · Rückflug Landung spätestens <b>${FF.maxTxt}</b> (zu Hause bis ${FF.heimTxt})${FF.oevHin ? ' · Hinweg begrenzt durch ' + esc(FF.oevHin) : ''}${FF.oevRueck ? ' · Rückweg begrenzt durch ' + esc(FF.oevRueck) : ''}${FF.anrKnown ? '' : ' <span class="warnTxt">– Anreisezeit fehlt, mit 0 gerechnet</span>'}${FF.oevFehlt ? ' <span class="warnTxt">– ÖV-Fahrplan noch nicht ermittelt (Stammdaten → Techniker → «Anreise auswerten»)</span>' : ''}`;
