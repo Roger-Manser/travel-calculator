@@ -2910,7 +2910,7 @@
   },
   {
    "id": "mwuc2cqbtrhnp",
-   "name": "Neuer Kunde",
+   "name": "UAB \"Satoris\"",
    "adresse": "",
    "land": "",
    "ort": "",
@@ -2919,7 +2919,7 @@
    "flughafenName": "",
    "distanzKm": "",
    "fahrzeitMin": "",
-   "updatedAt": 1795502895347
+   "updatedAt": 1795502900310
   }
  ],
  "apiLog": [
@@ -3100,5 +3100,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795502895347
+ "updatedAt": 1795502900310
 }
