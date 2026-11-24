@@ -2823,12 +2823,12 @@
    "name": "Torsten Friebe",
    "nationalitaet": "Deutschland",
    "wohnort": "",
-   "flughafen": "ZRH",
+   "flughafen": "FRA",
    "gepaeck": false,
    "gepaeckKg": 30,
    "arten": [],
    "anreiseModus": "auto",
-   "updatedAt": 1795503115571
+   "updatedAt": 1795503139741
   }
  ],
  "kunden": [
@@ -3142,5 +3142,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795503115571
+ "updatedAt": 1795503139741
 }
