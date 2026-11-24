@@ -2820,7 +2820,7 @@
   },
   {
    "id": "mwuc6up7ezdwv",
-   "name": "Neuer Techniker",
+   "name": "Torsten Friebe",
    "nationalitaet": "",
    "wohnort": "",
    "flughafen": "ZRH",
@@ -2828,7 +2828,7 @@
    "gepaeckKg": 30,
    "arten": [],
    "anreiseModus": "auto",
-   "updatedAt": 1795503105259
+   "updatedAt": 1795503111693
   }
  ],
  "kunden": [
@@ -3142,5 +3142,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795503105259
+ "updatedAt": 1795503111693
 }
