@@ -1662,7 +1662,8 @@
     }
    ],
    "at": 1795437894861
-  }
+  },
+  "mietTransferH": 1.5
  },
  "einsaetze": [
   {
@@ -2816,6 +2817,18 @@
     "at": 1795438270627,
     "src": "api"
    }
+  },
+  {
+   "id": "mwuc6up7ezdwv",
+   "name": "Neuer Techniker",
+   "nationalitaet": "",
+   "wohnort": "",
+   "flughafen": "ZRH",
+   "gepaeck": false,
+   "gepaeckKg": 30,
+   "arten": [],
+   "anreiseModus": "auto",
+   "updatedAt": 1795503105259
   }
  ],
  "kunden": [
@@ -3129,5 +3142,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795502976724
+ "updatedAt": 1795503105259
 }
