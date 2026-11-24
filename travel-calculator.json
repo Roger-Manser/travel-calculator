@@ -2912,14 +2912,14 @@
    "id": "mwuc2cqbtrhnp",
    "name": "UAB \"Satoris\"",
    "adresse": "",
-   "land": "",
+   "land": "Litauen",
    "ort": "",
    "profileId": "",
    "flughafen": "",
    "flughafenName": "",
    "distanzKm": "",
    "fahrzeitMin": "",
-   "updatedAt": 1795502900310
+   "updatedAt": 1795502912350
   }
  ],
  "apiLog": [
@@ -3100,5 +3100,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795502900310
+ "updatedAt": 1795502912350
 }
