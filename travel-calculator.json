@@ -2715,12 +2715,12 @@
    "arten": [
     "Installationstechniker"
    ],
-   "updatedAt": 1795500567613,
+   "updatedAt": 1795500781383,
    "gepaeckKg": 30,
    "anreiseModus": "auto",
    "autoH": 0.8,
    "nationalitaet": "Österreich",
-   "wohnort": "Wiener Neustadt",
+   "wohnort": "Biedermannsdorf",
    "anreiseKm": 54,
    "oevH": 1.25,
    "oevRetourChf": 29.5,
@@ -2729,7 +2729,8 @@
    "anreiseAusgewertet": 1795258958747,
    "anreiseStand": {
     "at": 1795258958747,
-    "src": "api"
+    "src": "api",
+    "stale": true
    },
    "maschinen": [
     "m-konv"
@@ -3075,5 +3076,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795500567613
+ "updatedAt": 1795500781383
 }
