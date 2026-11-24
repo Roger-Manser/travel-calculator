@@ -3188,10 +3188,21 @@
    "tout": 6156,
    "srch": 5,
    "updatedAt": 1795503366020
+  },
+  {
+   "id": "api-mwuccqg3pkfwa",
+   "typ": "use",
+   "at": 1795503379683,
+   "usd": 0.1138,
+   "text": "Länderprofil Schweiz",
+   "tin": 33277,
+   "tout": 1728,
+   "srch": 3,
+   "updatedAt": 1795503379683
   }
  ],
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795503366020
+ "updatedAt": 1795503379685
 }
