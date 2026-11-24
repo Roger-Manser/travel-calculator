@@ -2715,10 +2715,10 @@
    "arten": [
     "Installationstechniker"
    ],
-   "updatedAt": 1795500896504,
+   "updatedAt": 1795500910105,
    "gepaeckKg": 30,
    "anreiseModus": "auto",
-   "autoH": 0.4,
+   "autoH": 0.5,
    "nationalitaet": "Österreich",
    "wohnort": "2362 Biedermannsdorf",
    "anreiseKm": 21,
@@ -2728,7 +2728,7 @@
    "anreiseBemerkung": "Wechselkurs ca. 0.93 CHF/EUR angenommen. Distanz aus 13,3 Meilen (Rome2rio) umgerechnet. OeV: Zug ab Laxenburg-Biedermannsdorf via Wien Hbf, ca. 44-48 Min. Parkieren: Parkplatz C, 33,90 EUR fuer 1 Tag (Preisliste Januar 2026), bei Mehrtagesparkieren guenstiger pro Tag. Taxi: 45 EUR Fixpreis plus 2,90 EUR Zufahrtsgebuehr, andere Anbieter 45-50 EUR. OeV-Billettpreis und Fahrplan (erste/letzte Verbindung) nicht verlaessllich gefunden, bitte bei OeBB/VOR pruefen.",
    "anreiseAusgewertet": 1795258958747,
    "anreiseStand": {
-    "at": 1795500896503,
+    "at": 1795500910105,
     "src": "manuell"
    },
    "maschinen": [
@@ -3087,5 +3087,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795500896504
+ "updatedAt": 1795500910105
 }
