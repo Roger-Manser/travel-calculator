@@ -2913,13 +2913,13 @@
    "name": "UAB \"Satoris\"",
    "adresse": "",
    "land": "Litauen",
-   "ort": "",
+   "ort": "06304 Vilnius",
    "profileId": "",
    "flughafen": "",
    "flughafenName": "",
    "distanzKm": "",
    "fahrzeitMin": "",
-   "updatedAt": 1795502912350
+   "updatedAt": 1795502937982
   }
  ],
  "apiLog": [
@@ -3100,5 +3100,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795502912350
+ "updatedAt": 1795502937982
 }
