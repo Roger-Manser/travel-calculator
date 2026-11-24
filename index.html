@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v5.6 – Mietwagen-Transfer am Zielflughafen (90 Min.) in Reisezeit -->
+<!-- Gallus Travel Calculator v5.9 – Word-Bugfix: Weisse Schrift auf blauem Hintergrund -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#151617">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="5.6">
+<meta name="app-version" content="5.9">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
 :root{--bg:#151617;--card:#1e2022;--card2:#26292c;--line:#34373b;--ink:#ececec;--muted:#a3a6aa;--brand:#d07020;--brand-2:#f3a35c;--red:#ef6b6b;--amber:#e8c547;--input:#18191b;
@@ -278,7 +278,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 <section class="tab" data-tab="stamm" hidden>
   <div class="card"><h2>Kunden</h2>
     <p class="muted" style="margin-top:0">Adresse erfassen und «Adresse auswerten» klicken: Claude ermittelt per API Land, Ort, den nächsten geeigneten Flughafen, die Distanz und die Fahrzeit. Alle Werte bleiben änderbar.</p>
-    <div class="row" style="margin-bottom:10px"><input id="kSearch" placeholder="Kunden suchen …" style="max-width:340px"><button class="btn sec" id="btnAddKunde">+ Kunde</button></div>
+    <div class="row" style="margin-bottom:10px"><input id="kSearch" placeholder="Kunden suchen …" style="max-width:340px"><button class="btn sec" id="btnAddKunde">+ Kunde</button><button class="btn sec" id="btnAlleSchliessen" style="margin-left:auto" title="Alle Kunden- und Techniker-Details schliessen">Alle schliessen</button></div>
     <div id="kundenList"></div>
   </div>
   <div class="card"><h2>Techniker</h2>
@@ -422,8 +422,17 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '5.6';
+const APP_VERSION = '5.9';
 const VERSION_HISTORY = [
+  { v: '5.9', d: '2026-11-24', items: [
+    'Bugfix: Richtpreis für Word kopieren – weisse Schrift auf blauem Hintergrund nun zuverlässig (Legacy-Font-Tag ergänzt)',
+  ] },
+  { v: '5.8', d: '2026-11-24', items: [
+    'Button «Alle schliessen» in Stammdaten: schliesst alle offenen Kunden- und Techniker-Details auf einmal',
+  ] },
+  { v: '5.7', d: '2026-11-24', items: [
+    'Bugfix: Flughafen-Dropdown (Techniker und Kunde) zeigt beim Anklicken sofort alle Optionen – bisher wurde die Liste erst beim Tippen gefüllt',
+  ] },
   { v: '5.6', d: '2026-11-24', items: [
     'Mietwagen-Transfer am Zielflughafen: 90 Min. (standardmässig) für Gepäckausgabe, Autoschalter und Abfahrt in die Reisezeit eingerechnet – gilt für Hin- und Rückreise',
     'Einstellbar in Firmensätze unter «Vorlaufzeiten» (Mietwagen-Abholung am Zielflughafen)',
@@ -1874,7 +1883,7 @@ function offerHtml(r, lang, cur, edit) {
     return `<input class="ofin${on ? ' ofed' : ''}" data-oe="${esc(x.ek)}" data-of="${f}" inputmode="decimal" value="${n2i(x[f])}">${on ? `<div class="ofcalc">Kalk. ${n2(x.calc[f])}</div>` : ''}`;
   };
   const n2 = v => isFinite(v) ? v.toLocaleString('de-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '–';
-  const B = 'border:1px solid #000;', HB = 'background:#365F91;background-color:#365F91;color:#FFFFFF;', W = t => `<span style="color:#FFFFFF">${t}</span>`;
+  const B = 'border:1px solid #000;', HB = 'background:#365F91;background-color:#365F91;color:#FFFFFF;', W = t => `<font color="#FFFFFF"><span style="color:#FFFFFF">${t}</span></font>`;
   const th = (t, al) => `<th style="${HB}${B}padding:8px 10px;font-weight:normal;text-align:${al || 'center'};text-transform:none;letter-spacing:0;font-size:11pt" bgcolor="#365F91">${W(t)}</th>`;
   const head = [[T.cust, k ? k.name : ''], [T.mach, E.auftrag], [T.date, fmtDate(todayISO())]].filter(x => x[1]).map(([a, b]) => `${esc(a)}: <b>${esc(b)}</b>`).join(' &nbsp;·&nbsp; ');
   let html = `<div style="font-family:Arial,Helvetica,sans-serif;color:#000;font-size:11pt">
@@ -3193,6 +3202,34 @@ $('listTable').addEventListener('click', ev => {
 const stammTab = document.querySelector('section[data-tab="stamm"]');
 stammTab.addEventListener('change', onStammChange);
 stammTab.addEventListener('click', onStammClick);
+// Flughafen-Dropdown: bei Focus Wert leeren damit alle Optionen erscheinen
+stammTab.addEventListener('focusin', ev => {
+  const t = ev.target;
+  if (t.list && t.list.id === 'apList' && !t.dataset._apOpen) {
+    t.dataset._apOrig = t.value;
+    t.dataset._apOpen = '1';
+    t.value = '';
+  }
+});
+stammTab.addEventListener('focusout', ev => {
+  const t = ev.target;
+  if (t.list && t.list.id === 'apList') {
+    delete t.dataset._apOpen;
+    // Wenn leer und kein change ausgelöst: Originalwert zurücksetzen
+    if (t.value === '' && t.dataset._apOrig !== undefined) {
+      t.value = t.dataset._apOrig;
+    }
+    delete t.dataset._apOrig;
+  }
+});
+$('btnAlleSchliessen').addEventListener('click', () => {
+  stammTab.querySelectorAll('details[data-kid], details[data-tid]').forEach(d => {
+    d.open = false;
+    const id = d.dataset.kid || d.dataset.tid;
+    if (d.dataset.kid) OPEN_K.delete(id);
+    if (d.dataset.tid) OPEN_T.delete(id);
+  });
+});
 stammTab.addEventListener('toggle', ev => { const d = ev.target; if (!d.matches) return; const s = d.matches('details[data-kid]') ? OPEN_K : d.matches('details[data-tid]') ? OPEN_T : null; const id = d.dataset.kid || d.dataset.tid; if (s) { if (d.open) s.add(id); else s.delete(id); } }, true);
 $('kSearch').addEventListener('input', renderKunden);
 const ratesTab = document.querySelector('section[data-tab="rates"]');
