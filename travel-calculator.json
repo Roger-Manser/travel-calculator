@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-23",
   "verantwortlich": "",
-  "updatedAt": 1795503320286,
+  "updatedAt": 1795529991233,
   "profiles": [
    {
     "id": "ch",
@@ -159,6 +159,18 @@
     "landesWaehrung": "KGS",
     "flug": 357.8,
     "flugH": 12.3
+   },
+   {
+    "id": "mwus741mrgykf",
+    "name": "Neues Profil",
+    "cur": "EUR",
+    "erfV2": true,
+    "merged": true,
+    "hotel": "",
+    "car": "",
+    "spesen": 0,
+    "nk": 0,
+    "taxi": ""
    }
   ],
   "fx": {
@@ -3506,5 +3518,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795529804720
+ "updatedAt": 1795529991233
 }
