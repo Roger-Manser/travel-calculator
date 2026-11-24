@@ -2,20 +2,44 @@
  "rates": {
   "stand": "2026-11-23",
   "verantwortlich": "",
-  "updatedAt": 1795500203400,
+  "updatedAt": 1795503320286,
   "profiles": [
    {
     "id": "ch",
     "name": "Schweiz",
     "cur": "CHF",
-    "hotel": "",
-    "car": "",
+    "hotel": 165,
+    "car": 65,
     "spesen": 60,
     "nk": 10,
-    "taxi": "",
+    "taxi": 110,
     "erfV2": true,
-    "vsrc": {},
-    "merged": true
+    "vsrc": {
+     "hotel": {
+      "src": "api",
+      "at": 1795503320286
+     },
+     "car": {
+      "src": "api",
+      "at": 1795503320286
+     },
+     "km": {
+      "src": "api",
+      "at": 1795503320286
+     },
+     "taxi": {
+      "src": "api",
+      "at": 1795503320286
+     }
+    },
+    "merged": true,
+    "km": 0.13,
+    "apiStand": {
+     "at": 1795503320286,
+     "src": "api"
+    },
+    "apiBemerkung": "Treibstoff laut TCS vom 18.11.2026 (Benzin 95: 1.89, Diesel: 2.29 CHF/l). Hotel, Mietwagen und Taxi sind Schätzwerte aus Vergleichsportalen und Tarifen. Bei Wochenmieten sind Kilometer meist inklusive.",
+    "landesWaehrung": "CHF"
    },
    {
     "id": "de",
@@ -3142,10 +3166,21 @@
    "tout": 924,
    "srch": 1,
    "updatedAt": 1795502976721
+  },
+  {
+   "id": "api-mwucbgm3aneol",
+   "typ": "use",
+   "at": 1795503320283,
+   "usd": 0.1219,
+   "text": "Länderprofil Schweiz",
+   "tin": 37205,
+   "tout": 1748,
+   "srch": 3,
+   "updatedAt": 1795503320283
   }
  ],
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795503199246
+ "updatedAt": 1795503320286
 }
