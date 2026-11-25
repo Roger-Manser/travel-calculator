@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v6.1 – Alle schliessen per Doppelklick auf Summary (robust) -->
+<!-- Gallus Travel Calculator v6.2 – Sticky «Alle schliessen»-Button in Stammdaten -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#151617">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="6.1">
+<meta name="app-version" content="6.2">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
 :root{--bg:#151617;--card:#1e2022;--card2:#26292c;--line:#34373b;--ink:#ececec;--muted:#a3a6aa;--brand:#d07020;--brand-2:#f3a35c;--red:#ef6b6b;--amber:#e8c547;--input:#18191b;
@@ -23,6 +23,8 @@
 .budTab{width:100%;border-collapse:collapse;font-size:13px}.budTab td{padding:4px 6px;border-bottom:1px solid var(--line)}.budTab td.r{text-align:right;white-space:nowrap}
 body{margin:0;font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
 .theme{background:var(--card2);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12px;cursor:pointer}
+#stammCloseBar{position:sticky;top:57px;z-index:9;background:var(--bg);border-bottom:1px solid var(--line);padding:4px 16px;display:none;justify-content:flex-end}
+#stammCloseBar.vis{display:flex}
 header{position:sticky;top:0;z-index:10;background:var(--hdr);box-shadow:var(--shadow);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 h1{font-size:17px;margin:0}
 .ver{background:var(--card2);color:var(--brand-2);border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:12px;cursor:pointer}
@@ -276,6 +278,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <!-- ============ Stammdaten ============ -->
 <section class="tab" data-tab="stamm" hidden>
+  <div id="stammCloseBar"><button class="btn sec sm" id="btnAlleSchliessen">Alle schliessen ✕</button></div>
   <div class="card"><h2>Kunden</h2>
     <p class="muted" style="margin-top:0">Adresse erfassen und «Adresse auswerten» klicken: Claude ermittelt per API Land, Ort, den nächsten geeigneten Flughafen, die Distanz und die Fahrzeit. Alle Werte bleiben änderbar.</p>
     <div class="row" style="margin-bottom:10px"><input id="kSearch" placeholder="Kunden suchen …" style="max-width:340px"><button class="btn sec" id="btnAddKunde">+ Kunde</button></div>
@@ -422,8 +425,11 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '6.1';
+const APP_VERSION = '6.2';
 const VERSION_HISTORY = [
+  { v: '6.2', d: '2026-11-24', items: [
+    'Sticky «Alle schliessen»-Button am oberen Rand der Stammdaten – immer sichtbar beim Scrollen',
+  ] },
   { v: '6.1', d: '2026-11-24', items: [
     'Bugfix: Doppelklick auf Summary schliesst alle Details – robuste Implementierung via Click-Tracking',
   ] },
@@ -3228,26 +3234,23 @@ stammTab.addEventListener('focusout', ev => {
     delete t.dataset._apOrig;
   }
 });
-// Doppelklick auf Summary → alle Details schliessen (via Click-Tracking, da dblclick zu spät kommt)
-let _apLastClick = 0, _apLastEl = null;
-stammTab.addEventListener('click', ev => {
-  const sum = ev.target.closest('details[data-kid] > summary, details[data-tid] > summary');
-  if (!sum) return;
-  const now = Date.now();
-  if (_apLastEl === sum && now - _apLastClick < 400) {
-    // Zweiter Klick: alle schliessen
-    stammTab.querySelectorAll('details[data-kid], details[data-tid]').forEach(d => {
-      d.open = false;
-      const id = d.dataset.kid || d.dataset.tid;
-      if (d.dataset.kid) OPEN_K.delete(id);
-      if (d.dataset.tid) OPEN_T.delete(id);
-    });
-    _apLastEl = null; _apLastClick = 0;
-  } else {
-    _apLastEl = sum; _apLastClick = now;
-  }
-}, true);
-stammTab.addEventListener('toggle', ev => { const d = ev.target; if (!d.matches) return; const s = d.matches('details[data-kid]') ? OPEN_K : d.matches('details[data-tid]') ? OPEN_T : null; const id = d.dataset.kid || d.dataset.tid; if (s) { if (d.open) s.add(id); else s.delete(id); } }, true);
+// Sticky «Alle schliessen»-Button: sichtbar wenn mind. ein Detail offen
+function updateSchliessen() {
+  const bar = document.getElementById('stammCloseBar');
+  if (!bar) return;
+  const any = !!stammTab.querySelector('details[data-kid][open], details[data-tid][open]');
+  bar.classList.toggle('vis', any);
+}
+document.getElementById('btnAlleSchliessen').addEventListener('click', () => {
+  stammTab.querySelectorAll('details[data-kid], details[data-tid]').forEach(d => {
+    d.open = false;
+    const id = d.dataset.kid || d.dataset.tid;
+    if (d.dataset.kid) OPEN_K.delete(id);
+    if (d.dataset.tid) OPEN_T.delete(id);
+  });
+  updateSchliessen();
+});
+stammTab.addEventListener('toggle', ev => { const d = ev.target; if (!d.matches) return; const s2 = d.matches('details[data-kid]') ? OPEN_K : d.matches('details[data-tid]') ? OPEN_T : null; const id = d.dataset.kid || d.dataset.tid; if (s2) { if (d.open) s2.add(id); else s2.delete(id); } updateSchliessen(); }, true);
 $('kSearch').addEventListener('input', renderKunden);
 const ratesTab = document.querySelector('section[data-tab="rates"]');
 ratesTab.addEventListener('change', onRatesChange);

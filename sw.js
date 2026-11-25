@@ -1,5 +1,5 @@
-// Gallus Travel Calculator – Service Worker v6.1
-const CACHE_NAME = 'travel-calc-v6.1';
+// Gallus Travel Calculator – Service Worker v6.2
+const CACHE_NAME = 'travel-calc-v6.2';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './favicon.png'];
 
 self.addEventListener('install', e => {
