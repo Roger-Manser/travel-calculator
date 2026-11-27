@@ -3062,6 +3062,251 @@
      "auto": true
     }
    ]
+  },
+  {
+   "id": "mwyvastz8r5iw",
+   "name": "Unterstützung HDD",
+   "gep": {},
+   "visa": {},
+   "aufgabeId": "a-inst",
+   "kundeId": "mwyupvijqock2",
+   "techs": [
+    {
+     "id": "mwqa1sita14sv",
+     "flug": "",
+     "role": "inst",
+     "flugInfo": {
+      "hinflug": {
+       "datum": "2026-12-14",
+       "airline": "Austrian Airlines",
+       "flugnummern": "OS 211",
+       "von": "VIE",
+       "ab": "13:55",
+       "nach": "FRA",
+       "an": "15:25",
+       "umsteigeort": "",
+       "dauer_h": 1.5
+      },
+      "rueckflug": {
+       "datum": "2026-12-23",
+       "airline": "Austrian Airlines",
+       "flugnummern": "OS 216",
+       "von": "FRA",
+       "ab": "19:40",
+       "nach": "VIE",
+       "an": "21:05",
+       "umsteigeort": "",
+       "dauer_h": 1.42
+      },
+      "flugdauer_h": 1.5,
+      "umstiege": 0,
+      "preise": {
+       "eco": 124
+      },
+      "gepaeck": {
+       "eco": 238,
+       "bus": 0
+      },
+      "quelle": "https://www.austrian.com/lhg/de/de/o-d/cy-cy/wien-frankfurt",
+      "at": 1795776921609
+     },
+     "flugManuell": false,
+     "flugSrc": "online"
+    }
+   ],
+   "profileId": "de",
+   "auftrag": "LM440723",
+   "bemerkung": "",
+   "maschId": "m-konv",
+   "preis": "ek",
+   "ab": "2026-12-14",
+   "rueck": "2026-12-23",
+   "ueInst": "10",
+   "ueTrain": "",
+   "ueInst2": "",
+   "ueTrain2": "",
+   "instTage": "8",
+   "training": false,
+   "handTage": "",
+   "trainTage": "",
+   "klasse": "Economy",
+   "carMode": "ja",
+   "regel": "mit",
+   "man": {
+    "hotel": null,
+    "car": null,
+    "spesen": null
+   },
+   "ov": {
+    "hotel": "",
+    "car": "",
+    "spesen": "",
+    "nk": "",
+    "taxi": ""
+   },
+   "nkPausch": "",
+   "res": {
+    "at": 1795776921608,
+    "key": "{\"k\":\"mwyupvijqock2\",\"ab\":\"2026-12-14\",\"i\":\"8\",\"tr\":false,\"h\":\"\",\"d\":\"\",\"t\":[\"mwqa1sita14sv:\"]}",
+    "auto": false,
+    "model": "claude-sonnet-5-5",
+    "searches": 5,
+    "cur": "EUR",
+    "trip": "VIE–FRA · 14.12.2026–23.12.2026",
+    "data": {
+     "fluege": [
+      {
+       "techniker": "Johannes Strauss",
+       "von": "VIE",
+       "nach": "FRA",
+       "flugdauer_h": 1.5,
+       "umstiege": 0,
+       "preise_chf": {
+        "economy": 123.6,
+        "premium_economy": null,
+        "business": null
+       },
+       "zusatzgepaeck_chf": {
+        "economy": 238,
+        "premium_economy": null,
+        "business": 0
+       },
+       "hinflug": {
+        "datum": "2026-12-14",
+        "airline": "Austrian Airlines",
+        "flugnummern": "OS 211",
+        "von": "VIE",
+        "ab": "13:55",
+        "nach": "FRA",
+        "an": "15:25",
+        "umsteigeort": "",
+        "dauer_h": 1.5
+       },
+       "rueckflug": {
+        "datum": "2026-12-23",
+        "airline": "Austrian Airlines",
+        "flugnummern": "OS 216",
+        "von": "FRA",
+        "ab": "19:40",
+        "nach": "VIE",
+        "an": "21:05",
+        "umsteigeort": "",
+        "dauer_h": 1.42
+       },
+       "quelle": "https://www.austrian.com/lhg/de/de/o-d/cy-cy/wien-frankfurt",
+       "bemerkung": "Direktflüge. Der Hinflug am 14.12. ist der erste Flug nach 08:30, der in den Flugplänen gefunden wurde; der Flug um 07:00 liegt vor dem Zeitfenster. Der Economy-Preis von 135 EUR ist der günstigste Retourpreis im Dezember 2026 (vermutlich Light-Tarif ohne Aufgabegepäck) und nicht für die genauen Flüge bestätigt. Zusatzgepäck Economy: Schätzung 2 × 130 EUR (Zusatzstück plus Gewichtsaufschlag 24–32 kg, Lufthansa-Gruppe-Tarife). Business: 2 × 32 kg Freigepäck, daher 0 (im Comfort-Tarif nur 1 × 32 kg). Premium Economy wird auf Europastrecken nicht angeboten. Business-Preis nicht belegt. Verfügbarkeit von OS 211 am Montag und Preise vor Buchung prüfen."
+      }
+     ],
+     "wechselkurs": {
+      "chf_pro_einheit": 0.9153,
+      "waehrung": "EUR"
+     },
+     "visa": [
+      {
+       "nationalitaet": "Österreich",
+       "benoetigt": "nein",
+       "art": "Kein Visum und keine Einreisegenehmigung (EU-Bürger, Freizügigkeit)",
+       "kosten_chf": 0,
+       "vorlauf_tage": 0,
+       "hinweis": "Gültiger Reisepass oder Personalausweis genügt. Für die Entsendung ist in der Regel eine A1-Bescheinigung der österreichischen Sozialversicherung nötig, und je nach Tätigkeit kann eine Meldung nach deutschem Entsenderecht erforderlich sein. Dazu habe ich nicht recherchiert, bitte intern klären."
+      }
+     ],
+     "zusammenfassung": "Johannes Strauss fliegt direkt mit Austrian Airlines: Hinflug am 14.12.2026 mit OS 211 (13:55 bis 15:25) und Rückflug am 23.12.2026 mit OS 216 (19:40 bis 21:05). Der Economy-Retourpreis liegt bei rund 135 EUR (ca. CHF 124), das Zusatzgepäck von 30 kg bei geschätzt CHF 238. Für Premium Economy und Business liegen keine verlässlichen Preise vor. Als Österreicher braucht er für Deutschland kein Visum.",
+     "quellen": [
+      {
+       "titel": "Austrian Airlines: Flüge Wien–Frankfurt (Preise und Flugplan)",
+       "url": "https://www.austrian.com/lhg/de/de/o-d/cy-cy/wien-frankfurt"
+      },
+      {
+       "titel": "Austrian Airlines: Flüge Frankfurt–Wien (Flugplan)",
+       "url": "https://www.austrian.com/lhg/de/de/o-d/cy-cy/frankfurt-wien"
+      },
+      {
+       "titel": "Lufthansa: Übergepäck Preise",
+       "url": "https://www.lufthansa.com/de/de/uebergepaeck"
+      },
+      {
+       "titel": "Lufthansa Gepäck 2026: Gebühren (aifly)",
+       "url": "https://aifly.one/guides/lufthansa-freigepaeck/"
+      },
+      {
+       "titel": "Austrian Airlines: FAQ Gepäck",
+       "url": "https://www.austrian.com/at/de/faq-gepaeck"
+      },
+      {
+       "titel": "Wise: EUR/CHF Wechselkurs",
+       "url": "https://wise.com/us/currency-converter/eur-to-chf-rate"
+      }
+     ]
+    },
+    "sources": [
+     {
+      "url": "https://www.austrian.com/lhg/de/de/o-d/cy-cy/wien-frankfurt",
+      "title": "Direktflug von Wien nach Frankfurt (VIE-FRA) buchen"
+     },
+     {
+      "url": "https://www.lufthansa.com/lhg/de/de/o-d/cy-cy/wien-frankfurt",
+      "title": "Direktflug von Wien nach Frankfurt (VIE-FRA) buchen"
+     },
+     {
+      "url": "https://www.austrian.com/lhg/de/de/o-d/cy-cy/frankfurt-wien",
+      "title": "Direktflug von Frankfurt nach Wien (FRA-VIE) buchen"
+     },
+     {
+      "url": "https://www.austrian.com/lhg/at/de/o-d/cy-cy/wien-frankfurt",
+      "title": "Direktflug von Wien nach Frankfurt (VIE-FRA) buchen"
+     },
+     {
+      "url": "https://wise.com/us/currency-converter/eur-to-chf-rate",
+      "title": "Schweizer Franken Wechselkurs"
+     },
+     {
+      "url": "https://www.lufthansa.com/de/de/uebergepaeck",
+      "title": "Übergepäck"
+     },
+     {
+      "url": "https://aifly.one/guides/lufthansa-freigepaeck/",
+      "title": "Handgepäck und Aufgabegepäck Lufthansa (2026): Maße, Gewicht, Gebühren"
+     },
+     {
+      "url": "https://www.austrian.com/at/de/faq-gepaeck",
+      "title": "FAQ Gepäck"
+     },
+     {
+      "url": "https://www.airline-direct.de/fluege/von/Wien-VIE/nach/Frankfurt-FRA",
+      "title": "Flug Wien (VIE) nach Frankfurt (FRA) - billige Flüge online buchen"
+     },
+     {
+      "url": "https://www.swiss.com/lhg/de/de/o-d/cy-cy/wien-frankfurt",
+      "title": "Flug Wien (VIE) ✈️ Frankfurt (FRA)"
+     }
+    ]
+   },
+   "ofEdit": {
+    "all|flight": {
+     "cur": "EUR",
+     "ppu": 500,
+     "qty": 0
+    },
+    "all|carkm": {
+     "cur": "EUR",
+     "ppu": 1.2
+    },
+    "all|rental": {
+     "cur": "EUR",
+     "qty": 0,
+     "ppu": 0
+    }
+   },
+   "useApi": true,
+   "ovSrc": {},
+   "createdAt": 1795777066871,
+   "updatedAt": 1795777066871,
+   "total": 19421.04101,
+   "ofTotal": 21020,
+   "ofCur": "EUR",
+   "ofEdited": true,
+   "ziel": "Deutschland"
   }
  ],
  "aufgaben": [
@@ -3777,5 +4022,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795776921604
+ "updatedAt": 1795777066871
 }
