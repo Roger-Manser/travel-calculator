@@ -1,4 +1,4 @@
-<!-- Gallus Travel Calculator v6.2 – Sticky «Alle schliessen»-Button in Stammdaten -->
+<!-- Gallus Travel Calculator v6.5 – Globaler Reise-Cache (Flugstrecken, Transfers, Direktfahrten) -->
 <!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#151617">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="app-version" content="6.2">
+<meta name="app-version" content="6.5">
 <meta name="apple-mobile-web-app-title" content="Travel Calc">
 <style>
 :root{--bg:#151617;--card:#1e2022;--card2:#26292c;--line:#34373b;--ink:#ececec;--muted:#a3a6aa;--brand:#d07020;--brand-2:#f3a35c;--red:#ef6b6b;--amber:#e8c547;--input:#18191b;
@@ -23,8 +23,7 @@
 .budTab{width:100%;border-collapse:collapse;font-size:13px}.budTab td{padding:4px 6px;border-bottom:1px solid var(--line)}.budTab td.r{text-align:right;white-space:nowrap}
 body{margin:0;font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
 .theme{background:var(--card2);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12px;cursor:pointer}
-#stammCloseBar{position:sticky;top:57px;z-index:9;background:var(--bg);border-bottom:1px solid var(--line);padding:4px 16px;display:none;justify-content:flex-end}
-#stammCloseBar.vis{display:flex}
+#stammCloseBar{position:sticky;top:0;z-index:9;background:var(--card2);border-bottom:1px solid var(--line);padding:4px 16px;display:flex;justify-content:flex-end;margin-bottom:8px}
 header{position:sticky;top:0;z-index:10;background:var(--hdr);box-shadow:var(--shadow);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 h1{font-size:17px;margin:0}
 .ver{background:var(--card2);color:var(--brand-2);border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:12px;cursor:pointer}
@@ -399,6 +398,15 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
     <h3 style="margin:16px 0 6px;font-size:14px">Letzte Buchungen</h3>
     <div id="budList" class="muted">–</div>
   </div>
+  <div class="card"><h2>Reise-Cache</h2>
+    <p class="muted" style="margin-top:0">Technikerübergreifend gespeicherte Reisedaten. Priorität: Manuell im Einsatz &gt; Früherer Einsatz &gt; Cache hier &gt; API. Preis editieren: Wert ändern und Enter drücken.</p>
+    <h3 style="margin:12px 0 6px;font-size:14px">✈ Flugstrecken</h3>
+    <div id="rcFlugList" class="muted">–</div>
+    <h3 style="margin:16px 0 6px;font-size:14px">🚐 Transfers Flughafen → Kunde</h3>
+    <div id="rcTransList" class="muted">–</div>
+    <h3 style="margin:16px 0 6px;font-size:14px">🚗 Direktfahrten Wohnort → Kunde</h3>
+    <div id="rcAutoList" class="muted">–</div>
+  </div>
   <div class="card"><h2>Versionshistorie</h2><div class="vh" id="vhInfo"></div></div>
   <div class="card"><h2>Lokale Daten</h2>
     <p class="muted" style="margin-top:0">Löscht Daten, Entwurf und Einstellungen in diesem Browser. Die Daten im GitHub-Repo bleiben erhalten.</p>
@@ -425,8 +433,20 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <script>
 'use strict';
-const APP_VERSION = '6.2';
+const APP_VERSION = '6.5';
 const VERSION_HISTORY = [
+  { v: '6.5', d: '2026-11-27', items: [
+    'Globaler Reise-Cache: Flugstrecken (Klasse/Preis), Transfers (Flughafen zu Kunde) und Direktfahrten (Wohnort zu Kunde) werden technikerübergreifend gespeichert',
+    'Reise-Cache in Einstellungen einsehbar und editierbar (Preis ändern, Eintrag löschen)',
+    'Priorität: Manuell im Einsatz gesetzt > Früherer Einsatz > Globaler Cache > API',
+  ] },
+  { v: '6.4', d: '2026-11-27', items: [
+    'Reisevergleich Flug vs. Auto direkt pro Techniker im Einsatz: Distanz und Zeit werden aus früheren Einsaetzen oder per API ermittelt',
+    'Reisemodus Flug / Auto pro Techniker waehlbar – beeinflusst Reisezeit, Kosten und Flugbuchung',
+  ] },
+  { v: '6.3', d: '2026-11-25', items: [
+    'Bugfix: «Alle schliessen»-Button in Stammdaten immer sichtbar (nicht versteckt)',
+  ] },
   { v: '6.2', d: '2026-11-24', items: [
     'Sticky «Alle schliessen»-Button am oberen Rand der Stammdaten – immer sichtbar beim Scrollen',
   ] },
@@ -1209,6 +1229,10 @@ function ensureData(d) {
   d = d || {};
   d.rates = ensureRates(d.rates); d.deleted = d.deleted || {};
   d.einsaetze = d.einsaetze || []; d.techniker = d.techniker || []; d.kunden = d.kunden || []; d.apiLog = d.apiLog || [];
+  d.reiseCache = d.reiseCache || { flug: [], transfer: [], autoZiel: [] };
+  if (!d.reiseCache.flug) d.reiseCache.flug = [];
+  if (!d.reiseCache.transfer) d.reiseCache.transfer = [];
+  if (!d.reiseCache.autoZiel) d.reiseCache.autoZiel = [];
   if (!Array.isArray(d.aufgaben)) d.aufgaben = defaultAufgaben();
   if (!d.aufgaben.some(a => a.id === 'a-umb') && !d.deleted['a-umb']) d.aufgaben.splice(Math.min(3, d.aufgaben.length), 0, { id: 'a-umb', name: 'Umbau', art: 'Installationstechniker', updatedAt: 0 }); // Migration v1.7
   d.techniker.forEach(t => { // Migration v1.4: Standard-Zusatzgepäck
@@ -1322,14 +1346,30 @@ function renderTechPick() {
     const t = techById(sel.id); if (!t) return '';
     const arten = t.arten || [], fits = !req || arten.includes(req) || (E.training && sel.role === 'app');
     const c = techCls(sel, t);
+    const k_pick = DATA.kunden.find(x => x.id === E.kundeId);
+    const az_pick = resAutoZiel(sel, t.id, k_pick ? k_pick.id : null);
+    const isModeAuto = sel.reiseModus === 'auto';
+    const TT_cmp = (() => { try { return travelTimes(t, sel, k_pick, true); } catch(_) { return null; } })();
+    const flugZeitPick = TT_cmp && TT_cmp.ok ? fmtH(TT_cmp.hin + TT_cmp.rueck) : '?';
+    const autoZeitTxt = az_pick ? `${fmtH(az_pick.fahrzeitH * 2)} (hin+zurueck, ${fmt0(az_pick.km * 2)} km)` : null;
+    const azSrcTxt = az_pick ? (az_pick.src === 'api' ? ' · API' : ' · aus früherem Einsatz') : '';
+    const cmpBox = `<div style="flex-basis:100%;background:var(--card2);border-radius:6px;padding:6px 10px;font-size:11pt;display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:4px">`
+      + `<span>✈ Flug gesamt: <b>${esc(flugZeitPick)}</b></span>`
+      + `<span>\u{1F697} Auto direkt: <b>${az_pick ? esc(autoZeitTxt) : '<span class="warnTxt">fehlt</span>'}</b>${az_pick ? `<span class="muted" style="font-size:10pt">${esc(azSrcTxt)}</span>` : ''}</span>`
+      + (!az_pick && k_pick ? `<button class="btn sec sm" data-tauto="${esc(t.id)}">Auto-Distanz ermitteln (API)</button>` : '')
+      + `<span style="margin-left:auto">Reise: `
+      + `<label style="margin:0 4px"><input type="radio" name="rm_${esc(t.id)}" data-trm="${esc(t.id)}" value="flug" ${!isModeAuto ? 'checked' : ''}> ✈ Flug</label>`
+      + `<label style="margin:0 4px"><input type="radio" name="rm_${esc(t.id)}" data-trm="${esc(t.id)}" value="auto" ${isModeAuto ? 'checked' : ''}${!az_pick ? ' disabled title="Erst Auto-Distanz ermitteln"' : ''}> \u{1F697} Auto</label>`
+      + `</span></div>`;
     return `<div class="trow on">
       <b>${esc(t.name)}</b>
       <span class="muted">${esc(info(t))}${req && !fits ? ` · <span class="warnTxt">nicht ${esc(req)}</span>` : ''}${techFitsMasch(t) === false ? ` · <span class="warnTxt">nicht ${esc(mName)}</span>` : ''}</span>
       <button class="btn red sm" data-trem="${esc(t.id)}" title="Techniker aus dem Einsatz entfernen" style="margin-left:auto">✕</button>
       ${E.training ? `<label class="tflug" style="margin-left:0">Rolle <select data-trole="${esc(t.id)}" style="width:auto"><option value="inst" ${sel.role !== 'app' ? 'selected' : ''}>Installation</option><option value="app" ${sel.role === 'app' ? 'selected' : ''}>Training (Applikation)</option></select></label>` : ''}
-      <label class="tflug" style="margin-left:0">Klasse <select data-tk="${esc(t.id)}" style="width:auto"><option value="">Auto: ${KL[c.auto]}${isFinite(c.dur) ? ` (${fmtH(c.dur)})` : ''}</option>${Object.entries(KL).map(([kk, n]) => `<option value="${kk}" ${sel.klasse === kk ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
-      <label class="tflug">Flug ${esc(apLabel(t.flughafen))} – ${esc(destL)} · ${KL[c.cls]} retour CHF<input data-tf="${esc(t.id)}" inputmode="decimal" placeholder="per API" value="${esc(isFinite(c.price) ? (c.manual ? sel.flug : Math.round(c.price)) : '')}"></label>
-      ${sel.flugInfo ? `<div class="muted" style="flex-basis:100%">✈ ${esc(legTxt(sel.flugInfo.hinflug))} &nbsp;|&nbsp; ${esc(legTxt(sel.flugInfo.rueckflug))}</div>` : ''}
+      ${!isModeAuto ? `<label class="tflug" style="margin-left:0">Klasse <select data-tk="${esc(t.id)}" style="width:auto"><option value="">Auto: ${KL[c.auto]}${isFinite(c.dur) ? ` (${fmtH(c.dur)})` : ''}</option>${Object.entries(KL).map(([kk, n]) => `<option value="${kk}" ${sel.klasse === kk ? 'selected' : ''}>${n}</option>`).join('')}</select></label>` : ''}
+      ${!isModeAuto ? `<label class="tflug">Flug ${esc(apLabel(t.flughafen))} – ${esc(destL)} · ${KL[c.cls]} retour CHF<input data-tf="${esc(t.id)}" inputmode="decimal" placeholder="per API" value="${esc(isFinite(c.price) ? (c.manual ? sel.flug : Math.round(c.price)) : '')}"></label>` : ''}
+      ${!isModeAuto && sel.flugInfo ? `<div class="muted" style="flex-basis:100%">✈ ${esc(legTxt(sel.flugInfo.hinflug))} &nbsp;|&nbsp; ${esc(legTxt(sel.flugInfo.rueckflug))}</div>` : ''}
+      ${cmpBox}
     </div>`;
   }).join('');
   const avail = list.filter(t => !E.techs.some(x => x.id === t.id));
@@ -1353,6 +1393,9 @@ function onForm(ev) {
     renderTechPick();
   } else if (t.dataset.tf !== undefined) {
     const x = E.techs.find(x => x.id === t.dataset.tf); if (x) { x.flug = t.value; x.flugManuell = t.value.trim() !== ''; delete x.flugSrc; }
+  } else if (t.dataset.trm !== undefined) {
+    const x = E.techs.find(x => x.id === t.dataset.trm); if (x) { x.reiseModus = t.value; renderTechPick(); render(); }
+    return;
   } else {
     readForm();
     if (t.id === 'f_status') {
@@ -1391,6 +1434,62 @@ function legTxt(l) {
   const d = l.datum ? fmtDate(String(l.datum).slice(0, 10)) + ' ' : '';
   return `${d}${[l.airline, l.flugnummern].filter(Boolean).join(' ')}${l.von || l.ab ? ` · ${l.von ? apLabel(l.von) : ''} ${l.ab || ''}` : ''} → ${l.nach ? apLabel(l.nach) : ''} ${l.an || ''}${l.umsteigeort ? ` (via ${apLabel(l.umsteigeort)})` : ''}${isFinite(num(l.dauer_h)) ? ` · ${fmtH(num(l.dauer_h))}` : ''}`.replace(/\s+/g, ' ').trim();
 }
+function resAutoZiel(sel, tid, kid) {
+  if (sel && sel.autoZiel && isFinite(sel.autoZiel.km)) return sel.autoZiel;
+  if (!tid || !kid) return null;
+  for (const e of DATA.einsaetze) {
+    if (e.id === E.id) continue;
+    if (e.kundeId !== kid) continue;
+    const ts = e.techs || [];
+    const sx = ts.find(x => x.id === tid);
+    if (sx && sx.autoZiel && isFinite(sx.autoZiel.km)) return sx.autoZiel;
+  }
+  // 3. Globaler Cache
+  const gc = rcGetAutoZiel(tid, kid);
+  if (gc && isFinite(gc.km)) return { km: gc.km, fahrzeitH: gc.fahrzeitH, at: gc.at, src: gc.src || 'cache' };
+  return null;
+}
+// ===== GLOBALER REISE-CACHE =====
+// Schluessel-Generatoren
+const rcFlugKey  = (ap1, ap2) => `${ap1}>${ap2}`;
+const rcTransKey = (ap, kid)  => `${ap}>${kid}`;
+const rcAutoKey  = (tid, kid) => `${tid}>${kid}`;
+
+// Cache-Lookup (gibt Eintrag oder null)
+function rcGetFlug(ap1, ap2, klasse) {
+  return (DATA.reiseCache.flug || []).find(x => x.key === rcFlugKey(ap1, ap2) && x.klasse === klasse) || null;
+}
+function rcGetTransfer(ap, kid) {
+  return (DATA.reiseCache.transfer || []).find(x => x.key === rcTransKey(ap, kid)) || null;
+}
+function rcGetAutoZiel(tid, kid) {
+  return (DATA.reiseCache.autoZiel || []).find(x => x.key === rcAutoKey(tid, kid)) || null;
+}
+
+// Cache-Speichern / Aktualisieren
+function rcSaveFlug(ap1, ap2, klasse, chf, src) {
+  const key = rcFlugKey(ap1, ap2), rc = DATA.reiseCache.flug;
+  const idx = rc.findIndex(x => x.key === key && x.klasse === klasse);
+  const entry = { key, ap1, ap2, klasse, chf, src, at: Date.now() };
+  if (idx >= 0) rc[idx] = entry; else rc.push(entry);
+  changed();
+}
+function rcSaveTransfer(ap, kid, kName, km, fahrzeitH, chf, modus, src) {
+  const key = rcTransKey(ap, kid), rc = DATA.reiseCache.transfer;
+  const idx = rc.findIndex(x => x.key === key);
+  const entry = { key, ap, kid, kName, km, fahrzeitH, chf, modus, src, at: Date.now() };
+  if (idx >= 0) rc[idx] = entry; else rc.push(entry);
+  changed();
+}
+function rcSaveAutoZiel(tid, kid, tName, kName, km, fahrzeitH, src) {
+  const key = rcAutoKey(tid, kid), rc = DATA.reiseCache.autoZiel;
+  const idx = rc.findIndex(x => x.key === key);
+  const entry = { key, tid, kid, tName, kName, km, fahrzeitH, src, at: Date.now() };
+  if (idx >= 0) rc[idx] = entry; else rc.push(entry);
+  changed();
+}
+// ===== ENDE REISE-CACHE =====
+
 function resVisa(nat) { const d = E.res && E.res.data; const v = d && Array.isArray(d.visa) ? d.visa : []; const n = natKey(nat); return v.find(x => natKey(x.nationalitaet) === n) || v.find(x => n && natKey(x.nationalitaet).includes(n.slice(0, 5))) || null; }
 const isoOf = t => new Date(t).toISOString().slice(0, 10);
 function intOrNaN(v) { if (v === '' || v === undefined || v === null) return NaN; const n = num(v); return Number.isInteger(n) && n >= 0 ? n : NaN; }
@@ -1582,15 +1681,29 @@ function calcCore() {
       if (!isFinite(st)) missingStd.add('x');
       add(g, 'Arbeitszeit', ph, `Arbeitszeit ${an}`, d * arbH, 'h', st, stCur, isFinite(st) ? d * arbH * st * stFx : 0, `${d} Tage × ${fmt0(arbH)} h${maschName ? ' · ' + maschName : ''}`);
     });
+    const isTechAuto = sel.reiseModus === 'auto';
+    const az2 = isTechAuto ? resAutoZiel(sel, t.id, k ? k.id : null) : null;
     { const st = stdSatz(), pc = (num(R.reiseProz) || 0) / 100;
-      const TT = travelTimes(t, selC, k, car), est = !TT.ok;
+      const TT = isTechAuto && az2
+        ? { hin: az2.fahrzeitH, rueck: az2.fahrzeitH, ok: true, approx: false, mietTr: 0, vorl: 0, anr: az2.fahrzeitH, ziel: 0, hinF: 0, rueckF: 0 }
+        : travelTimes(t, selC, k, car);
+      const est = !TT.ok;
       const rh = est ? 2 * (num(R.reiseStdTag) || 0) : Math.round((TT.hin + TT.rueck) * 100) / 100;
-      if (est) warn(`${t.name}: Reisezeit geschätzt (2 × ${fmt0(num(R.reiseStdTag))} h) – genaue Reisezeit nach der Online-Ermittlung des Flugs.`);
-      else if (TT.approx && !erfFl) warn(`${t.name}: Flugdauer der Rückreise nicht einzeln bekannt – wie Hinflug gerechnet. «Neu recherchieren» liefert die genaue Dauer.`);
+      if (isTechAuto && az2) {
+        // Auto: km-Entschaedigung
+        const kpEUR = num(R.kmFahrzeugEUR), efx2 = num(R.fx.EUR), totalKm = 2 * az2.km;
+        if (kpEUR > 0) add(g, 'Fahrt (Auto)', home, `Direktfahrt ${t.wohnort || 'Wohnort'} – ${k ? k.name : 'Kunde'} retour`, totalKm, 'km', kpEUR, 'EUR', efx2 > 0 ? totalKm * kpEUR * efx2 : 0, `2 × ${fmt0(az2.km)} km · ${fmtH(az2.fahrzeitH)} je Richtung`);
+        else warn(`${t.name}: km-Satz (EUR/km) in Firmensaetze nicht erfasst.`);
+      } else if (!isTechAuto) {
+        if (est) warn(`${t.name}: Reisezeit geschätzt (2 × ${fmt0(num(R.reiseStdTag))} h) – genaue Reisezeit nach der Online-Ermittlung des Flugs.`);
+        else if (TT.approx && !erfFl) warn(`${t.name}: Flugdauer der Rückreise nicht einzeln bekannt – wie Hinflug gerechnet. «Neu recherchieren» liefert die genaue Dauer.`);
+      }
+      if (!isTechAuto && est) warn(`${t.name}: Reisezeit geschätzt.`);
       const f = v => isFinite(v) ? fmtH(v) : '–';
       const mietNote = TT.mietTr > 0 ? ` + Mietwagen ${fmtH(TT.mietTr)}` : '';
-      const note = (est ? `geschätzt: 2 × ${fmt0(num(R.reiseStdTag))} h` : `Hin ${fmtH(TT.hin)} (Anreise ${f(TT.anr)} + Flughafen ${fmtH(TT.vorl)} + Flug ${fmtH(TT.hinF)}${mietNote} + Fahrt ${f(TT.ziel)}) · Zurück ${fmtH(TT.rueck)} (Fahrt ${f(TT.ziel)}${mietNote} + Flughafen ${fmtH(TT.vorl)} + Flug ${fmtH(TT.rueckF)} + Heimreise ${f(TT.anr)})`) + (erfFl && !est ? ' · Flugdauer Erfahrungswert' : '');
+      const note = isTechAuto && az2 ? `Auto direkt: ${fmtH(az2.fahrzeitH)} je Richtung · ${fmt0(az2.km)} km je Richtung` : (est ? `geschätzt: 2 × ${fmt0(num(R.reiseStdTag))} h` : `Hin ${fmtH(TT.hin)} (Anreise ${f(TT.anr)} + Flughafen ${fmtH(TT.vorl)} + Flug ${fmtH(TT.hinF)}${mietNote} + Fahrt ${f(TT.ziel)}) · Zurück ${fmtH(TT.rueck)} (Fahrt ${f(TT.ziel)}${mietNote} + Flughafen ${fmtH(TT.vorl)} + Flug ${fmtH(TT.rueckF)} + Heimreise ${f(TT.anr)})`) + (erfFl && !est && !isTechAuto ? ' · Flugdauer Erfahrungswert' : '');
       if (rh > 0 && pc > 0) { if (!isFinite(st)) missingStd.add('x'); add(g, 'Reisezeit', home, 'Reisezeit Hin- und Rückreise', rh, 'h', st * pc, stCur, isFinite(st) ? rh * st * pc * stFx : 0, note + (pc !== 1 ? ` × ${fmt0(pc * 100)} %` : '')); } }
+    if (!isTechAuto) {
     const fiN = sel.flugInfo && sel.flugInfo.hinflug ? [sel.flugInfo.hinflug.airline, sel.flugInfo.hinflug.flugnummern].filter(Boolean).join(' ') : '';
     add(g, 'Flug', home, `Flug ${apLabel(t.flughafen)} – ${destL} · ${KL[C.cls]}`, 1, 'retour', fl, 'CHF', fl, [C.overridden ? 'Klasse manuell' : `Klasse automatisch${isFinite(C.dur) ? ` (Flug ${fmtH(C.dur)} ${C.cls === 'pe' ? '≥' : '<'} ${fmt0(C.lim)} h)` : ''}`, fiN, C.manual ? 'Preis manuell' : erfFl ? `Länderprofil ${p.name} (${cur} ${fmt(erfV('flug'))}${erfSrcTxt(p, 'flug') ? ', ' + erfSrcTxt(p, 'flug') : ''})` : (sel.flugInfo && sel.flugInfo.cache ? `aus Strecken-Speicher (${fmtDate(isoOf(sel.flugInfo.cache.at))})` : 'online ermittelt')].filter(Boolean).join(' · '));
     let gpv = 0;
@@ -1601,15 +1714,16 @@ function calcCore() {
     }
     { const bp = num(C.pr.bus), bg = t.gepaeck ? num(C.gp.bus) : 0;
       busCmp.push({ t, cls: C.cls, cur: fl + gpv, bus: isFinite(bp) ? bp + (isFinite(bg) ? bg : 0) : NaN, bgUnknown: t.gepaeck && !isFinite(bg) }); }
-    if (t.anreiseModus === 'taxi') {
+    } // end !isTechAuto
+    if (!isTechAuto && t.anreiseModus === 'taxi') {
       const tx = num(t.taxiEinfachChf);
       if (!isFinite(tx)) warn(`${t.name}: Taxipreis zum Flughafen fehlt (Stammdaten → Anreise auswerten).`);
       add(g, 'Anreise Flughafen', home, `Taxi ${t.wohnort || 'Wohnort'} – Flughafen ${apLabel(t.flughafen)}`, 2, 'Fahrten', tx, 'CHF', isFinite(tx) ? 2 * tx : 0, 'Hin- und Rückfahrt');
-    } else if (t.anreiseModus === 'oev') {
+    } else if (!isTechAuto && t.anreiseModus === 'oev') {
       const o = num(t.oevRetourChf);
       if (!isFinite(o)) warn(`${t.name}: ÖV-Billett zum Flughafen fehlt (Stammdaten → Anreise auswerten).`);
       add(g, 'Anreise Flughafen', home, `ÖV ${t.wohnort || 'Wohnort'} – Flughafen ${apLabel(t.flughafen)} retour`, 1, 'retour', o, 'CHF', isFinite(o) ? o : 0, '');
-    } else {
+    } else if (!isTechAuto) {
       const pk = num(t.parkenTagChf);
       if (!isFinite(pk)) warn(`${t.name}: Parkgebühr am Flughafen fehlt (Stammdaten → Anreise auswerten).`);
       add(g, 'Anreise Flughafen', fr, `Parkieren Flughafen ${apLabel(t.flughafen)}`, days, 'Tage', pk, 'CHF', isFinite(pk) ? days * pk : 0, '');
@@ -1622,7 +1736,7 @@ function calcCore() {
     add(g, 'Hotel', x.fracN, 'Hotel', nights, 'Nächte', h, cur, nights * h * fx, src('hotel') + hMinNote);
     add(g, 'Spesen', x.fracS, 'Spesen', spD, 'Tage', s, sCur, spD * s * sFx, [E.regel === 'mit' ? 'inkl. An- und Abreisetag' : 'ohne An- und Abreisetag', sNote].filter(Boolean).join(' · '));
     if (nkOn) add(g, 'Nebenkosten', fr, 'Nebenkosten', days, 'Reisetage', nk, cur, days * nk * fx, '');
-    if (!car) add(g, 'Transport vor Ort', home, 'Taxi Flughafen ↔ Kunde', 2, 'Fahrten', taxi, cur, 2 * taxi * fx, src('taxi'));
+    if (!isTechAuto && !car) add(g, 'Transport vor Ort', home, 'Taxi Flughafen ↔ Kunde', 2, 'Fahrten', taxi, cur, 2 * taxi * fx, src('taxi'));
     if (sel.flugInfo && S.ok) {
       const hd = sel.flugInfo.hinflug && String(sel.flugInfo.hinflug.datum || '').slice(0, 10), rd = sel.flugInfo.rueckflug && String(sel.flugInfo.rueckflug.datum || '').slice(0, 10);
       if (hd && hd !== isoOf(x.arr)) warn(`${t.name}: gewählter Hinflug am ${fmtDate(hd)} passt nicht zum Anreisetag ${dShort(x.arr)} – bitte «Neu recherchieren».`);
@@ -2249,6 +2363,27 @@ Fasse vor dem Ergebnis höchstens in 2–3 Sätzen zusammen. Antworte am Schluss
     return true;
   } catch (e) { const s = stat(); if (s) s.innerHTML = 'Fehler: ' + esc(e.message) + (LAST_RAW ? ' · <a href="#" data-raw style="color:var(--brand-2)">Rohantwort</a>' : ''); return false; }
 }
+async function evalAutoZiel(techId, kundeId) {
+  const t = techById(techId), k = DATA.kunden.find(x => x.id === kundeId);
+  if (!t || !k) { toast('Techniker oder Kunde nicht gefunden'); return; }
+  if (!CFG.ai.key.trim()) { toast('Bitte zuerst den Anthropic API-Key in den Einstellungen erfassen'); return; }
+  if (!t.wohnort) { toast('Bitte Wohnort beim Techniker erfassen'); return; }
+  if (!k.adresse && !k.ort) { toast('Bitte Adresse beim Kunden erfassen'); return; }
+  const sel = E.techs.find(x => x.id === techId); if (!sel) return;
+  const dest = [k.name, k.adresse || k.ort, k.land].filter(Boolean).join(', ');
+  toast('Ermittle Direktfahrt … (ca. 20–60 Sekunden)');
+  const prompt = `Ermittle die Strassendistanz und Fahrzeit fuer eine Direktfahrt mit dem Auto.\n\nVon: ${t.wohnort}\nNach: ${dest}\n\nErmittle:\n- Strassendistanz in km (Autoroute)\n- Typische Fahrzeit in Stunden (ohne Stopps, normale Verkehrslage)\n\nAntworte mit genau einem JSON-Objekt in einem \`\`\`json-Block:\n{ "distanz_km": Zahl, "fahrzeit_h": Zahl, "bemerkung": "kurz, Deutsch (Schweiz)" }`;
+  try {
+    const r = await callClaude(prompt, 2, undefined, `Direktfahrt ${t.name}→${k.name}`);
+    const j = extractJSON(r.text); if (!j) throw new Error('Kein auswertbares Ergebnis');
+    const km = Math.round(num(j.distanz_km)), fh = Math.round(num(j.fahrzeit_h) * 100) / 100;
+    if (!isFinite(km) || !isFinite(fh)) throw new Error('Distanz oder Fahrzeit fehlt in der Antwort');
+    sel.autoZiel = { km, fahrzeitH: fh, at: Date.now(), src: 'api', bemerkung: j.bemerkung || '' };
+    rcSaveAutoZiel(techId, kundeId, t.name, k.name, km, fh, 'api');
+    changed(); renderTechPick(); render();
+    toast(`Direktfahrt ermittelt: ${fmt0(km)} km · ${fmtH(fh)}`);
+  } catch (e) { toast('Fehler: ' + e.message); }
+}
 function renderStamm() {
   renderKunden();
   const arten = DATA.rates.arten || [];
@@ -2420,6 +2555,10 @@ Fasse vor dem Ergebnis höchstens in 2–3 Sätzen zusammen. Antworte am Schluss
     if (j.flughafen_iata) k.flughafen = String(j.flughafen_iata).toUpperCase().slice(0, 3);
     if (isFinite(num(j.distanz_km))) k.distanzKm = Math.round(num(j.distanz_km));
     if (isFinite(num(j.fahrzeit_min))) k.fahrzeitMin = Math.round(num(j.fahrzeit_min));
+    // Globaler Cache: Transfer Flughafen→Kunde
+    if (k.flughafen && isFinite(num(k.distanzKm)) && isFinite(num(k.fahrzeitMin))) {
+      rcSaveTransfer(String(k.flughafen).toUpperCase(), k.id, k.name, num(k.distanzKm), num(k.fahrzeitMin) / 60, NaN, 'Mietwagen', 'api');
+    }
     if (j.waehrung) k.waehrung = String(j.waehrung).toUpperCase();
     k.alternativen = Array.isArray(j.alternativen) ? j.alternativen.slice(0, 2) : [];
     k.bemerkung = j.bemerkung || '';
@@ -3096,6 +3235,15 @@ function applyResearch(isAuto) {
       if (s) {
         s.flugInfo = { hinflug: fl.hinflug || null, rueckflug: fl.rueckflug || null, flugdauer_h: num(fl.flugdauer_h), umstiege: num(fl.umstiege), preise: x.P.pr, gepaeck: x.P.gp, quelle: fl.quelle || '', at: Date.now() };
         s.flugManuell = false; s.flug = ''; s.flugSrc = 'online';
+        // Globaler Cache: Flugpreis speichern
+        { const ap1 = String(x.tech.flughafen || '').toUpperCase();
+          const ap2 = String(LAST && LAST.k && LAST.k.flughafen || '').toUpperCase();
+          if (ap1 && ap2) {
+            const C2 = techCls(s, x.tech);
+            if (isFinite(x.P.pr.eco)) rcSaveFlug(ap1, ap2, 'eco', num(x.P.pr.eco), 'api');
+            if (isFinite(x.P.pr.pe))  rcSaveFlug(ap1, ap2, 'pe',  num(x.P.pr.pe),  'api');
+            if (isFinite(x.P.pr.bus)) rcSaveFlug(ap1, ap2, 'bus', num(x.P.pr.bus), 'api');
+          } }
         { const pr = LAST && LAST.p ? DATA.rates.profiles.find(z => z.id === LAST.p.id) : null, ap = AP[String(x.tech.flughafen || '').toUpperCase()];
           if (pr && ap && ap.cc === 'CH') { // Erfahrungswerte gelten ab Schweiz
             const f = pr.cur === 'CHF' ? 1 : num(DATA.rates.fx[pr.cur]);
@@ -3154,8 +3302,50 @@ function doPrint() {
 }
 
 /* ---------- Einstellungen, Tabs, Version ---------- */
+function renderReiseCache() {
+  const fmtDat = at => at ? fmtDate(isoOf(at)) : '–';
+  const delBtn = (typ, key) => `<button class="btn red sm" style="padding:2px 6px" data-rcdel="${esc(typ)}|${esc(key)}">✕</button>`;
+  // Flugstrecken
+  const fl = DATA.reiseCache.flug || [];
+  $('rcFlugList').innerHTML = fl.length ? `<table style="width:100%;border-collapse:collapse;font-size:11pt">`
+    + `<tr><th style="text-align:left;padding:2px 6px">Strecke</th><th>Klasse</th><th>CHF retour</th><th>Quelle</th><th>Datum</th><th></th></tr>`
+    + fl.map(x => `<tr>
+      <td style="padding:2px 6px">${esc(x.ap1)} → ${esc(x.ap2)}</td>
+      <td style="text-align:center">${esc(x.klasse || '–')}</td>
+      <td style="text-align:right"><input data-rcedit="flug|${esc(x.key)}|${esc(x.klasse)}" value="${esc(isFinite(x.chf) ? Math.round(x.chf) : '')}" inputmode="numeric" style="width:70px;text-align:right"></td>
+      <td style="text-align:center;color:var(--muted)">${esc(x.src || '–')}</td>
+      <td style="text-align:center;color:var(--muted)">${esc(fmtDat(x.at))}</td>
+      <td>${delBtn('flug', x.key + '|' + (x.klasse || ''))}</td></tr>`).join('')
+    + `</table>` : '<span style="color:var(--muted)">Noch keine Flugstrecken gespeichert.</span>';
+  // Transfers
+  const tr = DATA.reiseCache.transfer || [];
+  $('rcTransList').innerHTML = tr.length ? `<table style="width:100%;border-collapse:collapse;font-size:11pt">`
+    + `<tr><th style="text-align:left;padding:2px 6px">Flughafen → Kunde</th><th>km</th><th>Zeit</th><th>CHF</th><th>Modus</th><th>Datum</th><th></th></tr>`
+    + tr.map(x => `<tr>
+      <td style="padding:2px 6px">${esc(x.ap)} → ${esc(x.kName || x.kid)}</td>
+      <td style="text-align:right">${isFinite(x.km) ? fmt0(x.km) : '–'}</td>
+      <td style="text-align:right">${isFinite(x.fahrzeitH) ? fmtH(x.fahrzeitH) : '–'}</td>
+      <td style="text-align:right"><input data-rcedit="transfer|${esc(x.key)}" value="${esc(isFinite(x.chf) ? Math.round(x.chf) : '')}" inputmode="numeric" style="width:70px;text-align:right"></td>
+      <td style="text-align:center;color:var(--muted)">${esc(x.modus || '–')}</td>
+      <td style="text-align:center;color:var(--muted)">${esc(fmtDat(x.at))}</td>
+      <td>${delBtn('transfer', x.key)}</td></tr>`).join('')
+    + `</table>` : '<span style="color:var(--muted)">Noch keine Transfers gespeichert.</span>';
+  // Auto-Direktfahrten
+  const az = DATA.reiseCache.autoZiel || [];
+  $('rcAutoList').innerHTML = az.length ? `<table style="width:100%;border-collapse:collapse;font-size:11pt">`
+    + `<tr><th style="text-align:left;padding:2px 6px">Techniker → Kunde</th><th>km</th><th>Zeit</th><th>Quelle</th><th>Datum</th><th></th></tr>`
+    + az.map(x => `<tr>
+      <td style="padding:2px 6px">${esc(x.tName || x.tid)} → ${esc(x.kName || x.kid)}</td>
+      <td style="text-align:right">${isFinite(x.km) ? fmt0(x.km) : '–'}</td>
+      <td style="text-align:right">${isFinite(x.fahrzeitH) ? fmtH(x.fahrzeitH) : '–'}</td>
+      <td style="text-align:center;color:var(--muted)">${esc(x.src || '–')}</td>
+      <td style="text-align:center;color:var(--muted)">${esc(fmtDat(x.at))}</td>
+      <td>${delBtn('autoZiel', x.key)}</td></tr>`).join('')
+    + `</table>` : '<span style="color:var(--muted)">Noch keine Direktfahrten gespeichert.</span>';
+}
 function renderSettings() {
   document.querySelectorAll('[data-cfg]').forEach(el => { const [a, b] = el.dataset.cfg.split('.'); el.value = CFG[a][b] ?? ''; });
+  renderReiseCache();
 }
 function onCfgChange(ev) {
   const el = ev.target; if (!el.dataset.cfg) return;
@@ -3181,7 +3371,7 @@ function checkVersion() {
 /* ---------- Events ---------- */
 $('calcForm').addEventListener('input', onForm);
 $('calcForm').addEventListener('change', onForm);
-$('techPick').addEventListener('click', ev => { const rm = ev.target.closest('[data-trem]'); if (rm) { E.techs = E.techs.filter(x => x.id !== rm.dataset.trem); renderTechPick(); render(); return; } if (ev.target.closest('[data-tclean]')) { E.techs = E.techs.filter(x => techById(x.id)); renderTechPick(); render(); } });
+$('techPick').addEventListener('click', ev => { const rm = ev.target.closest('[data-trem]'); if (rm) { E.techs = E.techs.filter(x => x.id !== rm.dataset.trem); renderTechPick(); render(); return; } if (ev.target.closest('[data-tclean]')) { E.techs = E.techs.filter(x => techById(x.id)); renderTechPick(); render(); return; } const ab = ev.target.closest('[data-tauto]'); if (ab) { const kid = E.kundeId; if (kid) evalAutoZiel(ab.dataset.tauto, kid); } });
 $('calcForm').addEventListener('click', ev => {
   if (ev.target.closest('#btnProfApi') && LAST && LAST.p) evalProfile(LAST.p.id);
   if (ev.target.closest('#btnRefreeze')) {
@@ -3235,12 +3425,6 @@ stammTab.addEventListener('focusout', ev => {
   }
 });
 // Sticky «Alle schliessen»-Button: sichtbar wenn mind. ein Detail offen
-function updateSchliessen() {
-  const bar = document.getElementById('stammCloseBar');
-  if (!bar) return;
-  const any = !!stammTab.querySelector('details[data-kid][open], details[data-tid][open]');
-  bar.classList.toggle('vis', any);
-}
 document.getElementById('btnAlleSchliessen').addEventListener('click', () => {
   stammTab.querySelectorAll('details[data-kid], details[data-tid]').forEach(d => {
     d.open = false;
@@ -3248,9 +3432,13 @@ document.getElementById('btnAlleSchliessen').addEventListener('click', () => {
     if (d.dataset.kid) OPEN_K.delete(id);
     if (d.dataset.tid) OPEN_T.delete(id);
   });
-  updateSchliessen();
 });
-stammTab.addEventListener('toggle', ev => { const d = ev.target; if (!d.matches) return; const s2 = d.matches('details[data-kid]') ? OPEN_K : d.matches('details[data-tid]') ? OPEN_T : null; const id = d.dataset.kid || d.dataset.tid; if (s2) { if (d.open) s2.add(id); else s2.delete(id); } updateSchliessen(); }, true);
+// Sticky bar top = Headerhöhe
+(function() {
+  const hdr = document.querySelector('header'), bar = document.getElementById('stammCloseBar');
+  if (hdr && bar) bar.style.top = hdr.offsetHeight + 'px';
+})();
+stammTab.addEventListener('toggle', ev => { const d = ev.target; if (!d.matches) return; const s2 = d.matches('details[data-kid]') ? OPEN_K : d.matches('details[data-tid]') ? OPEN_T : null; const id = d.dataset.kid || d.dataset.tid; if (s2) { if (d.open) s2.add(id); else s2.delete(id); } }, true);
 $('kSearch').addEventListener('input', renderKunden);
 const ratesTab = document.querySelector('section[data-tab="rates"]');
 ratesTab.addEventListener('change', onRatesChange);
@@ -3334,6 +3522,37 @@ $('ver').textContent = 'v' + APP_VERSION;
 fillDatalists();
 $('autoRes').checked = !!CFG.ai.autoRes;
 $('vhInfo').innerHTML = vhHtml();
+// Reise-Cache: Löschen und Preis-Edit
+document.querySelector('[data-tab="settings"]').addEventListener('click', ev => {
+  const btn = ev.target.closest('[data-rcdel]');
+  if (!btn) return;
+  const [typ, ...rest] = btn.dataset.rcdel.split('|');
+  if (typ === 'flug') {
+    const [key, klasse] = [rest[0], rest[1]];
+    DATA.reiseCache.flug = DATA.reiseCache.flug.filter(x => !(x.key === key && x.klasse === klasse));
+  } else if (typ === 'transfer') {
+    DATA.reiseCache.transfer = DATA.reiseCache.transfer.filter(x => x.key !== rest[0]);
+  } else if (typ === 'autoZiel') {
+    DATA.reiseCache.autoZiel = DATA.reiseCache.autoZiel.filter(x => x.key !== rest[0]);
+  }
+  changed(); renderReiseCache();
+});
+document.querySelector('[data-tab="settings"]').addEventListener('change', ev => {
+  const inp = ev.target.closest('[data-rcedit]');
+  if (!inp) return;
+  const parts = inp.dataset.rcedit.split('|');
+  const typ = parts[0], val = num(inp.value);
+  if (!isFinite(val)) { inp.style.outline = '2px solid var(--red)'; return; }
+  inp.style.outline = '';
+  if (typ === 'flug') {
+    const [, key, klasse] = parts;
+    const e = DATA.reiseCache.flug.find(x => x.key === key && x.klasse === klasse);
+    if (e) { e.chf = val; e.src = 'manuell'; e.at = Date.now(); changed(); renderReiseCache(); }
+  } else if (typ === 'transfer') {
+    const e = DATA.reiseCache.transfer.find(x => x.key === parts[1]);
+    if (e) { e.chf = val; e.src = 'manuell'; e.at = Date.now(); changed(); renderReiseCache(); }
+  }
+});
 checkVersion();
 writeForm(); renderRates(); renderStamm(); renderList(); renderSettings(); render();
 (async () => {
