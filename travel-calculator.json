@@ -2,7 +2,7 @@
  "rates": {
   "stand": "2026-11-23",
   "verantwortlich": "",
-  "updatedAt": 1795587042198,
+  "updatedAt": 1795776828048,
   "profiles": [
    {
     "id": "ch",
@@ -45,14 +45,38 @@
     "id": "de",
     "name": "Deutschland",
     "cur": "EUR",
-    "hotel": "",
-    "car": "",
+    "hotel": 125,
+    "car": 55,
     "spesen": 40,
     "nk": 10,
-    "taxi": "",
+    "taxi": 85,
     "erfV2": true,
-    "vsrc": {},
-    "merged": true
+    "vsrc": {
+     "hotel": {
+      "src": "api",
+      "at": 1795776828048
+     },
+     "car": {
+      "src": "api",
+      "at": 1795776828048
+     },
+     "km": {
+      "src": "api",
+      "at": 1795776828048
+     },
+     "taxi": {
+      "src": "api",
+      "at": 1795776828048
+     }
+    },
+    "merged": true,
+    "km": 0.12,
+    "apiStand": {
+     "at": 1795776828048,
+     "src": "api"
+    },
+    "apiBemerkung": "Treibstoff Stand 23.-25.11.2026 (E5 ca. 1.86-1.96, Diesel ca. 2.03-2.13 EUR/l); km-Gebuehren bei Kompaktwagen meist keine. Hotel und Taxi sind Schaetzwerte (keine aktuellen Quellen gefunden), Mietwagen aus Online-Vergleichen (Wochentarif inkl. Basisversicherung).",
+    "landesWaehrung": "EUR"
    },
    {
     "id": "us",
@@ -3682,10 +3706,21 @@
    "tout": 1525,
    "srch": 1,
    "updatedAt": 1795776698609
+  },
+  {
+   "id": "api-mwyv5ojw7huf2",
+   "typ": "use",
+   "at": 1795776828044,
+   "usd": 0.1244,
+   "text": "Länderprofil Deutschland",
+   "tin": 36996,
+   "tout": 2036,
+   "srch": 3,
+   "updatedAt": 1795776828044
   }
  ],
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795776698613
+ "updatedAt": 1795776828048
 }
