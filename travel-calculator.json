@@ -3382,14 +3382,32 @@
    "id": "mwyupvijqock2",
    "name": "CCL Faubel GmbH",
    "adresse": "Schwarzenberger Weg 45",
-   "land": "DE",
-   "ort": "34212 Melsungen",
+   "land": "Deutschland",
+   "ort": "Melsungen",
    "profileId": "de",
-   "flughafen": "",
-   "flughafenName": "",
-   "distanzKm": "",
-   "fahrzeitMin": "",
-   "updatedAt": 1795776122275
+   "flughafen": "FRA",
+   "flughafenName": "Frankfurt am Main",
+   "distanzKm": 185,
+   "fahrzeitMin": 115,
+   "updatedAt": 1795776698613,
+   "waehrung": "EUR",
+   "alternativen": [
+    {
+     "iata": "PAD",
+     "name": "Paderborn/Lippstadt",
+     "distanz_km": 125
+    },
+    {
+     "iata": "HAJ",
+     "name": "Hannover",
+     "distanz_km": 195
+    }
+   ],
+   "bemerkung": "Adresse: 34212 Melsungen, Hessen. Frankfurt hat die besten Verbindungen aus Europa (Fahrt ueber A5/A7). Kassel Airport (KSF, ca. 45 km) ist naeher, hat aber kaum regelmaessige Linienfluege. Alternativ ist die Anreise per Bahn ab Frankfurt Flughafen (ICE bis Kassel-Wilhelmshoehe, dann Regionalzug nach Melsungen) moeglich. Distanzen und Fahrzeiten sind Schaetzwerte.",
+   "calcStand": {
+    "at": 1795776698613,
+    "src": "api"
+   }
   }
  ],
  "apiLog": [
@@ -3653,10 +3671,21 @@
    "tout": 5227,
    "srch": 5,
    "updatedAt": 1795530122288
+  },
+  {
+   "id": "api-mwyv2wohgm8fq",
+   "typ": "use",
+   "at": 1795776698609,
+   "usd": 0.0539,
+   "text": "Kunde CCL Faubel GmbH",
+   "tin": 14300,
+   "tout": 1525,
+   "srch": 1,
+   "updatedAt": 1795776698609
   }
  ],
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795776122275
+ "updatedAt": 1795776698613
 }
