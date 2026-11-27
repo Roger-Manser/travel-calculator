@@ -3111,21 +3111,29 @@
       "at": 1795776921609
      },
      "flugManuell": false,
-     "flugSrc": "online"
+     "flugSrc": "online",
+     "autoZiel": {
+      "km": 790,
+      "fahrzeitH": 7.6,
+      "at": 1795781187802,
+      "src": "api",
+      "bemerkung": "Zieladresse: Schwarzenberger Weg 45, 34212 Melsungen (Hessen). Die Werte sind eine Schätzung aus meinem Kartenwissen und keine live berechnete Route. Typische Route: A21/A1 via Linz bis Passau, dann A3 via Regensburg und Nürnberg bis Würzburg, danach A7 via Fulda und Kassel bis Melsungen. Fahrzeit ohne Pausen und Staus. Mit Autobahnvignette Österreich, ohne Vignettenpflicht in Deutschland."
+     },
+     "reiseModus": "auto"
     }
    ],
    "profileId": "de",
    "auftrag": "LM440723",
    "bemerkung": "",
    "maschId": "m-konv",
-   "preis": "ek",
-   "ab": "2026-12-14",
+   "preis": "ic",
+   "ab": "2026-12-13",
    "rueck": "2026-12-23",
    "ueInst": "10",
    "ueTrain": "",
    "ueInst2": "",
    "ueTrain2": "",
-   "instTage": "8",
+   "instTage": "9",
    "training": false,
    "handTage": "",
    "trainTage": "",
@@ -3290,7 +3298,8 @@
     },
     "all|carkm": {
      "cur": "EUR",
-     "ppu": 1.2
+     "ppu": 1.2,
+     "qty": 1580
     },
     "all|rental": {
      "cur": "EUR",
@@ -3301,12 +3310,13 @@
    "useApi": true,
    "ovSrc": {},
    "createdAt": 1795777066871,
-   "updatedAt": 1795777171535,
-   "total": 19421.04101,
-   "ofTotal": 21020,
+   "updatedAt": 1795781368925,
+   "total": 19796.61957,
+   "ofTotal": 21059.5,
    "ofCur": "EUR",
    "ofEdited": true,
-   "ziel": "Deutschland"
+   "ziel": "Deutschland",
+   "flugLog": []
   }
  ],
  "aufgaben": [
@@ -4033,5 +4043,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795781187799
+ "updatedAt": 1795781368925
 }
