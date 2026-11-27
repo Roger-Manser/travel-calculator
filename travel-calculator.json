@@ -3377,6 +3377,19 @@
     "at": 1795529804720,
     "src": "api"
    }
+  },
+  {
+   "id": "mwyupvijqock2",
+   "name": "CCL Faubel GmbH",
+   "adresse": "Schwarzenberger Weg 45",
+   "land": "DE",
+   "ort": "34212 Melsungen",
+   "profileId": "de",
+   "flughafen": "",
+   "flughafenName": "",
+   "distanzKm": "",
+   "fahrzeitMin": "",
+   "updatedAt": 1795776122275
   }
  ],
  "apiLog": [
@@ -3645,5 +3658,5 @@
  "deleted": {
   "mwsuqtt79w38b": 1795415123283
  },
- "updatedAt": 1795587042198
+ "updatedAt": 1795776122275
 }
